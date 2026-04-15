@@ -5,15 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="655f5adc-d43b-471e-a9d6-1586578967dd" name="Changes" comment="Library Update">
-      <change afterPath="$PROJECT_DIR$/libs/settings/Layout/16-pages-layout.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/libs/templates/layout.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Inputs/input.json" beforeDir="false" afterPath="$PROJECT_DIR$/Inputs/input.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ReadMe.md" beforeDir="false" afterPath="$PROJECT_DIR$/ReadMe.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/Componentes/types.json" beforeDir="false" afterPath="$PROJECT_DIR$/libs/templates/types.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/FileHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/libs/FileHandler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/settings/16-pages.html" beforeDir="false" afterPath="$PROJECT_DIR$/libs/settings/16-pages.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Inputs/input.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/FileHandler.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/settings/16-pages.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/settings/Layout/16-pages-layout.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/settings/lines.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/templates/layout.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/templates/types.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,16 +58,16 @@
     <option name="showLibraryContents" value="true" />
     <option name="showMembers" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "DefaultHtmlFileTemplate": "HTML File",
-    "Python.FileHandler.executor": "Run",
-    "Python.main.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
-    "last_opened_file_path": "D:/project/TheBookDesign/libs/settings/Layout"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;Python.FileHandler.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/project/TheBookDesign/libs/settings/Layout&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\project\TheBookDesign\libs\settings\Layout" />
@@ -152,7 +153,15 @@
       <option name="project" value="LOCAL" />
       <updated>1752424909249</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Library Update">
+      <option name="closed" value="true" />
+      <created>1754229205422</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1754229205432</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">

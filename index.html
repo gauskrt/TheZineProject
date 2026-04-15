@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Zine Builder</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<style>
+body { margin:0; font-family:Arial; background:#0f0f0f; color:white; }
+header { padding:12px; border-bottom:1px solid #333; }
+.container { display:flex; }
+.sidebar { width:220px; border-right:1px solid #333; padding:10px; }
+.sidebar button, input { width:100%; margin:5px 0; padding:10px; background:#1a1a1a; color:white; border:none; }
+.sidebar button:hover { background:#333; }
+.main { flex:1; text-align:center; padding:10px; }
+canvas { border:1px solid #444; background:white; margin-top:10px; }
+</style>
+</head>
+
+<body>
+
+<header>ZINE BUILDER</header>
+
+<div class="container">
+
+<div class="sidebar">
+
+<input type="file" id="imgUpload">
+
+<button onclick="setMode('select')"><i class="fa fa-mouse-pointer"></i> Move</button>
+<button onclick="setMode('draw')"><i class="fa fa-pencil"></i> Draw</button>
+<button onclick="setMode('erase')"><i class="fa fa-eraser"></i> Erase</button>
+
+<input type="color" id="colorPicker">
+
+<button onclick="undo()"><i class="fa fa-undo"></i> Undo</button>
+<button onclick="redo()"><i class="fa fa-redo"></i> Redo</button>
+
+<button onclick="togglePreviewDraw()"><i class="fa fa-pen"></i> Draw on Preview</button>
+
+<button onclick="exportPDF()"><i class="fa fa-file-pdf"></i> Export PDF</button>
+
+<div style="font-size:12px; margin-top:10px; color:#aaa;">
+<b>Fold Instructions:</b><br>
+1. Print<br>
+2. Fold lengthwise<br>
+3. Cut center slit<br>
+4. Fold into booklet
+</div>
+
+</div>
+
+<div class="main">
+
+<div id="pages"></div>
+
+<canvas id="c" width="300" height="400"></canvas>
+
+<h4>Live Zine Preview</h4>
+<canvas id="previewCanvas" width="600" height="400"></canvas>
+
+</div>
+
+</div>
+
+<script>
+const canvas = new fabric.Canvas('c');
+const previewCanvas = new fabric.Canvas('previewCanvas');
+
+const TOTAL = 8;
+let current = 0;
+
+let pages = Array.from({length: TOTAL}, () => ({
+  json:null, history:[], redo:[]
+}));
+
+// ---------- PAGE BUTTONS ----------
+const pagesDiv = document.getElementById('pages');
+for(let i=0;i<TOTAL;i++){
+  let b = document.createElement('button');
+  b.innerText = i+1;
+  b.onclick = () => switchPage(i);
+  pagesDiv.appendChild(b);
+}
+
+function savePage(){
+  pages[current].json = canvas.toJSON();
+}
+
+function switchPage(i){
+  savePage();
+  current = i;
+  canvas.clear();
+
+  if(pages[i].json){
+    canvas.loadFromJSON(pages[i].json, canvas.renderAll.bind(canvas));
+  }
+
+  updatePreviewLive();
+}
+
+// ---------- HISTORY ----------
+function saveState(){
+  pages[current].history.push(JSON.stringify(canvas));
+  pages[current].redo=[];
+}
+
+canvas.on('object:added', () => {
+  saveState();
+  updatePreviewLive();
+});
+
+canvas.on('object:modified', () => {
+  saveState();
+  updatePreviewLive();
+});
+
+// ---------- UNDO REDO ----------
+function undo(){
+  let h = pages[current].history;
+  if(h.length){
+    pages[current].redo.push(JSON.stringify(canvas));
+    canvas.loadFromJSON(h.pop(), canvas.renderAll.bind(canvas));
+    updatePreviewLive();
+  }
+}
+
+function redo(){
+  let r = pages[current].redo;
+  if(r.length){
+    pages[current].history.push(JSON.stringify(canvas));
+    canvas.loadFromJSON(r.pop(), canvas.renderAll.bind(canvas));
+    updatePreviewLive();
+  }
+}
+
+// ---------- TOOLS ----------
+function setMode(mode){
+  canvas.isDrawingMode = false;
+
+  if(mode==="draw"){
+    canvas.isDrawingMode=true;
+    canvas.freeDrawingBrush.width=3;
+    canvas.freeDrawingBrush.color=document.getElementById("colorPicker").value;
+  }
+
+  if(mode==="erase"){
+    canvas.isDrawingMode=true;
+    canvas.freeDrawingBrush.width=20;
+    canvas.freeDrawingBrush.color="white";
+  }
+}
+
+// ---------- IMAGE ----------
+document.getElementById("imgUpload").addEventListener("change", e=>{
+  const reader = new FileReader();
+  reader.onload = f=>{
+    fabric.Image.fromURL(f.target.result, img=>{
+      img.scaleToWidth(150);
+      canvas.add(img);
+    });
+  };
+  reader.readAsDataURL(e.target.files[0]);
+});
+
+// ---------- GET ALL ----------
+function getAll(){
+  savePage();
+  return pages.map(p=>{
+    const temp = new fabric.StaticCanvas(null,{width:300,height:400});
+    if(p.json) temp.loadFromJSON(p.json, temp.renderAll.bind(temp));
+    return temp.toDataURL();
+  });
+}
+
+// ---------- ZINE LAYOUT (CORRECT ROTATION) ----------
+function buildLayout(imgs){
+  const c = document.createElement("canvas");
+  c.width = 1200;
+  c.height = 800;
+  const ctx = c.getContext("2d");
+
+  const map = [7,0,1,6,5,2,3,4];
+
+  imgs.forEach((src,i)=>{
+    const img = new Image();
+    img.src = src;
+
+    img.onload = () => {
+      let pos = map[i];
+      let col = pos % 4;
+      let row = Math.floor(pos / 4);
+
+      let x = col * 300;
+      let y = row * 400;
+
+      ctx.save();
+
+      if(row === 0){
+        ctx.translate(x + 300, y + 400);
+        ctx.rotate(Math.PI);
+        ctx.drawImage(img, 0, 0, 300, 400);
+      } else {
+        ctx.translate(x, y);
+        ctx.drawImage(img, 0, 0, 300, 400);
+      }
+
+      ctx.restore();
+    };
+  });
+
+  return c;
+}
+
+// ---------- LIVE PREVIEW ENGINE ----------
+let previewTimeout = null;
+
+function updatePreviewLive(){
+  clearTimeout(previewTimeout);
+
+  previewTimeout = setTimeout(()=>{
+    const imgs = getAll();
+    const layout = buildLayout(imgs);
+
+    setTimeout(()=>{
+      fabric.Image.fromURL(layout.toDataURL(), function(img){
+        previewCanvas.clear();
+        previewCanvas.add(img);
+      });
+    },300);
+
+  },200);
+}
+
+// ---------- DRAW ON PREVIEW ----------
+function togglePreviewDraw(){
+  previewCanvas.isDrawingMode = !previewCanvas.isDrawingMode;
+
+  if(previewCanvas.isDrawingMode){
+    previewCanvas.freeDrawingBrush.width = 3;
+    previewCanvas.freeDrawingBrush.color = "red";
+  }
+}
+
+// ---------- PDF ----------
+async function exportPDF(){
+  const {jsPDF}=window.jspdf;
+  const imgs=getAll();
+  const layout=buildLayout(imgs);
+
+  setTimeout(()=>{
+    const pdf=new jsPDF('landscape');
+    pdf.addImage(layout.toDataURL(),"PNG",0,0,297,210);
+    pdf.save("zine.pdf");
+  },1000);
+}
+
+// ---------- INIT ----------
+updatePreviewLive();
+
+</script>
+
+</body>
+</html>
