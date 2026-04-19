@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Booklet Maker</title>
+  <title>Booklet Maker v1.1</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
@@ -15,21 +15,28 @@
       --bg: #070707;
       --panel: #111111;
       --panel-2: #171717;
+      --panel-3: #1f1f1f;
       --line: #2e2e2e;
       --text: #f5f2ea;
       --muted: #9c9a94;
       --accent: #ff5d2a;
       --accent-soft: rgba(255, 93, 42, 0.16);
+      --canvas-bg: #ffffff;
       --shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+      --radius: 20px;
     }
 
     * {
       box-sizing: border-box;
     }
 
+    html,
     body {
       margin: 0;
-      min-height: 100vh;
+      min-height: 100%;
+    }
+
+    body {
       background:
         radial-gradient(circle at top right, rgba(255, 93, 42, 0.14), transparent 28%),
         linear-gradient(180deg, #0a0a0a 0%, #050505 100%);
@@ -37,104 +44,143 @@
       font-family: "Space Grotesk", sans-serif;
     }
 
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
     .app-shell {
       display: grid;
-      grid-template-columns: 290px minmax(0, 1fr);
+      grid-template-columns: 310px minmax(0, 1fr);
       min-height: 100vh;
     }
 
     .sidebar {
+      position: sticky;
+      top: 0;
+      align-self: start;
+      min-height: 100vh;
       padding: 24px 18px;
       border-right: 1px solid var(--line);
       background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 22%),
         rgba(10, 10, 10, 0.92);
-      position: sticky;
-      top: 0;
-      align-self: start;
-      min-height: 100vh;
+      overflow: auto;
     }
 
     .brand {
-      margin-bottom: 22px;
+      margin-bottom: 18px;
     }
 
     .brand h1 {
       margin: 0;
       font-family: "Bebas Neue", sans-serif;
-      font-size: 3.1rem;
+      font-size: 3.2rem;
+      line-height: 0.92;
       letter-spacing: 0.08em;
-      line-height: 0.95;
     }
 
     .brand p {
       margin: 10px 0 0;
-      font-size: 0.92rem;
       color: var(--muted);
       line-height: 1.5;
+      font-size: 0.94rem;
     }
 
-    .tool-group {
-      margin-bottom: 18px;
-      padding: 16px;
+    .tool-group,
+    .info-card,
+    .panel {
       border: 1px solid var(--line);
-      border-radius: 18px;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.01));
+      border-radius: var(--radius);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01)),
+        rgba(12, 12, 12, 0.98);
       box-shadow: var(--shadow);
     }
 
-    .tool-group h2 {
-      margin: 0 0 12px;
-      font-size: 0.78rem;
+    .tool-group,
+    .info-card {
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .tool-group h2,
+    .info-card h2,
+    .panel-header h3,
+    .summary-title {
+      margin: 0;
+      font-size: 0.8rem;
       letter-spacing: 0.16em;
       text-transform: uppercase;
       color: var(--muted);
     }
 
-    .tool-stack {
+    .tool-stack,
+    .tool-grid,
+    .asset-grid,
+    .action-grid,
+    .output-grid {
       display: grid;
       gap: 10px;
+      margin-top: 12px;
+    }
+
+    .tool-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .asset-grid,
+    .action-grid,
+    .output-grid {
+      grid-template-columns: 1fr;
     }
 
     button,
     .file-label,
-    input[type="color"] {
+    input[type="color"],
+    input[type="range"] {
       width: 100%;
       border: 1px solid var(--line);
       border-radius: 14px;
       background: var(--panel);
       color: var(--text);
-      font: inherit;
       transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
     }
 
     button,
     .file-label {
-      padding: 13px 14px;
+      min-height: 46px;
+      padding: 12px 14px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
       cursor: pointer;
       font-weight: 600;
+      text-align: center;
     }
 
     button:hover,
-    .file-label:hover {
+    .file-label:hover,
+    button:focus-visible,
+    .file-label:focus-visible {
       transform: translateY(-1px);
       border-color: rgba(255, 93, 42, 0.72);
       background: var(--panel-2);
       box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
+      outline: none;
     }
 
     button.active {
       background: linear-gradient(180deg, rgba(255, 93, 42, 0.22), rgba(255, 93, 42, 0.06));
-      border-color: rgba(255, 93, 42, 0.8);
+      border-color: rgba(255, 93, 42, 0.84);
       color: #fff3ee;
     }
 
     button:disabled {
-      opacity: 0.45;
+      opacity: 0.48;
       cursor: not-allowed;
       transform: none;
       box-shadow: none;
@@ -144,57 +190,122 @@
       display: none;
     }
 
-    .color-wrap {
+    .control-block {
+      margin-top: 12px;
       display: grid;
       gap: 8px;
     }
 
-    .color-wrap label {
-      font-size: 0.85rem;
+    .control-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .control-label {
+      font-size: 0.86rem;
       color: var(--muted);
     }
 
     input[type="color"] {
-      height: 52px;
+      height: 50px;
       padding: 6px;
+      cursor: pointer;
+    }
+
+    input[type="range"] {
+      appearance: none;
+      height: 44px;
+      padding: 0 12px;
       background: var(--panel);
       cursor: pointer;
     }
 
-    .instruction-list {
-      display: grid;
-      gap: 8px;
-      margin: 0;
-      padding-left: 18px;
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      margin-top: -6px;
+      background: var(--accent);
+      border-radius: 50%;
+      border: none;
+    }
+
+    .help-copy,
+    .instruction-list,
+    .preview-note,
+    .editor-tip,
+    .thumb-meta,
+    .camera-note,
+    .summary-copy {
       color: var(--muted);
       font-size: 0.92rem;
-      line-height: 1.45;
+      line-height: 1.5;
+    }
+
+    .instruction-list {
+      margin: 12px 0 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 8px;
     }
 
     .workspace {
-      padding: 26px;
+      padding: 24px;
     }
 
     .workspace-inner {
-      max-width: 1180px;
+      max-width: 1220px;
       margin: 0 auto;
       display: grid;
-      gap: 20px;
+      gap: 18px;
     }
 
-    .topbar {
+    .panel {
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 18px 20px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 14px;
+      gap: 12px;
       flex-wrap: wrap;
-      padding: 6px 2px;
     }
 
-    .topbar h2 {
+    .panel-body {
+      padding: 18px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .hero h2 {
       margin: 0;
-      font-size: 1.25rem;
-      font-weight: 700;
+      font-size: 1.4rem;
+    }
+
+    .hero p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 70ch;
     }
 
     .status-pill {
@@ -204,63 +315,20 @@
       border: 1px solid var(--line);
       color: var(--muted);
       font-size: 0.9rem;
-    }
-
-    .panel {
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01)),
-        rgba(12, 12, 12, 0.98);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
-
-    .panel-header {
-      padding: 18px 20px 12px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .panel-header h3 {
-      margin: 0;
-      font-size: 1rem;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-
-    .panel-body {
-      padding: 18px;
-    }
-
-    .page-nav {
-      display: grid;
-      grid-template-columns: repeat(8, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .page-btn {
-      min-width: 0;
-      padding: 12px 10px;
-      border-radius: 12px;
-      font-weight: 700;
+      white-space: nowrap;
     }
 
     .canvas-stage {
       display: grid;
+      gap: 18px;
       justify-items: center;
-      gap: 16px;
     }
 
     .editor-shell {
-      position: relative;
       width: fit-content;
+      max-width: 100%;
       padding: 18px;
-      border-radius: 26px;
+      border-radius: 24px;
       background:
         linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01)),
         #141414;
@@ -273,33 +341,213 @@
       box-shadow: 0 0 0 5px var(--accent-soft);
     }
 
-    .editor-tip {
-      font-size: 0.9rem;
-      color: var(--muted);
-      text-align: center;
-    }
-
-    .preview-shell {
-      width: 100%;
-      display: grid;
-      gap: 14px;
-    }
-
-    .preview-note {
-      color: var(--muted);
-      font-size: 0.9rem;
-      line-height: 1.45;
-    }
-
-    canvas {
-      display: block;
-      border-radius: 14px;
-    }
-
     .canvas-container {
-      background: #fff;
+      background: var(--canvas-bg);
       border-radius: 14px;
       overflow: hidden;
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.2);
+    }
+
+    .canvas-container canvas {
+      border-radius: 14px;
+    }
+
+    .editor-shell .canvas-container,
+    .preview-stage .canvas-container {
+      max-width: 100%;
+    }
+
+    .canvas-meta {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .canvas-meta strong {
+      font-size: 1rem;
+    }
+
+    .thumbnail-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .thumb-button {
+      padding: 10px;
+      min-height: auto;
+      align-items: stretch;
+      flex-direction: column;
+      gap: 8px;
+      border-radius: 16px;
+    }
+
+    .thumb-preview {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: #ffffff;
+    }
+
+    .thumb-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+
+    .thumb-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 26px;
+      min-height: 26px;
+      padding: 0 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .preview-details {
+      border: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .preview-details > summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 18px 20px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .preview-details > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .summary-left {
+      display: grid;
+      gap: 6px;
+    }
+
+    .summary-copy {
+      margin: 0;
+    }
+
+    .summary-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--line);
+      transition: transform 0.18s ease;
+    }
+
+    .preview-details[open] .summary-toggle {
+      transform: rotate(180deg);
+    }
+
+    .preview-stage {
+      padding: 18px;
+    }
+
+    .preview-stage .canvas-container,
+    .preview-stage .canvas-container canvas {
+      width: 100% !important;
+      height: auto !important;
+    }
+
+    .camera-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(8px);
+      z-index: 50;
+    }
+
+    .camera-modal.open {
+      display: flex;
+    }
+
+    .camera-card {
+      width: min(100%, 720px);
+      background: rgba(10, 10, 10, 0.96);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .camera-head,
+    .camera-body,
+    .camera-actions {
+      padding: 18px;
+    }
+
+    .camera-head {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .camera-head h3 {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .camera-frame {
+      width: 100%;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #000;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .camera-frame video {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .camera-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .camera-actions button {
+      width: auto;
+      min-width: 160px;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
     }
 
     @media (max-width: 1080px) {
@@ -315,24 +563,75 @@
       }
     }
 
-    @media (max-width: 760px) {
+    @media (max-width: 768px) {
       .workspace {
-        padding: 18px 14px 22px;
+        padding: 14px;
       }
 
+      .sidebar {
+        padding: 14px;
+      }
+
+      .brand h1 {
+        font-size: 2.5rem;
+      }
+
+      .tool-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .panel-header,
       .panel-body,
-      .panel-header {
+      .preview-stage,
+      .preview-details > summary {
         padding-left: 14px;
         padding-right: 14px;
       }
 
-      .page-nav {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+      .editor-shell {
+        width: 100%;
+        padding: 12px;
       }
 
-      #previewCanvas {
+      .editor-shell .canvas-container,
+      .editor-shell .canvas-container canvas {
         width: 100% !important;
         height: auto !important;
+      }
+
+      .thumbnail-strip {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        padding-bottom: 6px;
+        scroll-snap-type: x proximity;
+      }
+
+      .thumbnail-strip::-webkit-scrollbar {
+        height: 8px;
+      }
+
+      .thumbnail-strip::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.14);
+        border-radius: 999px;
+      }
+
+      .thumb-button {
+        min-width: 120px;
+        flex: 0 0 120px;
+        scroll-snap-align: start;
+      }
+
+      .camera-actions {
+        justify-content: stretch;
+      }
+
+      .camera-actions button {
+        width: 100%;
       }
     }
   </style>
@@ -341,113 +640,150 @@
   <div class="app-shell">
     <aside class="sidebar">
       <div class="brand">
-        <h1>Your Journey outside your phone</h1>
-        <p>In the era of digital being and the advent of AI, Here is an effort to have something physical, part of the Life you lived, Something you can share, which is more than just a meme.</p>
+        <h1>Booklet Maker</h1>
+        <p>Create something physical from the moments you want to keep. Build an 8-page mini zine, preview the print sheet live, and export a ready-to-fold PDF.</p>
       </div>
 
       <section class="tool-group">
-        <h2>Tools</h2>
-        <div class="tool-stack">
+        <h2>Edit Tools</h2>
+        <div class="tool-grid">
           <button id="selectTool" type="button"><i class="fa-solid fa-up-down-left-right"></i> Move</button>
           <button id="drawTool" type="button"><i class="fa-solid fa-pencil"></i> Draw</button>
           <button id="eraseTool" type="button"><i class="fa-solid fa-eraser"></i> Erase</button>
-          <button id="clearCanvas" type="button"><i class="fa-solid fa-trash-can"></i> Clear Canvas</button>
+          <button id="textTool" type="button"><i class="fa-solid fa-font"></i> Text</button>
         </div>
       </section>
 
       <section class="tool-group">
         <h2>Assets</h2>
-        <div class="tool-stack">
+        <div class="asset-grid">
           <label class="file-label" for="imageUpload"><i class="fa-solid fa-image"></i> Upload Images</label>
           <input id="imageUpload" class="file-input" type="file" accept="image/*" multiple>
-          <div class="color-wrap">
-            <label for="colorPicker">Brush Color</label>
+
+          <button id="cameraBtn" type="button"><i class="fa-solid fa-camera"></i> Take Photo</button>
+          <input id="cameraFallbackInput" class="file-input" type="file" accept="image/*" capture="environment">
+
+          <div class="control-block">
+            <div class="control-row">
+              <span class="control-label">Color</span>
+              <span id="colorValue">#ff5d2a</span>
+            </div>
             <input id="colorPicker" type="color" value="#ff5d2a">
+          </div>
+
+          <div class="control-block">
+            <div class="control-row">
+              <span class="control-label">Text Size</span>
+              <span id="fontSizeValue">28 px</span>
+            </div>
+            <input id="fontSizeRange" type="range" min="12" max="96" step="1" value="28">
           </div>
         </div>
       </section>
 
       <section class="tool-group">
-        <h2>History</h2>
-        <div class="tool-stack">
+        <h2>Actions</h2>
+        <div class="action-grid">
           <button id="undoBtn" type="button"><i class="fa-solid fa-rotate-left"></i> Undo</button>
           <button id="redoBtn" type="button"><i class="fa-solid fa-rotate-right"></i> Redo</button>
+          <button id="clearCanvas" type="button"><i class="fa-solid fa-trash-can"></i> Clear Page</button>
         </div>
       </section>
 
       <section class="tool-group">
-        <h2>Preview</h2>
-        <div class="tool-stack">
+        <h2>Output</h2>
+        <div class="output-grid">
           <button id="previewDrawBtn" type="button"><i class="fa-solid fa-pen-ruler"></i> Draw on Preview</button>
           <button id="exportPdfBtn" type="button"><i class="fa-solid fa-file-arrow-down"></i> Export PDF</button>
         </div>
       </section>
 
+      <section class="info-card">
+        <h2>How To Fold</h2>
+        <ol class="instruction-list">
+          <li>Print the PDF.</li>
+          <li>Fold lengthwise.</li>
+          <li>Cut the center slit.</li>
+          <li>Fold into a booklet.</li>
+        </ol>
+      </section>
     </aside>
 
     <main class="workspace">
       <div class="workspace-inner">
-
-        <section>
-          <h2>Why?</h2>
-          <p>In the era of digital being and the advent of AI, Here is an effort to have something physical, part of the Life you lived, Something you can share, which is more than just a meme.
-             A motive to hold something which is not just your phone.</p>
+        <section class="panel hero">
+          <div>
+            <h2>Version 1.1</h2>
+            <p>Mobile-friendly controls, live page thumbnails, editable text, quick camera capture, and a more stable preview pipeline all sit on top of the same 8-page zine engine and A4 export flow.</p>
+          </div>
+          <div id="statusText" class="status-pill">Ready to build page 1.</div>
         </section>
 
         <section class="panel">
           <div class="panel-header">
-            <h3>Pages 1-8</h3>
-            <span class="preview-note">Each page keeps its own canvas JSON plus independent undo and redo history.</span>
+            <h3>Pages</h3>
+            <span class="preview-note">Tap any thumbnail to switch pages. Each page keeps its own JSON, undo history, and redo history.</span>
           </div>
           <div class="panel-body">
-            <div id="pageNav" class="page-nav"></div>
+            <div id="thumbnailStrip" class="thumbnail-strip"></div>
           </div>
         </section>
-
-        <div class="topbar">
-          <div id="statusText" class="status-pill">Ready to build page 1.</div>
-        </div>
 
         <section class="panel">
           <div class="panel-header">
             <h3>Main Editor</h3>
-            <span class="preview-note">Canvas size: 300 x 400 px. Drag and drop images directly onto the page.</span>
+            <span class="preview-note">Canvas size: 300 x 400 px. Drag and drop images, use the text tool, or snap objects toward center while moving.</span>
           </div>
           <div class="panel-body">
             <div class="canvas-stage">
+              <div class="canvas-meta">
+                <strong id="pageTitle">Page 1</strong>
+                <span class="preview-note">Move mode lets you resize and rotate selected items. Text color uses the same picker as drawing.</span>
+              </div>
               <div id="editorShell" class="editor-shell">
                 <canvas id="editorCanvas" width="300" height="400"></canvas>
               </div>
-              <div class="editor-tip">Tip: use Move mode for resize and rotation handles, Draw for pencil, and Erase for a white brush.</div>
+              <div class="editor-tip">Tip: tap Text to drop in an editable textbox, then resize it like any other Fabric object.</div>
             </div>
           </div>
         </section>
 
-        <section class="panel preview-shell">
-          <div class="panel-header">
-            <h3>Live Print Layout Preview</h3>
-            <span class="preview-note">Top row is inverted 180 degrees. Bottom row stays upright. Preview drawing stays only on this layout canvas.</span>
-          </div>
-          <div class="panel-body">
-            <canvas id="previewCanvas" width="900" height="600"></canvas>
-          </div>
-        </section>
-
-        <section class="Instruction to make the zine">
-          <div class="Instruction Panel">
-            <h3>How to fold the Zine</h3>
-                    <ol class="instruction-list">
-          <li>Design your PDF.</li>
-          <li>Print your PDF using the Export pdf button</li>
-          <li>Print the PDF.</li>
-          <li>Follow the instructions to fold the zine.</li>
-                      <img src="images/how_to.jpg"  width="800" height="900" alt="Description of how to fold the  Zine!">
-        </ol>
-          </div>
+        <section class="panel">
+          <details id="previewDetails" class="preview-details" open>
+            <summary>
+              <div class="summary-left">
+                <span class="summary-title">Live Print Layout Preview</span>
+                <p class="summary-copy">Top row is inverted 180 degrees: [5][4][3][2]. Bottom row stays upright: [6][7][8][1].</p>
+              </div>
+              <span class="summary-toggle"><i class="fa-solid fa-chevron-down"></i></span>
+            </summary>
+            <div class="preview-stage">
+              <canvas id="previewCanvas" width="900" height="600"></canvas>
+            </div>
+          </details>
         </section>
       </div>
     </main>
   </div>
+
+  <div id="cameraModal" class="camera-modal" aria-hidden="true">
+    <div class="camera-card">
+      <div class="camera-head">
+        <h3>Capture Photo</h3>
+        <p class="camera-note">Use your camera to drop a photo directly onto the current page.</p>
+      </div>
+      <div class="camera-body">
+        <div class="camera-frame">
+          <video id="cameraFeed" autoplay playsinline muted></video>
+        </div>
+      </div>
+      <div class="camera-actions">
+        <button id="cancelCameraBtn" type="button"><i class="fa-solid fa-xmark"></i> Cancel</button>
+        <button id="capturePhotoBtn" type="button"><i class="fa-solid fa-camera-retro"></i> Capture</button>
+      </div>
+    </div>
+  </div>
+  <canvas id="cameraCaptureCanvas" class="visually-hidden" width="1280" height="720"></canvas>
 
   <script>
     const PAGE_COUNT = 8;
@@ -457,12 +793,14 @@
     const LAYOUT_HEIGHT = 800;
     const PREVIEW_DEBOUNCE_MS = 250;
     const HISTORY_LIMIT = 60;
+    const SNAP_THRESHOLD = 8;
 
     const editorCanvas = new fabric.Canvas("editorCanvas", {
       width: PAGE_WIDTH,
       height: PAGE_HEIGHT,
       backgroundColor: "#ffffff",
-      preserveObjectStacking: true
+      preserveObjectStacking: true,
+      selection: true
     });
 
     const previewCanvas = new fabric.Canvas("previewCanvas", {
@@ -474,38 +812,55 @@
     });
 
     const statusText = document.getElementById("statusText");
-    const pageNav = document.getElementById("pageNav");
+    const pageTitle = document.getElementById("pageTitle");
+    const thumbnailStrip = document.getElementById("thumbnailStrip");
     const editorShell = document.getElementById("editorShell");
     const imageUpload = document.getElementById("imageUpload");
+    const cameraBtn = document.getElementById("cameraBtn");
+    const cameraFallbackInput = document.getElementById("cameraFallbackInput");
     const colorPicker = document.getElementById("colorPicker");
+    const colorValue = document.getElementById("colorValue");
+    const fontSizeRange = document.getElementById("fontSizeRange");
+    const fontSizeValue = document.getElementById("fontSizeValue");
     const undoBtn = document.getElementById("undoBtn");
     const redoBtn = document.getElementById("redoBtn");
     const previewDrawBtn = document.getElementById("previewDrawBtn");
     const exportPdfBtn = document.getElementById("exportPdfBtn");
+    const previewDetails = document.getElementById("previewDetails");
+    const cameraModal = document.getElementById("cameraModal");
+    const cameraFeed = document.getElementById("cameraFeed");
+    const capturePhotoBtn = document.getElementById("capturePhotoBtn");
+    const cancelCameraBtn = document.getElementById("cancelCameraBtn");
+    const cameraCaptureCanvas = document.getElementById("cameraCaptureCanvas");
+
     const toolButtons = {
       select: document.getElementById("selectTool"),
       draw: document.getElementById("drawTool"),
-      erase: document.getElementById("eraseTool")
+      erase: document.getElementById("eraseTool"),
+      text: document.getElementById("textTool")
     };
 
-    const pageButtons = [];
+    const thumbnailButtons = [];
     let currentPageIndex = 0;
     let currentTool = "select";
     let previewDrawingEnabled = false;
     let isRestoringPage = false;
-    let previewTimer = null;
-    let previewJobId = 0;
+    let refreshTimer = null;
+    let refreshToken = 0;
+    let cameraStream = null;
 
     const blankState = JSON.stringify(editorCanvas.toJSON());
-    const pages = Array.from({ length: PAGE_COUNT }, () => ({
+    const pages = Array.from({ length: PAGE_COUNT }, (_, index) => ({
       json: blankState,
       history: [blankState],
-      redo: []
+      redo: [],
+      thumbnail: "",
+      label: "Page " + (index + 1)
     }));
 
-    // Exact imposition map for the printable zine sheet.
-    // Top row is flipped 180 degrees: [5][4][3][2]
-    // Bottom row stays upright:       [6][7][8][1]
+    // Exact zine mapping for the printable imposition sheet.
+    // Top row is rotated 180 degrees: [5][4][3][2]
+    // Bottom row remains upright:      [6][7][8][1]
     const layoutSlots = [
       { page: 5, col: 0, row: 0, rotate: true },
       { page: 4, col: 1, row: 0, rotate: true },
@@ -538,13 +893,37 @@
       redoBtn.disabled = pages[currentPageIndex].redo.length === 0;
     }
 
-    function updatePageButtons() {
-      pageButtons.forEach((button, index) => {
-        button.classList.toggle("active", index === currentPageIndex);
+    function updateFontReadout() {
+      fontSizeValue.textContent = fontSizeRange.value + " px";
+      colorValue.textContent = colorPicker.value.toLowerCase();
+    }
+
+    function getActiveTextObject() {
+      const activeObject = editorCanvas.getActiveObject();
+      if (!activeObject) {
+        return null;
+      }
+      return ["textbox", "i-text", "text"].includes(activeObject.type) ? activeObject : null;
+    }
+
+    function decorateObject(object) {
+      object.set({
+        cornerColor: "#ff5d2a",
+        borderColor: "#ff5d2a",
+        transparentCorners: false,
+        cornerStyle: "circle"
+      });
+      object.setCoords();
+      return object;
+    }
+
+    function decorateLoadedObjects() {
+      editorCanvas.forEachObject((object) => {
+        decorateObject(object);
       });
     }
 
-    function syncBrushColor() {
+    function syncBrushAndTextControls() {
       const brushColor = currentTool === "erase" ? "#ffffff" : colorPicker.value;
       editorCanvas.freeDrawingBrush = new fabric.PencilBrush(editorCanvas);
       editorCanvas.freeDrawingBrush.color = brushColor;
@@ -553,6 +932,18 @@
       previewCanvas.freeDrawingBrush = new fabric.PencilBrush(previewCanvas);
       previewCanvas.freeDrawingBrush.color = colorPicker.value;
       previewCanvas.freeDrawingBrush.width = 4;
+
+      const textObject = getActiveTextObject();
+      if (textObject) {
+        textObject.set({
+          fill: colorPicker.value,
+          fontSize: Number(fontSizeRange.value)
+        });
+        textObject.setCoords();
+        editorCanvas.requestRenderAll();
+      }
+
+      updateFontReadout();
     }
 
     function applyEditorTool(mode) {
@@ -571,8 +962,15 @@
         object.evented = !isDrawing;
       });
 
-      syncBrushColor();
+      syncBrushAndTextControls();
       editorCanvas.requestRenderAll();
+    }
+
+    function updateThumbnailSelection() {
+      thumbnailButtons.forEach((button, index) => {
+        button.classList.toggle("active", index === currentPageIndex);
+      });
+      pageTitle.textContent = "Page " + (currentPageIndex + 1);
     }
 
     function pushHistorySnapshot() {
@@ -583,7 +981,6 @@
       const page = pages[currentPageIndex];
       const snapshot = getCurrentCanvasState();
       const lastSnapshot = page.history[page.history.length - 1];
-
       page.json = snapshot;
 
       if (snapshot === lastSnapshot) {
@@ -597,7 +994,7 @@
       }
       page.redo = [];
       updateHistoryButtons();
-      schedulePreviewRefresh();
+      scheduleCompositeRefresh();
     }
 
     function loadCanvasState(stateString) {
@@ -605,9 +1002,10 @@
       return new Promise((resolve) => {
         editorCanvas.loadFromJSON(parseState(stateString), () => {
           editorCanvas.setBackgroundColor("#ffffff", () => {
+            decorateLoadedObjects();
             editorCanvas.renderAll();
             isRestoringPage = false;
-            applyEditorTool(currentTool);
+            applyEditorTool(currentTool === "text" ? "select" : currentTool);
             resolve();
           });
         });
@@ -621,18 +1019,20 @@
 
       saveCurrentPageState();
       currentPageIndex = nextIndex;
-      updatePageButtons();
+      updateThumbnailSelection();
       await loadCanvasState(pages[currentPageIndex].json);
       updateHistoryButtons();
+      syncTextControlsFromSelection();
       setStatus("Editing page " + (currentPageIndex + 1) + ".");
-      schedulePreviewRefresh();
+      scheduleCompositeRefresh();
     }
 
     async function restoreFromHistory(stateString) {
       await loadCanvasState(stateString);
       pages[currentPageIndex].json = stateString;
       updateHistoryButtons();
-      schedulePreviewRefresh();
+      syncTextControlsFromSelection();
+      scheduleCompositeRefresh();
     }
 
     async function undo() {
@@ -666,10 +1066,26 @@
       editorCanvas.setBackgroundColor("#ffffff", () => {
         editorCanvas.renderAll();
         isRestoringPage = false;
-        applyEditorTool(currentTool);
+        applyEditorTool("select");
         pushHistorySnapshot();
         setStatus("Cleared page " + (currentPageIndex + 1) + ".");
       });
+    }
+
+    function syncTextControlsFromSelection() {
+      const activeText = getActiveTextObject();
+      if (!activeText) {
+        updateFontReadout();
+        return;
+      }
+
+      if (activeText.fill) {
+        colorPicker.value = activeText.fill;
+      }
+      if (activeText.fontSize) {
+        fontSizeRange.value = String(Math.round(activeText.fontSize));
+      }
+      updateFontReadout();
     }
 
     function readFileAsDataURL(file) {
@@ -688,19 +1104,16 @@
     }
 
     async function addImageToEditor(dataUrl, indexOffset = 0) {
-      const image = await createFabricImage(dataUrl);
-      const maxWidth = PAGE_WIDTH * 0.8;
-      const maxHeight = PAGE_HEIGHT * 0.8;
+      const image = decorateObject(await createFabricImage(dataUrl));
+      const maxWidth = PAGE_WIDTH * 0.82;
+      const maxHeight = PAGE_HEIGHT * 0.82;
       const scale = Math.min(maxWidth / image.width, maxHeight / image.height, 1);
 
       image.set({
         left: PAGE_WIDTH / 2 + indexOffset * 10,
         top: PAGE_HEIGHT / 2 + indexOffset * 10,
         originX: "center",
-        originY: "center",
-        cornerColor: "#ff5d2a",
-        borderColor: "#ff5d2a",
-        transparentCorners: false
+        originY: "center"
       });
       image.scale(scale);
 
@@ -722,6 +1135,33 @@
       }
     }
 
+    function insertTextBox() {
+      const textObject = decorateObject(new fabric.Textbox("Tap to edit", {
+        left: PAGE_WIDTH / 2,
+        top: PAGE_HEIGHT / 2,
+        originX: "center",
+        originY: "center",
+        width: 190,
+        fontSize: Number(fontSizeRange.value),
+        fill: colorPicker.value,
+        fontFamily: "Arial",
+        editable: true,
+        textAlign: "left"
+      }));
+
+      editorCanvas.add(textObject);
+      editorCanvas.setActiveObject(textObject);
+      editorCanvas.requestRenderAll();
+      textObject.enterEditing();
+      textObject.selectAll();
+      setStatus("Text inserted on page " + (currentPageIndex + 1) + ".");
+    }
+
+    function handleTextTool() {
+      applyEditorTool("text");
+      insertTextBox();
+    }
+
     function loadImageElement(src) {
       return new Promise((resolve, reject) => {
         const image = new Image();
@@ -731,7 +1171,7 @@
       });
     }
 
-    async function renderPageToDataUrl(page) {
+    async function renderPageToDataUrl(page, multiplier = 0.45) {
       const tempCanvasElement = document.createElement("canvas");
       tempCanvasElement.width = PAGE_WIDTH;
       tempCanvasElement.height = PAGE_HEIGHT;
@@ -753,30 +1193,33 @@
 
       const dataUrl = tempCanvas.toDataURL({
         format: "png",
-        multiplier: 1
+        multiplier
       });
       tempCanvas.dispose();
       return dataUrl;
     }
 
-    async function buildZineLayoutCanvas() {
+    async function renderAllPageImages(multiplier = 0.45) {
       saveCurrentPageState();
-      const pageImages = await Promise.all(pages.map((page) => renderPageToDataUrl(page)));
+      return Promise.all(pages.map((page) => renderPageToDataUrl(page, multiplier)));
+    }
+
+    async function buildZineLayoutCanvas(pageImages) {
+      const pageImageSources = pageImages || await renderAllPageImages(1);
       const layoutCanvas = document.createElement("canvas");
       layoutCanvas.width = LAYOUT_WIDTH;
       layoutCanvas.height = LAYOUT_HEIGHT;
-
       const context = layoutCanvas.getContext("2d");
+
       context.fillStyle = "#ffffff";
       context.fillRect(0, 0, LAYOUT_WIDTH, LAYOUT_HEIGHT);
 
-      // Layout mapping and rotation logic:
-      // We place each rendered page into the 4x2 print grid, rotating only the top row
-      // so the exported sheet folds into the correct 8-page mini zine sequence.
+      // Rotation logic for the printable sheet:
+      // only the top row is flipped so the sheet folds into the correct mini-zine order.
       for (const slot of layoutSlots) {
         const x = slot.col * PAGE_WIDTH;
         const y = slot.row * PAGE_HEIGHT;
-        const image = await loadImageElement(pageImages[slot.page - 1]);
+        const image = await loadImageElement(pageImageSources[slot.page - 1]);
 
         context.save();
         if (slot.rotate) {
@@ -790,6 +1233,15 @@
       }
 
       return layoutCanvas;
+    }
+
+    function updateThumbnails(pageImages) {
+      pageImages.forEach((dataUrl, index) => {
+        pages[index].thumbnail = dataUrl;
+        const imageElement = thumbnailButtons[index].querySelector("img");
+        imageElement.src = dataUrl;
+      });
+      updateThumbnailSelection();
     }
 
     function updatePreviewBackground(dataUrl) {
@@ -812,27 +1264,32 @@
       });
     }
 
-    function schedulePreviewRefresh() {
-      clearTimeout(previewTimer);
-      const jobId = ++previewJobId;
+    function scheduleCompositeRefresh() {
+      clearTimeout(refreshTimer);
+      const token = ++refreshToken;
 
-      previewTimer = setTimeout(async () => {
-        setStatus("Refreshing live preview...");
+      refreshTimer = setTimeout(async () => {
+        setStatus("Refreshing preview and thumbnails...");
 
         try {
-          // Preview rendering pipeline:
-          // 1. Render each stored page JSON into a temporary page image.
-          // 2. Rebuild the full imposition sheet using the zine mapping above.
-          // 3. Push that sheet into the preview Fabric canvas as its background image.
-          const layoutCanvas = await buildZineLayoutCanvas();
-          if (jobId !== previewJobId) {
+          // Preview update system:
+          // 1. Save the current page.
+          // 2. Render all 8 pages once.
+          // 3. Reuse those rendered images for both thumbnails and the print preview.
+          const renderedPages = await renderAllPageImages(1);
+          if (token !== refreshToken) {
             return;
           }
 
-          const dataUrl = layoutCanvas.toDataURL("image/png");
-          await updatePreviewBackground(dataUrl);
+          updateThumbnails(renderedPages);
 
-          if (jobId !== previewJobId) {
+          const layoutCanvas = await buildZineLayoutCanvas(renderedPages);
+          if (token !== refreshToken) {
+            return;
+          }
+
+          await updatePreviewBackground(layoutCanvas.toDataURL("image/png"));
+          if (token !== refreshToken) {
             return;
           }
 
@@ -855,7 +1312,7 @@
         ? '<i class="fa-solid fa-pen-ruler"></i> Stop Preview Draw'
         : '<i class="fa-solid fa-pen-ruler"></i> Draw on Preview';
 
-      syncBrushColor();
+      syncBrushAndTextControls();
       setStatus(previewDrawingEnabled ? "Preview drawing enabled." : "Preview drawing disabled.");
     }
 
@@ -864,7 +1321,8 @@
       setStatus("Building PDF...");
 
       try {
-        const layoutCanvas = await buildZineLayoutCanvas();
+        const pageImages = await renderAllPageImages(1);
+        const layoutCanvas = await buildZineLayoutCanvas(pageImages);
         const imageData = layoutCanvas.toDataURL("image/png");
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({
@@ -884,46 +1342,148 @@
       }
     }
 
-    function buildPageNavigation() {
+    function buildThumbnailNavigation() {
       for (let index = 0; index < PAGE_COUNT; index += 1) {
         const button = document.createElement("button");
         button.type = "button";
-        button.className = "page-btn";
-        button.textContent = String(index + 1);
-        button.addEventListener("click", () => {
-          switchPage(index);
-        });
-        pageButtons.push(button);
-        pageNav.appendChild(button);
+        button.className = "thumb-button";
+        button.innerHTML = `
+          <img class="thumb-preview" alt="Thumbnail for page ${index + 1}">
+          <span class="thumb-label">
+            <span>${pages[index].label}</span>
+            <span class="thumb-badge">${index + 1}</span>
+          </span>
+        `;
+        button.addEventListener("click", () => switchPage(index));
+        thumbnailButtons.push(button);
+        thumbnailStrip.appendChild(button);
       }
-      updatePageButtons();
+      updateThumbnailSelection();
     }
 
     function handleDragState(isDragging) {
       editorShell.classList.toggle("dragging", isDragging);
     }
 
+    function maybeSnapObject(target) {
+      const center = target.getCenterPoint();
+      if (Math.abs(center.x - PAGE_WIDTH / 2) <= SNAP_THRESHOLD) {
+        target.setPositionByOrigin(new fabric.Point(PAGE_WIDTH / 2, center.y), "center", "center");
+      }
+      if (Math.abs(center.y - PAGE_HEIGHT / 2) <= SNAP_THRESHOLD) {
+        target.setPositionByOrigin(new fabric.Point(center.x, PAGE_HEIGHT / 2), "center", "center");
+      }
+    }
+
+    async function openCameraModal() {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        cameraFallbackInput.click();
+        setStatus("Camera preview not supported here. Falling back to file upload.");
+        return;
+      }
+
+      try {
+        cameraStream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: { ideal: "environment" },
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+          },
+          audio: false
+        });
+
+        cameraFeed.srcObject = cameraStream;
+        cameraModal.classList.add("open");
+        cameraModal.setAttribute("aria-hidden", "false");
+        setStatus("Camera ready.");
+      } catch (error) {
+        console.error(error);
+        cameraFallbackInput.click();
+        setStatus("Camera access failed. Using file upload instead.");
+      }
+    }
+
+    function closeCameraModal() {
+      cameraModal.classList.remove("open");
+      cameraModal.setAttribute("aria-hidden", "true");
+      if (cameraStream) {
+        cameraStream.getTracks().forEach((track) => track.stop());
+      }
+      cameraStream = null;
+      cameraFeed.srcObject = null;
+    }
+
+    async function capturePhotoToCanvas() {
+      if (!cameraStream) {
+        return;
+      }
+
+      const videoWidth = cameraFeed.videoWidth || 1280;
+      const videoHeight = cameraFeed.videoHeight || 720;
+      cameraCaptureCanvas.width = videoWidth;
+      cameraCaptureCanvas.height = videoHeight;
+      const context = cameraCaptureCanvas.getContext("2d");
+      context.drawImage(cameraFeed, 0, 0, videoWidth, videoHeight);
+      const dataUrl = cameraCaptureCanvas.toDataURL("image/png");
+      closeCameraModal();
+      await addImageToEditor(dataUrl);
+      setStatus("Photo captured on page " + (currentPageIndex + 1) + ".");
+    }
+
     function wireEvents() {
       toolButtons.select.addEventListener("click", () => applyEditorTool("select"));
       toolButtons.draw.addEventListener("click", () => applyEditorTool("draw"));
       toolButtons.erase.addEventListener("click", () => applyEditorTool("erase"));
+      toolButtons.text.addEventListener("click", handleTextTool);
 
       undoBtn.addEventListener("click", undo);
       redoBtn.addEventListener("click", redo);
       previewDrawBtn.addEventListener("click", togglePreviewDrawing);
       exportPdfBtn.addEventListener("click", exportPdf);
       document.getElementById("clearCanvas").addEventListener("click", clearCurrentCanvas);
+      cameraBtn.addEventListener("click", openCameraModal);
+      cancelCameraBtn.addEventListener("click", closeCameraModal);
+      capturePhotoBtn.addEventListener("click", capturePhotoToCanvas);
+      cameraModal.addEventListener("click", (event) => {
+        if (event.target === cameraModal) {
+          closeCameraModal();
+        }
+      });
 
       colorPicker.addEventListener("input", () => {
-        syncBrushColor();
-        if (currentTool === "draw") {
-          setStatus("Brush color updated.");
+        syncBrushAndTextControls();
+        if (getActiveTextObject()) {
+          scheduleCompositeRefresh();
+        }
+      });
+
+      colorPicker.addEventListener("change", () => {
+        if (getActiveTextObject()) {
+          pushHistorySnapshot();
+        }
+      });
+
+      fontSizeRange.addEventListener("input", () => {
+        syncBrushAndTextControls();
+        if (getActiveTextObject()) {
+          scheduleCompositeRefresh();
+        }
+      });
+
+      fontSizeRange.addEventListener("change", () => {
+        if (getActiveTextObject()) {
+          pushHistorySnapshot();
         }
       });
 
       imageUpload.addEventListener("change", async (event) => {
         await handleImageFiles(event.target.files);
         imageUpload.value = "";
+      });
+
+      cameraFallbackInput.addEventListener("change", async (event) => {
+        await handleImageFiles(event.target.files);
+        cameraFallbackInput.value = "";
       });
 
       ["dragenter", "dragover"].forEach((eventName) => {
@@ -944,27 +1504,54 @@
         await handleImageFiles(files);
       });
 
-      editorCanvas.on("object:added", pushHistorySnapshot);
+      editorCanvas.on("object:added", (event) => {
+        if (event.target) {
+          decorateObject(event.target);
+        }
+        pushHistorySnapshot();
+      });
+
       editorCanvas.on("object:modified", pushHistorySnapshot);
       editorCanvas.on("object:removed", pushHistorySnapshot);
-      editorCanvas.on("path:created", schedulePreviewRefresh);
+      editorCanvas.on("path:created", scheduleCompositeRefresh);
+      editorCanvas.on("object:moving", (event) => {
+        if (!event.target || editorCanvas.isDrawingMode) {
+          return;
+        }
+        maybeSnapObject(event.target);
+      });
+
+      editorCanvas.on("selection:created", syncTextControlsFromSelection);
+      editorCanvas.on("selection:updated", syncTextControlsFromSelection);
+      editorCanvas.on("selection:cleared", updateFontReadout);
+      editorCanvas.on("text:editing:exited", pushHistorySnapshot);
+      editorCanvas.on("text:changed", scheduleCompositeRefresh);
+
       previewCanvas.on("path:created", () => {
         setStatus("Preview annotated.");
       });
 
+      previewDetails.addEventListener("toggle", () => {
+        previewCanvas.calcOffset();
+      });
+
       window.addEventListener("beforeunload", saveCurrentPageState);
+      window.addEventListener("resize", () => {
+        editorCanvas.calcOffset();
+        previewCanvas.calcOffset();
+      });
     }
 
     function init() {
-      buildPageNavigation();
+      buildThumbnailNavigation();
       wireEvents();
       updateHistoryButtons();
+      updateFontReadout();
       applyEditorTool("select");
-      schedulePreviewRefresh();
+      scheduleCompositeRefresh();
     }
 
     init();
   </script>
 </body>
 </html>
-
