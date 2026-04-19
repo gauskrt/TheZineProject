@@ -4,17 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="655f5adc-d43b-471e-a9d6-1586578967dd" name="Changes" comment="Library Update">
-      <change afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
+    <list default="true" id="655f5adc-d43b-471e-a9d6-1586578967dd" name="Changes" comment="Update">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Inputs/input.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/FileHandler.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/settings/16-pages.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/settings/Layout/16-pages-layout.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/settings/lines.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/templates/layout.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/templates/types.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ReadMe.md" beforeDir="false" afterPath="$PROJECT_DIR$/ReadMe.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -161,13 +154,22 @@
       <option name="project" value="LOCAL" />
       <updated>1754229205432</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Update">
+      <option name="closed" value="true" />
+      <created>1776294765663</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1776294765663</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="The initial Commit" />
     <MESSAGE value="ReadMe Commit" />
     <MESSAGE value="Library Update" />
-    <option name="LAST_COMMIT_MESSAGE" value="Library Update" />
+    <MESSAGE value="Update" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update" />
   </component>
 </project>
