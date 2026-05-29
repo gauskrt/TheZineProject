@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Booklet Maker v1.1</title>
+  <title>Booklet Maker</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
@@ -26,15 +26,9 @@
       --radius: 20px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
-    html,
-    body {
-      margin: 0;
-      min-height: 100%;
-    }
+    html, body { margin: 0; min-height: 100%; }
 
     body {
       background:
@@ -44,12 +38,29 @@
       font-family: "Space Grotesk", sans-serif;
     }
 
-    button,
-    input,
-    select,
-    textarea {
-      font: inherit;
+    /* ── Skip link (accessibility) ───────────────────────────────── */
+    .skip-link {
+      position: absolute;
+      top: -100px;
+      left: 12px;
+      z-index: 9999;
+      padding: 8px 16px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 0 0 10px 10px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: top 0.1s;
     }
+    .skip-link:focus { top: 0; outline: 3px solid #fff; outline-offset: 2px; }
+
+    /* ── Global focus ring ───────────────────────────────────────── */
+    *:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    button, input, select, textarea { font: inherit; }
 
     .app-shell {
       display: grid;
@@ -57,90 +68,94 @@
       min-height: 100vh;
     }
 
+    /* ── Sidebar ─────────────────────────────────────────────────── */
     .sidebar {
       position: sticky;
       top: 0;
       align-self: start;
       min-height: 100vh;
-      padding: 24px 18px;
+      max-height: 100vh;
+      padding: 20px 16px;
       border-right: 1px solid var(--line);
       background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 22%),
-        rgba(10, 10, 10, 0.92);
-      overflow: auto;
+        linear-gradient(180deg, rgba(255,255,255,0.02), transparent 22%),
+        rgba(10,10,10,0.92);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
     }
 
-    .brand {
-      margin-bottom: 18px;
-    }
-
+    .brand { margin-bottom: 14px; }
     .brand h1 {
       margin: 0;
       font-family: "Bebas Neue", sans-serif;
-      font-size: 3.2rem;
+      font-size: 2.8rem;
       line-height: 0.92;
       letter-spacing: 0.08em;
     }
 
-    .brand p {
-      margin: 10px 0 0;
+    /* ── Start guide steps ───────────────────────────────────────── */
+    .start-guide {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255, 93, 42, 0.06);
+    }
+    .start-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.88rem;
       color: var(--muted);
-      line-height: 1.5;
-      font-size: 0.94rem;
+    }
+    .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
     }
 
-    .tool-group,
-    .info-card,
-    .panel {
+    /* ── Tool groups ─────────────────────────────────────────────── */
+    .tool-group, .info-card, .panel {
       border: 1px solid var(--line);
       border-radius: var(--radius);
       background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01)),
-        rgba(12, 12, 12, 0.98);
+        linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)),
+        rgba(12,12,12,0.98);
       box-shadow: var(--shadow);
     }
+    .tool-group, .info-card { padding: 14px; margin-bottom: 12px; }
 
-    .tool-group,
-    .info-card {
-      padding: 16px;
-      margin-bottom: 16px;
-    }
-
-    .tool-group h2,
-    .info-card h2,
-    .panel-header h3,
-    .summary-title {
+    .tool-group h2, .info-card h2, .panel-header h3, .summary-title {
       margin: 0;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       letter-spacing: 0.16em;
       text-transform: uppercase;
       color: var(--muted);
     }
 
-    .tool-stack,
-    .tool-grid,
-    .asset-grid,
-    .action-grid,
-    .output-grid {
+    .tool-stack, .tool-grid, .asset-grid, .action-grid, .output-grid {
       display: grid;
-      gap: 10px;
-      margin-top: 12px;
+      gap: 8px;
+      margin-top: 10px;
     }
+    .tool-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .asset-grid, .action-grid, .output-grid { grid-template-columns: 1fr; }
 
-    .tool-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .asset-grid,
-    .action-grid,
-    .output-grid {
-      grid-template-columns: 1fr;
-    }
-
-    button,
-    .file-label,
-    input[type="color"],
-    input[type="range"] {
+    /* ── Buttons ─────────────────────────────────────────────────── */
+    button, .file-label, input[type="color"], input[type="range"] {
       width: 100%;
       border: 1px solid var(--line);
       border-radius: 14px;
@@ -148,330 +163,424 @@
       color: var(--text);
       transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
     }
-
-    button,
-    .file-label {
-      min-height: 46px;
-      padding: 12px 14px;
+    button, .file-label {
+      min-height: 44px;
+      padding: 10px 12px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
+      gap: 8px;
       cursor: pointer;
       font-weight: 600;
       text-align: center;
     }
-
-    button:hover,
-    .file-label:hover,
-    button:focus-visible,
-    .file-label:focus-visible {
+    button:hover, .file-label:hover {
       transform: translateY(-1px);
-      border-color: rgba(255, 93, 42, 0.72);
+      border-color: rgba(255,93,42,0.72);
       background: var(--panel-2);
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
-      outline: none;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.24);
     }
-
+    button:focus-visible, .file-label:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+      border-color: var(--accent);
+    }
     button.active {
-      background: linear-gradient(180deg, rgba(255, 93, 42, 0.22), rgba(255, 93, 42, 0.06));
-      border-color: rgba(255, 93, 42, 0.84);
+      background: linear-gradient(180deg, rgba(255,93,42,0.22), rgba(255,93,42,0.06));
+      border-color: rgba(255,93,42,0.84);
       color: #fff3ee;
     }
-
     button:disabled {
-      opacity: 0.48;
+      opacity: 0.4;
       cursor: not-allowed;
       transform: none;
       box-shadow: none;
     }
+    .file-input { display: none; }
 
-    .file-input {
-      display: none;
-    }
-
-    .control-block {
-      margin-top: 12px;
-      display: grid;
-      gap: 8px;
-    }
-
+    /* ── Color + swatch ──────────────────────────────────────────── */
+    .control-block { margin-top: 10px; display: grid; gap: 6px; }
     .control-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      gap: 10px;
       color: var(--muted);
-      font-size: 0.9rem;
+      font-size: 0.88rem;
+    }
+    .control-label { font-size: 0.84rem; color: var(--muted); }
+    .color-readout { display: flex; align-items: center; gap: 6px; }
+    .color-swatch {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: #ff5d2a;
+      flex-shrink: 0;
     }
 
-    .control-label {
-      font-size: 0.86rem;
-      color: var(--muted);
-    }
+    input[type="color"] { height: 46px; padding: 6px; cursor: pointer; }
 
-    input[type="color"] {
-      height: 50px;
-      padding: 6px;
-      cursor: pointer;
-    }
-
+    /* ── Range slider ────────────────────────────────────────────── */
     input[type="range"] {
       appearance: none;
-      height: 44px;
+      height: 42px;
       padding: 0 12px;
       background: var(--panel);
       cursor: pointer;
     }
-
     input[type="range"]::-webkit-slider-runnable-track {
       height: 6px;
-      background: rgba(255, 255, 255, 0.12);
+      background: rgba(255,255,255,0.12);
       border-radius: 999px;
     }
-
     input[type="range"]::-webkit-slider-thumb {
       appearance: none;
-      width: 18px;
-      height: 18px;
-      margin-top: -6px;
+      width: 20px;
+      height: 20px;
+      margin-top: -7px;
       background: var(--accent);
       border-radius: 50%;
       border: none;
+      box-shadow: 0 0 0 3px rgba(255,93,42,0);
+      transition: box-shadow 0.15s;
+    }
+    input[type="range"]:hover::-webkit-slider-thumb,
+    input[type="range"]:focus::-webkit-slider-thumb {
+      box-shadow: 0 0 0 4px var(--accent-soft);
     }
 
-    .help-copy,
-    .instruction-list,
-    .preview-note,
-    .editor-tip,
-    .thumb-meta,
-    .camera-note,
-    .summary-copy {
+    /* ── Info text ───────────────────────────────────────────────── */
+    .help-copy, .instruction-list, .preview-note, .editor-tip,
+    .thumb-meta, .camera-note, .summary-copy, .scroll-hint {
       color: var(--muted);
-      font-size: 0.92rem;
+      font-size: 0.88rem;
       line-height: 1.5;
     }
-
     .instruction-list {
-      margin: 12px 0 0;
+      margin: 10px 0 0;
       padding-left: 18px;
       display: grid;
+      gap: 6px;
+    }
+
+    /* ── How To Fold collapsible ─────────────────────────────────── */
+    .fold-guide { margin-bottom: 0; }
+    .fold-guide > summary {
+      list-style: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       gap: 8px;
     }
-
-    .workspace {
-      padding: 24px;
+    .fold-guide > summary::-webkit-details-marker { display: none; }
+    .fold-guide > summary .fold-chevron {
+      transition: transform 0.18s;
+      color: var(--muted);
+      font-size: 0.75rem;
     }
+    .fold-guide[open] > summary .fold-chevron { transform: rotate(180deg); }
 
-    .workspace-inner {
-      max-width: 1220px;
-      margin: 0 auto;
-      display: grid;
-      gap: 18px;
-    }
+    /* ── Workspace ───────────────────────────────────────────────── */
+    .workspace { padding: 24px; }
+    .workspace-inner { max-width: 1220px; margin: 0 auto; display: grid; gap: 16px; }
 
-    .panel {
-      overflow: hidden;
-    }
-
-    .panel-header {
-      padding: 18px 20px 12px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    /* ── Start banner ────────────────────────────────────────────── */
+    .start-banner {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      gap: 14px;
+      padding: 14px 20px;
       flex-wrap: wrap;
+      overflow: visible;
     }
-
-    .panel-body {
-      padding: 18px;
-    }
-
-    .hero {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 16px;
-      align-items: center;
-      padding: 20px;
-    }
-
-    .hero h2 {
+    .start-copy {
       margin: 0;
-      font-size: 1.4rem;
-    }
-
-    .hero p {
-      margin: 8px 0 0;
-      color: var(--muted);
-      line-height: 1.6;
-      max-width: 70ch;
-    }
-
-    .status-pill {
-      padding: 10px 14px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--line);
       color: var(--muted);
       font-size: 0.9rem;
-      white-space: nowrap;
+      line-height: 1.5;
+    }
+    .start-copy .accent-icon { color: var(--accent); margin-right: 6px; }
+    kbd {
+      display: inline-block;
+      padding: 1px 6px;
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 5px;
+      font-family: monospace;
+      font-size: 0.82em;
+      background: rgba(255,255,255,0.07);
+      color: var(--text);
     }
 
-    .canvas-stage {
-      display: grid;
-      gap: 18px;
-      justify-items: center;
-    }
-
-    .editor-shell {
-      width: fit-content;
-      max-width: 100%;
-      padding: 18px;
-      border-radius: 24px;
-      background:
-        linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01)),
-        #141414;
+    /* ── Status pill ─────────────────────────────────────────────── */
+    .status-pill {
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.04);
       border: 1px solid var(--line);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      color: var(--muted);
+      font-size: 0.88rem;
+      white-space: nowrap;
+      min-width: 120px;
+      text-align: center;
+      transition: opacity 0.4s;
     }
+    .status-pill.fading { opacity: 0.35; }
 
-    .editor-shell.dragging {
-      border-color: rgba(255, 93, 42, 0.85);
-      box-shadow: 0 0 0 5px var(--accent-soft);
-    }
-
-    .canvas-container {
-      background: var(--canvas-bg);
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.2);
-    }
-
-    .canvas-container canvas {
-      border-radius: 14px;
-    }
-
-    .editor-shell .canvas-container,
-    .preview-stage .canvas-container {
-      max-width: 100%;
-    }
-
-    .canvas-meta {
-      width: 100%;
+    /* ── Panel ───────────────────────────────────────────────────── */
+    .panel { overflow: hidden; }
+    .panel-header {
+      padding: 16px 20px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
       display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
       align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .panel-body { padding: 16px; }
+
+    /* ── Page counter ────────────────────────────────────────────── */
+    .page-counter {
+      font-size: 0.82rem;
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 0.04em;
     }
 
-    .canvas-meta strong {
-      font-size: 1rem;
-    }
-
+    /* ── Thumbnails ──────────────────────────────────────────────── */
     .thumbnail-strip {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 12px;
+      gap: 10px;
     }
-
+    .scroll-hint {
+      display: none;
+      text-align: center;
+      margin-top: 8px;
+      font-size: 0.82rem;
+    }
     .thumb-button {
-      padding: 10px;
+      position: relative;
+      padding: 8px;
       min-height: auto;
       align-items: stretch;
       flex-direction: column;
-      gap: 8px;
-      border-radius: 16px;
+      gap: 6px;
+      border-radius: 14px;
     }
-
+    .thumb-button.active {
+      background: linear-gradient(180deg, rgba(255,93,42,0.18), rgba(255,93,42,0.05));
+      border-color: var(--accent);
+    }
     .thumb-preview {
       width: 100%;
       aspect-ratio: 3 / 4;
       object-fit: cover;
-      border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      border: 2px solid rgba(255,255,255,0.08);
       background: #ffffff;
+      display: block;
+      transition: border-color 0.18s;
+    }
+    .thumb-button.active .thumb-preview { border-color: var(--accent); }
+
+    /* Empty page indicator */
+    .thumb-button.thumb-empty .thumb-preview { opacity: 0.55; }
+    .thumb-empty-label {
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.55);
+      color: var(--muted);
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      pointer-events: none;
+      white-space: nowrap;
     }
 
     .thumb-label {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
-      font-size: 0.9rem;
+      gap: 8px;
+      font-size: 0.85rem;
       color: var(--text);
     }
-
     .thumb-badge {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-width: 26px;
-      min-height: 26px;
-      padding: 0 8px;
+      min-width: 24px;
+      min-height: 24px;
+      padding: 0 6px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255,255,255,0.08);
       color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    /* ── Canvas stage ────────────────────────────────────────────── */
+    .canvas-stage { display: grid; gap: 16px; justify-items: center; }
+    .canvas-meta {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .canvas-meta strong { font-size: 1rem; }
+    .canvas-meta .page-counter-inline {
       font-size: 0.82rem;
+      color: var(--accent);
+      font-weight: 700;
     }
 
-    .preview-details {
-      border: none;
-      margin: 0;
-      padding: 0;
+    /* Editor shell with focus ring */
+    .editor-shell {
+      width: fit-content;
+      max-width: 100%;
+      padding: 16px;
+      border-radius: 22px;
+      background:
+        linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01)),
+        #141414;
+      border: 1px solid var(--line);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .editor-shell:focus-within {
+      border-color: rgba(255,93,42,0.7);
+      box-shadow: 0 0 0 3px var(--accent-soft), inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+    .editor-shell.dragging {
+      border-color: rgba(255,93,42,0.85);
+      box-shadow: 0 0 0 5px var(--accent-soft);
     }
 
+    /* Canvas wrapper with crosshair */
+    .canvas-wrapper {
+      position: relative;
+      background: var(--canvas-bg);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 14px 28px rgba(0,0,0,0.2);
+    }
+    .canvas-wrapper canvas { display: block; border-radius: 12px; }
+    .snap-guide {
+      position: absolute;
+      pointer-events: none;
+      opacity: 0.13;
+      background: #555;
+    }
+    .snap-guide-h { left: 0; right: 0; height: 1px; top: 50%; }
+    .snap-guide-v { top: 0; bottom: 0; width: 1px; left: 50%; }
+
+    /* Page-switch fade animation */
+    @keyframes pageFadeIn {
+      from { opacity: 0.55; }
+      to   { opacity: 1; }
+    }
+    .canvas-wrapper.page-switching { animation: pageFadeIn 0.22s ease; }
+
+    .editor-tip {
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    /* ── Preview section ─────────────────────────────────────────── */
+    .preview-details { border: none; margin: 0; padding: 0; }
     .preview-details > summary {
       list-style: none;
       cursor: pointer;
-      padding: 18px 20px 12px;
+      padding: 16px 20px 10px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
     }
-
-    .preview-details > summary::-webkit-details-marker {
-      display: none;
-    }
-
-    .summary-left {
-      display: grid;
-      gap: 6px;
-    }
-
-    .summary-copy {
-      margin: 0;
-    }
-
+    .preview-details > summary::-webkit-details-marker { display: none; }
+    .summary-left { display: grid; gap: 4px; }
+    .summary-copy { margin: 0; }
     .summary-toggle {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 38px;
-      height: 38px;
+      width: 36px; height: 36px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255,255,255,0.05);
       border: 1px solid var(--line);
-      transition: transform 0.18s ease;
+      transition: transform 0.18s;
+      flex-shrink: 0;
     }
+    .preview-details[open] .summary-toggle { transform: rotate(180deg); }
 
-    .preview-details[open] .summary-toggle {
-      transform: rotate(180deg);
-    }
-
-    .preview-stage {
-      padding: 18px;
-    }
-
-    .preview-stage .canvas-container,
-    .preview-stage .canvas-container canvas {
+    .preview-stage { padding: 16px; }
+    .preview-stage-canvas-wrap { position: relative; }
+    .preview-stage .canvas-wrapper,
+    .preview-stage .canvas-wrapper canvas {
       width: 100% !important;
       height: auto !important;
     }
 
+    /* Preview loading overlay */
+    .preview-loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.45);
+      border-radius: 12px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      gap: 10px;
+      z-index: 2;
+    }
+    .preview-loading[hidden] { display: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .preview-loading .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.15);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    /* Second export CTA + fold guide */
+    .preview-cta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    .fold-steps {
+      font-size: 0.86rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .fold-steps strong { color: var(--text); }
+    .preview-cta .export-cta-btn {
+      white-space: nowrap;
+      min-width: 160px;
+      background: linear-gradient(180deg, rgba(255,93,42,0.22), rgba(255,93,42,0.08));
+      border-color: rgba(255,93,42,0.7);
+      color: #fff3ee;
+      flex-shrink: 0;
+    }
+
+    /* ── Camera modal ────────────────────────────────────────────── */
     .camera-modal {
       position: fixed;
       inset: 0;
@@ -479,320 +588,510 @@
       align-items: center;
       justify-content: center;
       padding: 20px;
-      background: rgba(0, 0, 0, 0.72);
+      background: rgba(0,0,0,0.72);
       backdrop-filter: blur(8px);
       z-index: 50;
     }
-
-    .camera-modal.open {
-      display: flex;
-    }
-
+    .camera-modal.open { display: flex; }
     .camera-card {
       width: min(100%, 720px);
-      background: rgba(10, 10, 10, 0.96);
+      background: rgba(10,10,10,0.96);
       border: 1px solid var(--line);
       border-radius: 24px;
       overflow: hidden;
       box-shadow: var(--shadow);
     }
-
-    .camera-head,
-    .camera-body,
-    .camera-actions {
-      padding: 18px;
-    }
-
-    .camera-head {
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    }
-
-    .camera-head h3 {
-      margin: 0;
-      font-size: 1rem;
-    }
-
+    .camera-head, .camera-body, .camera-actions { padding: 16px; }
+    .camera-head { border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .camera-head h3 { margin: 0; font-size: 1rem; }
     .camera-frame {
       width: 100%;
-      border-radius: 18px;
+      border-radius: 16px;
       overflow: hidden;
       background: #000;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255,255,255,0.08);
     }
-
-    .camera-frame video {
-      display: block;
-      width: 100%;
-      height: auto;
-    }
-
+    .camera-frame video { display: block; width: 100%; height: auto; }
     .camera-actions {
       display: flex;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
       justify-content: flex-end;
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      border-top: 1px solid rgba(255,255,255,0.06);
     }
+    .camera-actions button { width: auto; min-width: 140px; }
 
-    .camera-actions button {
-      width: auto;
-      min-width: 160px;
+    /* ── Shortcuts modal ─────────────────────────────────────────── */
+    .shortcuts-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(0,0,0,0.72);
+      backdrop-filter: blur(8px);
+      z-index: 60;
     }
+    .shortcuts-modal.open { display: flex; }
+    .shortcuts-card {
+      width: min(100%, 480px);
+      background: rgba(10,10,10,0.97);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .shortcuts-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .shortcuts-head h3 { margin: 0; font-size: 1rem; }
+    .shortcuts-close {
+      width: 36px; height: 36px;
+      min-height: auto;
+      padding: 0;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+    .shortcuts-table {
+      width: 100%;
+      border-collapse: collapse;
+      padding: 16px;
+      display: block;
+    }
+    .shortcuts-table td {
+      padding: 7px 16px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    .shortcuts-table tr td:first-child { color: var(--text); }
+    .shortcuts-table tr:nth-child(odd) td { background: rgba(255,255,255,0.02); }
+    .shortcuts-footer { padding: 12px 20px; border-top: 1px solid rgba(255,255,255,0.06); }
 
+    /* ── Accessibility helpers ───────────────────────────────────── */
     .visually-hidden {
       position: absolute;
-      width: 1px;
-      height: 1px;
-      margin: -1px;
-      padding: 0;
+      width: 1px; height: 1px;
+      margin: -1px; padding: 0;
       overflow: hidden;
-      clip: rect(0, 0, 0, 0);
+      clip: rect(0,0,0,0);
       border: 0;
     }
 
+    /* ── Responsive: tablet 1080px ───────────────────────────────── */
     @media (max-width: 1080px) {
-      .app-shell {
-        grid-template-columns: 1fr;
-      }
-
+      .app-shell { grid-template-columns: 1fr; }
       .sidebar {
         position: static;
         min-height: auto;
+        max-height: none;
         border-right: none;
         border-bottom: 1px solid var(--line);
+        padding: 14px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: flex-start;
       }
+      .brand { width: 100%; margin-bottom: 0; }
+      .start-guide { display: none; }
+      .tool-group, .info-card { margin-bottom: 0; flex: 1 1 200px; min-width: 180px; }
     }
 
+    /* ── Responsive: mobile 768px ────────────────────────────────── */
     @media (max-width: 768px) {
-      .workspace {
-        padding: 14px;
-      }
+      .workspace { padding: 12px; }
+      .sidebar { padding: 12px; }
+      .brand h1 { font-size: 2.2rem; }
 
-      .sidebar {
-        padding: 14px;
-      }
-
-      .brand h1 {
-        font-size: 2.5rem;
-      }
-
-      .tool-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .hero {
-        grid-template-columns: 1fr;
-      }
-
-      .panel-header,
-      .panel-body,
-      .preview-stage,
-      .preview-details > summary {
-        padding-left: 14px;
-        padding-right: 14px;
-      }
-
-      .editor-shell {
-        width: 100%;
-        padding: 12px;
-      }
-
-      .editor-shell .canvas-container,
-      .editor-shell .canvas-container canvas {
+      .editor-shell { width: 100%; padding: 10px; }
+      .editor-shell .canvas-wrapper,
+      .editor-shell .canvas-wrapper canvas {
         width: 100% !important;
         height: auto !important;
       }
 
       .thumbnail-strip {
         display: flex;
-        gap: 10px;
+        gap: 8px;
         overflow-x: auto;
         padding-bottom: 6px;
         scroll-snap-type: x proximity;
+        -webkit-overflow-scrolling: touch;
       }
-
-      .thumbnail-strip::-webkit-scrollbar {
-        height: 8px;
-      }
-
+      .thumbnail-strip::-webkit-scrollbar { height: 4px; }
       .thumbnail-strip::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.14);
+        background: rgba(255,255,255,0.14);
         border-radius: 999px;
       }
-
       .thumb-button {
-        min-width: 120px;
-        flex: 0 0 120px;
+        min-width: 110px;
+        flex: 0 0 110px;
         scroll-snap-align: start;
       }
+      .scroll-hint { display: block; }
 
-      .camera-actions {
-        justify-content: stretch;
+      .panel-header, .panel-body, .preview-stage {
+        padding-left: 12px;
+        padding-right: 12px;
       }
 
-      .camera-actions button {
-        width: 100%;
-      }
+      .camera-actions { justify-content: stretch; }
+      .camera-actions button { width: 100%; }
+
+      .preview-cta { flex-direction: column; }
+      .preview-cta .export-cta-btn { width: 100%; }
+    }
+
+    /* ── Responsive: icon-only buttons at 480px ──────────────────── */
+    @media (max-width: 480px) {
+      .tool-grid .btn-text { display: none; }
+      .tool-grid button { justify-content: center; padding: 10px 8px; }
+    }
+
+    /* ── Tiny screen canvas constraint ──────────────────────────── */
+    @media (max-width: 340px) {
+      .canvas-wrapper { width: 100%; }
+      .canvas-wrapper canvas { width: 100% !important; height: auto !important; }
     }
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#editorCanvas">Skip to editor</a>
+
   <div class="app-shell">
-    <aside class="sidebar">
+    <!-- ── Sidebar ─────────────────────────────────────────────── -->
+    <aside class="sidebar" aria-label="Tools and settings">
       <div class="brand">
         <h1>Booklet Maker</h1>
-        <p>Create something physical from the moments you want to keep. Build an 8-page mini zine, preview the print sheet live, and export a ready-to-fold PDF.</p>
       </div>
 
-      <section class="tool-group">
+      <div class="start-guide" aria-label="Getting started">
+        <div class="start-step"><span class="step-num">1</span>Pick a page thumbnail to edit.</div>
+        <div class="start-step"><span class="step-num">2</span>Add images, text, or draw freely.</div>
+        <div class="start-step"><span class="step-num">3</span>Export PDF when all 8 pages are done.</div>
+      </div>
+
+      <section class="tool-group" aria-label="Edit tools">
         <h2>Edit Tools</h2>
         <div class="tool-grid">
-          <button id="selectTool" type="button"><i class="fa-solid fa-up-down-left-right"></i> Move</button>
-          <button id="drawTool" type="button"><i class="fa-solid fa-pencil"></i> Draw</button>
-          <button id="eraseTool" type="button"><i class="fa-solid fa-eraser"></i> Erase</button>
-          <button id="textTool" type="button"><i class="fa-solid fa-font"></i> Text</button>
+          <button id="selectTool" type="button"
+            aria-label="Select and move objects (S)"
+            title="Select and move objects — press S">
+            <i class="fa-solid fa-up-down-left-right" aria-hidden="true"></i>
+            <span class="btn-text">Move</span>
+          </button>
+          <button id="drawTool" type="button"
+            aria-label="Freehand draw (D)"
+            title="Freehand draw — press D">
+            <i class="fa-solid fa-pencil" aria-hidden="true"></i>
+            <span class="btn-text">Draw</span>
+          </button>
+          <button id="eraseTool" type="button"
+            aria-label="Erase (E)"
+            title="Erase — press E">
+            <i class="fa-solid fa-eraser" aria-hidden="true"></i>
+            <span class="btn-text">Erase</span>
+          </button>
+          <button id="textTool" type="button"
+            aria-label="Insert text box (T)"
+            title="Insert text box — press T">
+            <i class="fa-solid fa-font" aria-hidden="true"></i>
+            <span class="btn-text">Insert Text</span>
+          </button>
         </div>
       </section>
 
-      <section class="tool-group">
+      <section class="tool-group" aria-label="Assets and style">
         <h2>Assets</h2>
         <div class="asset-grid">
-          <label class="file-label" for="imageUpload"><i class="fa-solid fa-image"></i> Upload Images</label>
-          <input id="imageUpload" class="file-input" type="file" accept="image/*" multiple>
+          <label class="file-label" for="imageUpload"
+            title="Upload images from your device">
+            <i class="fa-solid fa-image" aria-hidden="true"></i> Upload Images
+          </label>
+          <input id="imageUpload" class="file-input" type="file" accept="image/*" multiple
+            aria-label="Upload images">
 
-          <button id="cameraBtn" type="button"><i class="fa-solid fa-camera"></i> Take Photo</button>
-          <input id="cameraFallbackInput" class="file-input" type="file" accept="image/*" capture="environment">
+          <button id="cameraBtn" type="button"
+            aria-label="Take a photo with your camera"
+            title="Take a photo with your camera">
+            <i class="fa-solid fa-camera" aria-hidden="true"></i> Take Photo
+          </button>
+          <input id="cameraFallbackInput" class="file-input" type="file" accept="image/*" capture="environment"
+            aria-label="Camera photo fallback">
 
           <div class="control-block">
             <div class="control-row">
-              <span class="control-label">Color</span>
-              <span id="colorValue">#ff5d2a</span>
+              <span class="control-label" id="colorLabel">Color</span>
+              <span class="color-readout">
+                <span id="colorSwatch" class="color-swatch" aria-hidden="true"></span>
+                <span id="colorValue">#ff5d2a</span>
+              </span>
             </div>
-            <input id="colorPicker" type="color" value="#ff5d2a">
+            <input id="colorPicker" type="color" value="#ff5d2a"
+              aria-label="Pick draw and text color" aria-labelledby="colorLabel">
           </div>
 
           <div class="control-block">
             <div class="control-row">
-              <span class="control-label">Text Size</span>
+              <span class="control-label" id="brushLabel">Brush Size</span>
+              <span id="brushSizeValue">3 px</span>
+            </div>
+            <input id="brushSizeRange" type="range" min="1" max="40" step="1" value="3"
+              aria-label="Brush and eraser size" aria-labelledby="brushLabel">
+          </div>
+
+          <div class="control-block">
+            <div class="control-row">
+              <span class="control-label" id="fontLabel">Text Size</span>
               <span id="fontSizeValue">28 px</span>
             </div>
-            <input id="fontSizeRange" type="range" min="12" max="96" step="1" value="28">
+            <input id="fontSizeRange" type="range" min="12" max="96" step="1" value="28"
+              aria-label="Text font size" aria-labelledby="fontLabel">
           </div>
         </div>
       </section>
 
-      <section class="tool-group">
+      <section class="tool-group" aria-label="Edit actions">
         <h2>Actions</h2>
         <div class="action-grid">
-          <button id="undoBtn" type="button"><i class="fa-solid fa-rotate-left"></i> Undo</button>
-          <button id="redoBtn" type="button"><i class="fa-solid fa-rotate-right"></i> Redo</button>
-          <button id="clearCanvas" type="button"><i class="fa-solid fa-trash-can"></i> Clear Page</button>
+          <button id="undoBtn" type="button"
+            aria-label="Undo last action (Ctrl+Z)"
+            title="Undo — Ctrl+Z">
+            <i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Undo
+          </button>
+          <button id="redoBtn" type="button"
+            aria-label="Redo last undone action (Ctrl+Y)"
+            title="Redo — Ctrl+Y">
+            <i class="fa-solid fa-rotate-right" aria-hidden="true"></i> Redo
+          </button>
+          <button id="clearCanvas" type="button"
+            aria-label="Clear all content on current page"
+            title="Clear this page (you can undo)">
+            <i class="fa-solid fa-trash-can" aria-hidden="true"></i> Clear Page
+          </button>
         </div>
       </section>
 
-      <section class="tool-group">
+      <section class="tool-group" aria-label="Project save and load">
+        <h2>Project</h2>
+        <div class="action-grid">
+          <button id="saveProjectBtn" type="button"
+            title="Download all 8 pages as a .json file"
+            aria-label="Save project to a JSON file">
+            <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Save Project
+          </button>
+          <label class="file-label" for="loadProjectInput"
+            title="Load a previously saved .json project file">
+            <i class="fa-solid fa-folder-open" aria-hidden="true"></i> Load Project
+          </label>
+          <input id="loadProjectInput" class="file-input" type="file" accept=".json"
+            aria-label="Load project from JSON file">
+        </div>
+      </section>
+
+      <section class="tool-group" aria-label="Output and export">
         <h2>Output</h2>
         <div class="output-grid">
-          <button id="previewDrawBtn" type="button"><i class="fa-solid fa-pen-ruler"></i> Draw on Preview</button>
-          <button id="exportPdfBtn" type="button"><i class="fa-solid fa-file-arrow-down"></i> Export PDF</button>
+          <button id="previewDrawBtn" type="button"
+            title="Annotate the print preview without changing any page"
+            aria-label="Toggle annotation mode on the print preview">
+            <i class="fa-solid fa-pen-ruler" aria-hidden="true"></i> Annotate Print Preview
+          </button>
+          <button id="exportPdfBtn" type="button"
+            title="Export all 8 pages as a print-ready A4 PDF"
+            aria-label="Export PDF">
+            <i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i> Export PDF
+          </button>
+          <button id="shortcutsBtn" type="button"
+            title="Show keyboard shortcuts (?)"
+            aria-label="Show keyboard shortcuts">
+            <i class="fa-solid fa-keyboard" aria-hidden="true"></i> Shortcuts <kbd>?</kbd>
+          </button>
         </div>
       </section>
 
-      <section class="info-card">
-        <h2>How To Fold</h2>
+      <details class="info-card fold-guide">
+        <summary>
+          <h2 style="display:inline">How To Fold</h2>
+          <i class="fa-solid fa-chevron-down fold-chevron" aria-hidden="true"></i>
+        </summary>
         <ol class="instruction-list">
-          <li>Print the PDF.</li>
-          <li>Fold lengthwise.</li>
-          <li>Cut the center slit.</li>
-          <li>Fold into a booklet.</li>
+          <li>Print the exported PDF.</li>
+          <li>Fold the sheet lengthwise.</li>
+          <li>Cut the center slit on the fold.</li>
+          <li>Push the ends together and fold into a booklet.</li>
         </ol>
-      </section>
+      </details>
     </aside>
 
+    <!-- ── Main workspace ──────────────────────────────────────── -->
     <main class="workspace">
       <div class="workspace-inner">
-        <section class="panel hero">
-          <div>
-            <h2>Version 1.1</h2>
-            <p>Mobile-friendly controls, live page thumbnails, editable text, quick camera capture, and a more stable preview pipeline all sit on top of the same 8-page zine engine and A4 export flow.</p>
+
+        <!-- Start banner (replaces version hero) -->
+        <section class="panel start-banner" aria-label="App status">
+          <p class="start-copy">
+            <i class="fa-solid fa-circle-info accent-icon" aria-hidden="true"></i>
+            Edit each of your 8 pages, then export as a print-ready A4 PDF. Press <kbd>?</kbd> for keyboard shortcuts.
+            Work is saved automatically in your browser.
+          </p>
+          <div id="statusText" class="status-pill" role="status" aria-live="polite" aria-atomic="true">
+            Ready.
           </div>
-          <div id="statusText" class="status-pill">Ready to build page 1.</div>
         </section>
 
-        <section class="panel">
+        <!-- Pages / thumbnail strip -->
+        <section class="panel" aria-label="Page navigation">
           <div class="panel-header">
             <h3>Pages</h3>
-            <span class="preview-note">Tap any thumbnail to switch pages. Each page keeps its own JSON, undo history, and redo history.</span>
+            <span id="pageCounter" class="page-counter" aria-live="polite">Page 1 / 8</span>
           </div>
           <div class="panel-body">
-            <div id="thumbnailStrip" class="thumbnail-strip"></div>
+            <div id="thumbnailStrip" class="thumbnail-strip"
+              role="tablist"
+              aria-label="Switch between the 8 zine pages"></div>
+            <p class="scroll-hint" aria-hidden="true">← Swipe to see all 8 pages →</p>
           </div>
         </section>
 
-        <section class="panel">
+        <!-- Main editor -->
+        <section class="panel" aria-label="Canvas editor">
           <div class="panel-header">
             <h3>Main Editor</h3>
-            <span class="preview-note">Canvas size: 300 x 400 px. Drag and drop images, use the text tool, or snap objects toward center while moving.</span>
+            <span class="preview-note">Drag &amp; drop images · snap-to-center while moving · <kbd>S</kbd> <kbd>D</kbd> <kbd>E</kbd> <kbd>T</kbd> shortcuts</span>
           </div>
           <div class="panel-body">
             <div class="canvas-stage">
               <div class="canvas-meta">
-                <strong id="pageTitle">Page 1</strong>
-                <span class="preview-note">Move mode lets you resize and rotate selected items. Text color uses the same picker as drawing.</span>
+                <strong id="pageTitle">Page 1 / 8</strong>
+                <span class="preview-note">Move mode: resize and rotate selected items.</span>
               </div>
               <div id="editorShell" class="editor-shell">
-                <canvas id="editorCanvas" width="300" height="400"></canvas>
+                <div class="canvas-wrapper" id="canvasWrapper">
+                  <canvas id="editorCanvas" width="300" height="400"></canvas>
+                  <div class="snap-guide snap-guide-h" aria-hidden="true"></div>
+                  <div class="snap-guide snap-guide-v" aria-hidden="true"></div>
+                </div>
               </div>
-              <div class="editor-tip">Tip: tap Text to drop in an editable textbox, then resize it like any other Fabric object.</div>
+              <p class="editor-tip">
+                Tip: press <kbd>T</kbd> to insert a text box · drag images from your desktop · objects snap to centre.
+              </p>
             </div>
           </div>
         </section>
 
-        <section class="panel">
-          <details id="previewDetails" class="preview-details" open>
+        <!-- Print preview (starts collapsed) -->
+        <section class="panel" aria-label="Print layout preview">
+          <details id="previewDetails" class="preview-details">
             <summary>
               <div class="summary-left">
                 <span class="summary-title">Live Print Layout Preview</span>
-                <p class="summary-copy">Top row is inverted 180 degrees: [5][4][3][2]. Bottom row stays upright: [6][7][8][1].</p>
+                <p class="summary-copy">Top row inverted 180°: [5][4][3][2] · Bottom row upright: [6][7][8][1].</p>
               </div>
-              <span class="summary-toggle"><i class="fa-solid fa-chevron-down"></i></span>
+              <span class="summary-toggle" aria-hidden="true">
+                <i class="fa-solid fa-chevron-down"></i>
+              </span>
             </summary>
             <div class="preview-stage">
-              <canvas id="previewCanvas" width="900" height="600"></canvas>
+              <div class="preview-stage-canvas-wrap">
+                <div class="canvas-wrapper">
+                  <canvas id="previewCanvas" width="900" height="600"></canvas>
+                </div>
+                <div id="previewLoading" class="preview-loading" hidden aria-live="polite">
+                  <div class="spinner" aria-hidden="true"></div>
+                  <span>Rendering preview…</span>
+                </div>
+              </div>
+              <div class="preview-cta">
+                <div class="fold-steps">
+                  <strong>To fold after printing:</strong>
+                  fold lengthwise → cut centre slit → push ends together → fold into booklet.
+                </div>
+                <button id="exportPdfBtn2" type="button" class="export-cta-btn"
+                  aria-label="Export PDF"
+                  title="Export all 8 pages as a print-ready A4 PDF">
+                  <i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i> Export PDF
+                </button>
+              </div>
             </div>
           </details>
         </section>
+
       </div>
     </main>
   </div>
 
-  <div id="cameraModal" class="camera-modal" aria-hidden="true">
+  <!-- Camera modal -->
+  <div id="cameraModal" class="camera-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Capture photo">
     <div class="camera-card">
       <div class="camera-head">
         <h3>Capture Photo</h3>
-        <p class="camera-note">Use your camera to drop a photo directly onto the current page.</p>
+        <p class="camera-note">Drops a photo directly onto the current page.</p>
       </div>
       <div class="camera-body">
         <div class="camera-frame">
-          <video id="cameraFeed" autoplay playsinline muted></video>
+          <video id="cameraFeed" autoplay playsinline muted aria-label="Camera feed"></video>
         </div>
       </div>
       <div class="camera-actions">
-        <button id="cancelCameraBtn" type="button"><i class="fa-solid fa-xmark"></i> Cancel</button>
-        <button id="capturePhotoBtn" type="button"><i class="fa-solid fa-camera-retro"></i> Capture</button>
+        <button id="cancelCameraBtn" type="button" aria-label="Cancel camera">
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i> Cancel
+        </button>
+        <button id="capturePhotoBtn" type="button" aria-label="Capture photo">
+          <i class="fa-solid fa-camera-retro" aria-hidden="true"></i> Capture
+        </button>
       </div>
     </div>
   </div>
+
+  <!-- Keyboard shortcuts modal -->
+  <div id="shortcutsModal" class="shortcuts-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Keyboard shortcuts">
+    <div class="shortcuts-card">
+      <div class="shortcuts-head">
+        <h3>Keyboard Shortcuts</h3>
+        <button id="closeShortcutsBtn" class="shortcuts-close" type="button" aria-label="Close shortcuts panel">
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </button>
+      </div>
+      <table class="shortcuts-table" aria-label="Keyboard shortcut list">
+        <tbody>
+          <tr><td><kbd>S</kbd></td><td>Select / Move tool</td></tr>
+          <tr><td><kbd>D</kbd></td><td>Draw tool</td></tr>
+          <tr><td><kbd>E</kbd></td><td>Erase tool</td></tr>
+          <tr><td><kbd>T</kbd></td><td>Insert text box</td></tr>
+          <tr><td><kbd>1</kbd> – <kbd>8</kbd></td><td>Switch to page 1 – 8</td></tr>
+          <tr><td><kbd>Ctrl</kbd> <kbd>Z</kbd></td><td>Undo</td></tr>
+          <tr><td><kbd>Ctrl</kbd> <kbd>Y</kbd></td><td>Redo</td></tr>
+          <tr><td><kbd>?</kbd></td><td>Show / hide this panel</td></tr>
+        </tbody>
+      </table>
+      <div class="shortcuts-footer">
+        <button id="closeShortcutsFooterBtn" type="button" aria-label="Close shortcuts panel">
+          <i class="fa-solid fa-check" aria-hidden="true"></i> Got it
+        </button>
+      </div>
+    </div>
+  </div>
+
   <canvas id="cameraCaptureCanvas" class="visually-hidden" width="1280" height="720"></canvas>
 
   <script type="module">
     import {
       PAGE_COUNT, PAGE_WIDTH, PAGE_HEIGHT, LAYOUT_WIDTH, LAYOUT_HEIGHT,
-      PREVIEW_DEBOUNCE_MS, HISTORY_LIMIT, SNAP_THRESHOLD,
+      PREVIEW_DEBOUNCE_MS, SNAP_THRESHOLD,
       layoutSlots, parseState, calcImageScale, createBlankPage,
       pushSnapshot, undoPage, redoPage, snapPosition
     } from "./src/zine-core.js";
 
+    // ── Canvas setup ───────────────────────────────────────────────
     const editorCanvas = new fabric.Canvas("editorCanvas", {
       width: PAGE_WIDTH,
       height: PAGE_HEIGHT,
@@ -809,51 +1108,142 @@
       selection: false
     });
 
-    const statusText = document.getElementById("statusText");
-    const pageTitle = document.getElementById("pageTitle");
-    const thumbnailStrip = document.getElementById("thumbnailStrip");
-    const editorShell = document.getElementById("editorShell");
-    const imageUpload = document.getElementById("imageUpload");
-    const cameraBtn = document.getElementById("cameraBtn");
+    // ── DOM refs ───────────────────────────────────────────────────
+    const statusText        = document.getElementById("statusText");
+    const pageTitle         = document.getElementById("pageTitle");
+    const pageCounter       = document.getElementById("pageCounter");
+    const thumbnailStrip    = document.getElementById("thumbnailStrip");
+    const editorShell       = document.getElementById("editorShell");
+    const canvasWrapper     = document.getElementById("canvasWrapper");
+    const imageUpload       = document.getElementById("imageUpload");
+    const cameraBtn         = document.getElementById("cameraBtn");
     const cameraFallbackInput = document.getElementById("cameraFallbackInput");
-    const colorPicker = document.getElementById("colorPicker");
-    const colorValue = document.getElementById("colorValue");
-    const fontSizeRange = document.getElementById("fontSizeRange");
-    const fontSizeValue = document.getElementById("fontSizeValue");
-    const undoBtn = document.getElementById("undoBtn");
-    const redoBtn = document.getElementById("redoBtn");
-    const previewDrawBtn = document.getElementById("previewDrawBtn");
-    const exportPdfBtn = document.getElementById("exportPdfBtn");
-    const previewDetails = document.getElementById("previewDetails");
-    const cameraModal = document.getElementById("cameraModal");
-    const cameraFeed = document.getElementById("cameraFeed");
-    const capturePhotoBtn = document.getElementById("capturePhotoBtn");
-    const cancelCameraBtn = document.getElementById("cancelCameraBtn");
+    const colorPicker       = document.getElementById("colorPicker");
+    const colorValue        = document.getElementById("colorValue");
+    const colorSwatch       = document.getElementById("colorSwatch");
+    const fontSizeRange     = document.getElementById("fontSizeRange");
+    const fontSizeValue     = document.getElementById("fontSizeValue");
+    const brushSizeRange    = document.getElementById("brushSizeRange");
+    const brushSizeValue    = document.getElementById("brushSizeValue");
+    const undoBtn           = document.getElementById("undoBtn");
+    const redoBtn           = document.getElementById("redoBtn");
+    const previewDrawBtn    = document.getElementById("previewDrawBtn");
+    const exportPdfBtn      = document.getElementById("exportPdfBtn");
+    const exportPdfBtn2     = document.getElementById("exportPdfBtn2");
+    const previewDetails    = document.getElementById("previewDetails");
+    const previewLoading    = document.getElementById("previewLoading");
+    const cameraModal       = document.getElementById("cameraModal");
+    const cameraFeed        = document.getElementById("cameraFeed");
+    const capturePhotoBtn   = document.getElementById("capturePhotoBtn");
+    const cancelCameraBtn   = document.getElementById("cancelCameraBtn");
     const cameraCaptureCanvas = document.getElementById("cameraCaptureCanvas");
+    const shortcutsModal    = document.getElementById("shortcutsModal");
+    const shortcutsBtn      = document.getElementById("shortcutsBtn");
+    const closeShortcutsBtn = document.getElementById("closeShortcutsBtn");
+    const closeShortcutsFooterBtn = document.getElementById("closeShortcutsFooterBtn");
+    const saveProjectBtn    = document.getElementById("saveProjectBtn");
+    const loadProjectInput  = document.getElementById("loadProjectInput");
 
     const toolButtons = {
       select: document.getElementById("selectTool"),
-      draw: document.getElementById("drawTool"),
-      erase: document.getElementById("eraseTool"),
-      text: document.getElementById("textTool")
+      draw:   document.getElementById("drawTool"),
+      erase:  document.getElementById("eraseTool"),
+      text:   document.getElementById("textTool")
     };
 
+    // ── State ──────────────────────────────────────────────────────
     const thumbnailButtons = [];
-    let currentPageIndex = 0;
-    let currentTool = "select";
+    let currentPageIndex     = 0;
+    let currentTool          = "select";
     let previewDrawingEnabled = false;
-    let isRestoringPage = false;
-    let refreshTimer = null;
-    let refreshToken = 0;
-    let cameraStream = null;
+    let isRestoringPage      = false;
+    let refreshTimer         = null;
+    let refreshToken         = 0;
+    let cameraStream         = null;
+    let statusClearTimer     = null;
+
+    const LS_KEY = "bookletmaker_v1";
 
     const blankState = JSON.stringify(editorCanvas.toJSON());
-    const pages = Array.from({ length: PAGE_COUNT }, (_, index) => createBlankPage(index, blankState));
+    const pages = Array.from({ length: PAGE_COUNT }, (_, i) => createBlankPage(i, blankState));
 
-    function setStatus(message) {
+    // ── Status (auto-clears after 4 s by default) ──────────────────
+    function setStatus(message, autoClear = true) {
+      clearTimeout(statusClearTimer);
       statusText.textContent = message;
+      statusText.classList.remove("fading");
+      if (autoClear && message) {
+        statusClearTimer = setTimeout(() => {
+          statusText.classList.add("fading");
+          setTimeout(() => {
+            statusText.textContent = "";
+            statusText.classList.remove("fading");
+          }, 400);
+        }, 4000);
+      }
     }
 
+    // ── localStorage persistence ───────────────────────────────────
+    function saveToLocalStorage() {
+      try {
+        localStorage.setItem(LS_KEY, JSON.stringify(pages.map((p) => p.json)));
+      } catch (_) { /* storage full — fail silently */ }
+    }
+
+    function loadFromLocalStorage() {
+      try {
+        const raw = localStorage.getItem(LS_KEY);
+        if (!raw) return false;
+        const data = JSON.parse(raw);
+        if (!Array.isArray(data) || data.length !== PAGE_COUNT) return false;
+        data.forEach((json, i) => {
+          if (typeof json === "string") {
+            pages[i].json    = json;
+            pages[i].history = [json];
+            pages[i].redo    = [];
+          }
+        });
+        return true;
+      } catch (_) { return false; }
+    }
+
+    // ── Save / Load project ────────────────────────────────────────
+    function saveProject() {
+      saveCurrentPageState();
+      const data = { version: 1, pages: pages.map((p) => p.json) };
+      const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement("a");
+      a.href     = url;
+      a.download = `zine-project-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      setStatus("Project saved as JSON.");
+    }
+
+    async function loadProject(file) {
+      try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+        if (!Array.isArray(data.pages) || data.pages.length !== PAGE_COUNT) {
+          setStatus("Invalid project file — expected 8 pages.");
+          return;
+        }
+        data.pages.forEach((json, i) => {
+          pages[i].json    = json;
+          pages[i].history = [json];
+          pages[i].redo    = [];
+        });
+        await loadCanvasState(pages[currentPageIndex].json);
+        updateHistoryButtons();
+        scheduleCompositeRefresh();
+        setStatus("Project loaded successfully.");
+      } catch (_) {
+        setStatus("Could not read project file. Is it a valid zine JSON?");
+      }
+    }
+
+    // ── Canvas helpers ─────────────────────────────────────────────
     function getCurrentCanvasState() {
       return JSON.stringify(editorCanvas.toJSON());
     }
@@ -863,21 +1253,22 @@
     }
 
     function updateHistoryButtons() {
-      undoBtn.disabled = pages[currentPageIndex].history.length <= 1;
-      redoBtn.disabled = pages[currentPageIndex].redo.length === 0;
+      const page = pages[currentPageIndex];
+      undoBtn.disabled = page.history.length <= 1;
+      redoBtn.disabled = page.redo.length === 0;
     }
 
-    function updateFontReadout() {
-      fontSizeValue.textContent = fontSizeRange.value + " px";
-      colorValue.textContent = colorPicker.value.toLowerCase();
+    function updateReadouts() {
+      fontSizeValue.textContent  = fontSizeRange.value + " px";
+      brushSizeValue.textContent = brushSizeRange.value + " px";
+      colorValue.textContent     = colorPicker.value.toLowerCase();
+      colorSwatch.style.background = colorPicker.value;
     }
 
     function getActiveTextObject() {
-      const activeObject = editorCanvas.getActiveObject();
-      if (!activeObject) {
-        return null;
-      }
-      return ["textbox", "i-text", "text"].includes(activeObject.type) ? activeObject : null;
+      const obj = editorCanvas.getActiveObject();
+      if (!obj) return null;
+      return ["textbox", "i-text", "text"].includes(obj.type) ? obj : null;
     }
 
     function decorateObject(object) {
@@ -892,73 +1283,96 @@
     }
 
     function decorateLoadedObjects() {
-      editorCanvas.forEachObject((object) => {
-        decorateObject(object);
-      });
+      editorCanvas.forEachObject((obj) => decorateObject(obj));
     }
 
     function syncBrushAndTextControls() {
       const brushColor = currentTool === "erase" ? "#ffffff" : colorPicker.value;
+      const rawSize    = parseInt(brushSizeRange.value, 10);
+      const brushWidth = currentTool === "erase" ? Math.max(rawSize * 2, 12) : rawSize;
+
       editorCanvas.freeDrawingBrush = new fabric.PencilBrush(editorCanvas);
       editorCanvas.freeDrawingBrush.color = brushColor;
-      editorCanvas.freeDrawingBrush.width = currentTool === "erase" ? 18 : 3;
+      editorCanvas.freeDrawingBrush.width = brushWidth;
 
       previewCanvas.freeDrawingBrush = new fabric.PencilBrush(previewCanvas);
       previewCanvas.freeDrawingBrush.color = colorPicker.value;
       previewCanvas.freeDrawingBrush.width = 4;
 
-      const textObject = getActiveTextObject();
-      if (textObject) {
-        textObject.set({
-          fill: colorPicker.value,
-          fontSize: Number(fontSizeRange.value)
-        });
-        textObject.setCoords();
+      const textObj = getActiveTextObject();
+      if (textObj) {
+        textObj.set({ fill: colorPicker.value, fontSize: Number(fontSizeRange.value) });
+        textObj.setCoords();
         editorCanvas.requestRenderAll();
       }
 
-      updateFontReadout();
+      updateReadouts();
     }
 
     function applyEditorTool(mode) {
       currentTool = mode;
-      Object.entries(toolButtons).forEach(([key, button]) => {
-        button.classList.toggle("active", key === mode);
+      Object.entries(toolButtons).forEach(([key, btn]) => {
+        btn.classList.toggle("active", key === mode);
       });
 
       const isDrawing = mode === "draw" || mode === "erase";
-      editorCanvas.isDrawingMode = isDrawing;
-      editorCanvas.selection = !isDrawing;
+      editorCanvas.isDrawingMode  = isDrawing;
+      editorCanvas.selection      = !isDrawing;
       editorCanvas.skipTargetFind = isDrawing;
 
-      editorCanvas.forEachObject((object) => {
-        object.selectable = !isDrawing;
-        object.evented = !isDrawing;
+      editorCanvas.forEachObject((obj) => {
+        obj.selectable = !isDrawing;
+        obj.evented    = !isDrawing;
       });
 
       syncBrushAndTextControls();
       editorCanvas.requestRenderAll();
     }
 
-    function updateThumbnailSelection() {
-      thumbnailButtons.forEach((button, index) => {
-        button.classList.toggle("active", index === currentPageIndex);
-      });
-      pageTitle.textContent = "Page " + (currentPageIndex + 1);
+    // ── Thumbnail navigation ───────────────────────────────────────
+    function scrollToActiveThumbnail() {
+      const btn = thumbnailButtons[currentPageIndex];
+      if (btn) btn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
     }
 
-    function pushHistorySnapshot() {
-      if (isRestoringPage) {
-        return;
-      }
+    function updateThumbnailSelection() {
+      thumbnailButtons.forEach((btn, i) => {
+        const isActive = i === currentPageIndex;
+        btn.classList.toggle("active", isActive);
+        btn.setAttribute("tabindex", isActive ? "0" : "-1");
+        btn.setAttribute("aria-selected", String(isActive));
 
+        // Empty-page indicator
+        const isEmpty = pages[i].history.length <= 1;
+        btn.classList.toggle("thumb-empty", isEmpty);
+        const existingLabel = btn.querySelector(".thumb-empty-label");
+        if (isEmpty && !existingLabel) {
+          const lbl = document.createElement("span");
+          lbl.className = "thumb-empty-label";
+          lbl.textContent = "Empty";
+          lbl.setAttribute("aria-hidden", "true");
+          btn.appendChild(lbl);
+        } else if (!isEmpty && existingLabel) {
+          existingLabel.remove();
+        }
+      });
+
+      pageTitle.textContent   = `Page ${currentPageIndex + 1} / ${PAGE_COUNT}`;
+      pageCounter.textContent = `Page ${currentPageIndex + 1} / ${PAGE_COUNT}`;
+      scrollToActiveThumbnail();
+    }
+
+    // ── History ────────────────────────────────────────────────────
+    function pushHistorySnapshot() {
+      if (isRestoringPage) return;
       const snapshot = getCurrentCanvasState();
-      const newPage = pushSnapshot(pages[currentPageIndex], snapshot);
-      const changed = newPage !== pages[currentPageIndex];
+      const newPage  = pushSnapshot(pages[currentPageIndex], snapshot);
+      const changed  = newPage !== pages[currentPageIndex];
       pages[currentPageIndex] = newPage;
       updateHistoryButtons();
       if (changed) {
         scheduleCompositeRefresh();
+        saveToLocalStorage();
       }
     }
 
@@ -970,7 +1384,8 @@
             decorateLoadedObjects();
             editorCanvas.renderAll();
             isRestoringPage = false;
-            applyEditorTool(currentTool === "text" ? "select" : currentTool);
+            // Keep the current tool (no forced revert to select)
+            applyEditorTool(currentTool);
             resolve();
           });
         });
@@ -978,17 +1393,23 @@
     }
 
     async function switchPage(nextIndex) {
-      if (nextIndex === currentPageIndex) {
-        return;
-      }
-
+      if (nextIndex === currentPageIndex) return;
+      const fromIndex = currentPageIndex;
       saveCurrentPageState();
       currentPageIndex = nextIndex;
+
+      // Page-switch fade animation
+      canvasWrapper.classList.add("page-switching");
+      canvasWrapper.addEventListener("animationend", () => {
+        canvasWrapper.classList.remove("page-switching");
+      }, { once: true });
+
       updateThumbnailSelection();
       await loadCanvasState(pages[currentPageIndex].json);
       updateHistoryButtons();
       syncTextControlsFromSelection();
-      setStatus("Editing page " + (currentPageIndex + 1) + ".");
+      setStatus(`Page ${fromIndex + 1} saved. Now editing page ${nextIndex + 1}.`);
+      saveToLocalStorage();
       scheduleCompositeRefresh();
     }
 
@@ -998,11 +1419,13 @@
       updateHistoryButtons();
       syncTextControlsFromSelection();
       scheduleCompositeRefresh();
+      saveToLocalStorage();
     }
 
     async function undo() {
       const result = undoPage(pages[currentPageIndex]);
       if (!result.state) {
+        setStatus("Nothing to undo on page " + (currentPageIndex + 1) + ".");
         return;
       }
       pages[currentPageIndex] = result.page;
@@ -1013,6 +1436,7 @@
     async function redo() {
       const result = redoPage(pages[currentPageIndex]);
       if (!result.state) {
+        setStatus("Nothing to redo on page " + (currentPageIndex + 1) + ".");
         return;
       }
       pages[currentPageIndex] = result.page;
@@ -1021,6 +1445,7 @@
     }
 
     function clearCurrentCanvas() {
+      if (!confirm(`Clear all content on page ${currentPageIndex + 1}? You can undo this.`)) return;
       isRestoringPage = true;
       editorCanvas.clear();
       editorCanvas.setBackgroundColor("#ffffff", () => {
@@ -1028,30 +1453,23 @@
         isRestoringPage = false;
         applyEditorTool("select");
         pushHistorySnapshot();
-        setStatus("Cleared page " + (currentPageIndex + 1) + ".");
+        setStatus("Page " + (currentPageIndex + 1) + " cleared. Press Undo to restore.");
       });
     }
 
     function syncTextControlsFromSelection() {
       const activeText = getActiveTextObject();
-      if (!activeText) {
-        updateFontReadout();
-        return;
-      }
-
-      if (activeText.fill) {
-        colorPicker.value = activeText.fill;
-      }
-      if (activeText.fontSize) {
-        fontSizeRange.value = String(Math.round(activeText.fontSize));
-      }
-      updateFontReadout();
+      if (!activeText) { updateReadouts(); return; }
+      if (activeText.fill)     colorPicker.value  = activeText.fill;
+      if (activeText.fontSize) fontSizeRange.value = String(Math.round(activeText.fontSize));
+      updateReadouts();
     }
 
+    // ── Asset loading ──────────────────────────────────────────────
     function readFileAsDataURL(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
+        reader.onload  = () => resolve(reader.result);
         reader.onerror = () => reject(new Error("Could not read file."));
         reader.readAsDataURL(file);
       });
@@ -1059,22 +1477,20 @@
 
     function createFabricImage(src) {
       return new Promise((resolve) => {
-        fabric.Image.fromURL(src, (image) => resolve(image), { crossOrigin: "anonymous" });
+        fabric.Image.fromURL(src, (img) => resolve(img), { crossOrigin: "anonymous" });
       });
     }
 
     async function addImageToEditor(dataUrl, indexOffset = 0) {
       const image = decorateObject(await createFabricImage(dataUrl));
       const scale = calcImageScale(image.width, image.height, PAGE_WIDTH, PAGE_HEIGHT);
-
       image.set({
-        left: PAGE_WIDTH / 2 + indexOffset * 10,
-        top: PAGE_HEIGHT / 2 + indexOffset * 10,
+        left: PAGE_WIDTH  / 2 + indexOffset * 10,
+        top:  PAGE_HEIGHT / 2 + indexOffset * 10,
         originX: "center",
         originY: "center"
       });
       image.scale(scale);
-
       editorCanvas.add(image);
       editorCanvas.setActiveObject(image);
       editorCanvas.requestRenderAll();
@@ -1082,21 +1498,21 @@
     }
 
     async function handleImageFiles(fileList) {
-      const files = Array.from(fileList).filter((file) => file.type.startsWith("image/"));
+      const files = Array.from(fileList).filter((f) => f.type.startsWith("image/"));
       if (!files.length) {
+        setStatus("No valid image files found. Please select JPG, PNG, GIF, or WebP.");
         return;
       }
-
-      for (let index = 0; index < files.length; index += 1) {
-        const dataUrl = await readFileAsDataURL(files[index]);
-        await addImageToEditor(dataUrl, index);
+      for (let i = 0; i < files.length; i++) {
+        const dataUrl = await readFileAsDataURL(files[i]);
+        await addImageToEditor(dataUrl, i);
       }
     }
 
     function insertTextBox() {
-      const textObject = decorateObject(new fabric.Textbox("Tap to edit", {
-        left: PAGE_WIDTH / 2,
-        top: PAGE_HEIGHT / 2,
+      const textObj = decorateObject(new fabric.Textbox("Tap to edit", {
+        left: PAGE_WIDTH  / 2,
+        top:  PAGE_HEIGHT / 2,
         originX: "center",
         originY: "center",
         width: 190,
@@ -1106,13 +1522,12 @@
         editable: true,
         textAlign: "left"
       }));
-
-      editorCanvas.add(textObject);
-      editorCanvas.setActiveObject(textObject);
+      editorCanvas.add(textObj);
+      editorCanvas.setActiveObject(textObj);
       editorCanvas.requestRenderAll();
-      textObject.enterEditing();
-      textObject.selectAll();
-      setStatus("Text inserted on page " + (currentPageIndex + 1) + ".");
+      textObj.enterEditing();
+      textObj.selectAll();
+      setStatus("Text box added. Click outside the box to finish editing.");
     }
 
     function handleTextTool() {
@@ -1120,101 +1535,82 @@
       insertTextBox();
     }
 
+    // ── Rendering ──────────────────────────────────────────────────
     function loadImageElement(src) {
       return new Promise((resolve, reject) => {
-        const image = new Image();
-        image.onload = () => resolve(image);
-        image.onerror = () => reject(new Error("Could not load image."));
-        image.src = src;
+        const img  = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error("Could not load image."));
+        img.src = src;
       });
     }
 
     async function renderPageToDataUrl(page, multiplier = 0.45) {
-      const tempCanvasElement = document.createElement("canvas");
-      tempCanvasElement.width = PAGE_WIDTH;
-      tempCanvasElement.height = PAGE_HEIGHT;
-
-      const tempCanvas = new fabric.StaticCanvas(tempCanvasElement, {
-        width: PAGE_WIDTH,
-        height: PAGE_HEIGHT,
-        backgroundColor: "#ffffff"
+      const el = document.createElement("canvas");
+      el.width  = PAGE_WIDTH;
+      el.height = PAGE_HEIGHT;
+      const tmp = new fabric.StaticCanvas(el, {
+        width: PAGE_WIDTH, height: PAGE_HEIGHT, backgroundColor: "#ffffff"
       });
-
       await new Promise((resolve) => {
-        tempCanvas.loadFromJSON(parseState(page.json), () => {
-          tempCanvas.setBackgroundColor("#ffffff", () => {
-            tempCanvas.renderAll();
-            resolve();
-          });
+        tmp.loadFromJSON(parseState(page.json), () => {
+          tmp.setBackgroundColor("#ffffff", () => { tmp.renderAll(); resolve(); });
         });
       });
-
-      const dataUrl = tempCanvas.toDataURL({
-        format: "png",
-        multiplier
-      });
-      tempCanvas.dispose();
+      const dataUrl = tmp.toDataURL({ format: "png", multiplier });
+      tmp.dispose();
       return dataUrl;
     }
 
     async function renderAllPageImages(multiplier = 0.45) {
       saveCurrentPageState();
-      return Promise.all(pages.map((page) => renderPageToDataUrl(page, multiplier)));
+      return Promise.all(pages.map((p) => renderPageToDataUrl(p, multiplier)));
     }
 
     async function buildZineLayoutCanvas(pageImages) {
-      const pageImageSources = pageImages || await renderAllPageImages(1);
-      const layoutCanvas = document.createElement("canvas");
-      layoutCanvas.width = LAYOUT_WIDTH;
-      layoutCanvas.height = LAYOUT_HEIGHT;
-      const context = layoutCanvas.getContext("2d");
+      const srcs    = pageImages || await renderAllPageImages(1);
+      const canvas  = document.createElement("canvas");
+      canvas.width  = LAYOUT_WIDTH;
+      canvas.height = LAYOUT_HEIGHT;
+      const ctx     = canvas.getContext("2d");
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, LAYOUT_WIDTH, LAYOUT_HEIGHT);
 
-      context.fillStyle = "#ffffff";
-      context.fillRect(0, 0, LAYOUT_WIDTH, LAYOUT_HEIGHT);
-
-      // Rotation logic for the printable sheet:
-      // only the top row is flipped so the sheet folds into the correct mini-zine order.
       for (const slot of layoutSlots) {
-        const x = slot.col * PAGE_WIDTH;
-        const y = slot.row * PAGE_HEIGHT;
-        const image = await loadImageElement(pageImageSources[slot.page - 1]);
-
-        context.save();
+        const x   = slot.col * PAGE_WIDTH;
+        const y   = slot.row * PAGE_HEIGHT;
+        const img = await loadImageElement(srcs[slot.page - 1]);
+        ctx.save();
         if (slot.rotate) {
-          context.translate(x + PAGE_WIDTH, y + PAGE_HEIGHT);
-          context.rotate(Math.PI);
-          context.drawImage(image, 0, 0, PAGE_WIDTH, PAGE_HEIGHT);
+          ctx.translate(x + PAGE_WIDTH, y + PAGE_HEIGHT);
+          ctx.rotate(Math.PI);
+          ctx.drawImage(img, 0, 0, PAGE_WIDTH, PAGE_HEIGHT);
         } else {
-          context.drawImage(image, x, y, PAGE_WIDTH, PAGE_HEIGHT);
+          ctx.drawImage(img, x, y, PAGE_WIDTH, PAGE_HEIGHT);
         }
-        context.restore();
+        ctx.restore();
       }
-
-      return layoutCanvas;
+      return canvas;
     }
 
     function updateThumbnails(pageImages) {
-      pageImages.forEach((dataUrl, index) => {
-        pages[index].thumbnail = dataUrl;
-        const imageElement = thumbnailButtons[index].querySelector("img");
-        imageElement.src = dataUrl;
+      pageImages.forEach((dataUrl, i) => {
+        pages[i].thumbnail = dataUrl;
+        thumbnailButtons[i].querySelector("img").src = dataUrl;
       });
       updateThumbnailSelection();
     }
 
     function updatePreviewBackground(dataUrl) {
       return new Promise((resolve) => {
-        fabric.Image.fromURL(dataUrl, (image) => {
-          image.set({
-            originX: "left",
-            originY: "top",
-            selectable: false,
-            evented: false,
-            scaleX: previewCanvas.getWidth() / LAYOUT_WIDTH,
+        fabric.Image.fromURL(dataUrl, (img) => {
+          img.set({
+            originX: "left", originY: "top",
+            selectable: false, evented: false,
+            scaleX: previewCanvas.getWidth()  / LAYOUT_WIDTH,
             scaleY: previewCanvas.getHeight() / LAYOUT_HEIGHT
           });
-
-          previewCanvas.setBackgroundImage(image, () => {
+          previewCanvas.setBackgroundImage(img, () => {
             previewCanvas.renderAll();
             resolve();
           });
@@ -1227,104 +1623,115 @@
       const token = ++refreshToken;
 
       refreshTimer = setTimeout(async () => {
-        setStatus("Refreshing preview and thumbnails...");
+        previewLoading.hidden = false;
+        setStatus("Refreshing preview…", false);
 
         try {
-          // Preview update system:
-          // 1. Save the current page.
-          // 2. Render all 8 pages once.
-          // 3. Reuse those rendered images for both thumbnails and the print preview.
-          const renderedPages = await renderAllPageImages(1);
-          if (token !== refreshToken) {
-            return;
-          }
+          const rendered = await renderAllPageImages(1);
+          if (token !== refreshToken) return;
 
-          updateThumbnails(renderedPages);
+          updateThumbnails(rendered);
 
-          const layoutCanvas = await buildZineLayoutCanvas(renderedPages);
-          if (token !== refreshToken) {
-            return;
-          }
+          const layoutCanvas = await buildZineLayoutCanvas(rendered);
+          if (token !== refreshToken) return;
 
           await updatePreviewBackground(layoutCanvas.toDataURL("image/png"));
-          if (token !== refreshToken) {
-            return;
-          }
+          if (token !== refreshToken) return;
 
-          setStatus("Preview ready for page " + (currentPageIndex + 1) + ".");
-        } catch (error) {
-          console.error(error);
+          setStatus("Preview ready — page " + (currentPageIndex + 1) + ".");
+        } catch (err) {
+          console.error(err);
           setStatus("Preview update failed. Try again.");
+        } finally {
+          previewLoading.hidden = true;
         }
       }, PREVIEW_DEBOUNCE_MS);
     }
 
+    // ── Preview drawing toggle ─────────────────────────────────────
     function togglePreviewDrawing() {
       previewDrawingEnabled = !previewDrawingEnabled;
-      previewCanvas.isDrawingMode = previewDrawingEnabled;
-      previewCanvas.selection = !previewDrawingEnabled;
+      previewCanvas.isDrawingMode  = previewDrawingEnabled;
+      previewCanvas.selection      = !previewDrawingEnabled;
       previewCanvas.skipTargetFind = previewDrawingEnabled;
 
       previewDrawBtn.classList.toggle("active", previewDrawingEnabled);
       previewDrawBtn.innerHTML = previewDrawingEnabled
-        ? '<i class="fa-solid fa-pen-ruler"></i> Stop Preview Draw'
-        : '<i class="fa-solid fa-pen-ruler"></i> Draw on Preview';
+        ? '<i class="fa-solid fa-pen-ruler" aria-hidden="true"></i> Stop Annotating'
+        : '<i class="fa-solid fa-pen-ruler" aria-hidden="true"></i> Annotate Print Preview';
 
       syncBrushAndTextControls();
-      setStatus(previewDrawingEnabled ? "Preview drawing enabled." : "Preview drawing disabled.");
+      setStatus(previewDrawingEnabled ? "Annotating print preview." : "Annotation mode off.");
     }
 
+    // ── PDF export ─────────────────────────────────────────────────
     async function exportPdf() {
-      exportPdfBtn.disabled = true;
-      setStatus("Building PDF...");
+      exportPdfBtn.disabled  = true;
+      exportPdfBtn2.disabled = true;
+
+      const exportTimeout = setTimeout(() => {
+        exportPdfBtn.disabled  = false;
+        exportPdfBtn2.disabled = false;
+        setStatus("PDF export timed out. Please try again.");
+      }, 30000);
 
       try {
+        setStatus("Building PDF — rendering pages…", false);
         const pageImages = await renderAllPageImages(1);
-        const layoutCanvas = await buildZineLayoutCanvas(pageImages);
-        const imageData = layoutCanvas.toDataURL("image/png");
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF({
-          orientation: "landscape",
-          unit: "mm",
-          format: "a4"
-        });
 
+        setStatus("Building PDF — compositing layout…", false);
+        const layoutCanvas = await buildZineLayoutCanvas(pageImages);
+        const imageData    = layoutCanvas.toDataURL("image/png");
+
+        setStatus("Building PDF — saving file…", false);
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
         pdf.addImage(imageData, "PNG", 0, 0, 297, 210, undefined, "FAST");
-        pdf.save("mini-zine-layout.pdf");
-        setStatus("PDF exported.");
-      } catch (error) {
-        console.error(error);
-        setStatus("PDF export failed. Check the console for details.");
+
+        const ts = new Date().toISOString().slice(0, 19).replace(/[T:]/g, "-");
+        pdf.save(`mini-zine-${ts}.pdf`);
+        setStatus("PDF exported successfully.");
+      } catch (err) {
+        console.error(err);
+        setStatus("PDF export failed. Check the browser console for details.");
       } finally {
-        exportPdfBtn.disabled = false;
+        clearTimeout(exportTimeout);
+        exportPdfBtn.disabled  = false;
+        exportPdfBtn2.disabled = false;
       }
     }
 
+    // ── Thumbnails ─────────────────────────────────────────────────
     function buildThumbnailNavigation() {
-      for (let index = 0; index < PAGE_COUNT; index += 1) {
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = "thumb-button";
-        button.innerHTML = `
-          <img class="thumb-preview" alt="Thumbnail for page ${index + 1}">
+      for (let i = 0; i < PAGE_COUNT; i++) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "thumb-button";
+        btn.setAttribute("role", "tab");
+        btn.setAttribute("aria-label", `Go to page ${i + 1}`);
+        btn.setAttribute("tabindex", i === 0 ? "0" : "-1");
+        btn.setAttribute("aria-selected", i === 0 ? "true" : "false");
+        btn.innerHTML = `
+          <img class="thumb-preview" alt="Page ${i + 1} preview">
           <span class="thumb-label">
-            <span>${pages[index].label}</span>
-            <span class="thumb-badge">${index + 1}</span>
-          </span>
-        `;
-        button.addEventListener("click", () => switchPage(index));
-        thumbnailButtons.push(button);
-        thumbnailStrip.appendChild(button);
+            <span>${pages[i].label}</span>
+            <span class="thumb-badge" aria-hidden="true">${i + 1}</span>
+          </span>`;
+        btn.addEventListener("click", () => switchPage(i));
+        thumbnailButtons.push(btn);
+        thumbnailStrip.appendChild(btn);
       }
       updateThumbnailSelection();
     }
 
+    // ── Drag state ─────────────────────────────────────────────────
     function handleDragState(isDragging) {
       editorShell.classList.toggle("dragging", isDragging);
     }
 
+    // ── Snap ───────────────────────────────────────────────────────
     function maybeSnapObject(target) {
-      const center = target.getCenterPoint();
+      const center  = target.getCenterPoint();
       const snapped = snapPosition(center.x, center.y, PAGE_WIDTH, PAGE_HEIGHT);
       if (snapped.x !== center.x) {
         target.setPositionByOrigin(new fabric.Point(snapped.x, center.y), "center", "center");
@@ -1334,180 +1741,234 @@
       }
     }
 
+    // ── Camera ─────────────────────────────────────────────────────
     async function openCameraModal() {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         cameraFallbackInput.click();
-        setStatus("Camera preview not supported here. Falling back to file upload.");
+        setStatus("Camera not supported in this browser. Using file upload instead.");
         return;
       }
-
       try {
         cameraStream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            facingMode: { ideal: "environment" },
-            width: { ideal: 1280 },
-            height: { ideal: 720 }
-          },
+          video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } },
           audio: false
         });
-
         cameraFeed.srcObject = cameraStream;
         cameraModal.classList.add("open");
         cameraModal.setAttribute("aria-hidden", "false");
-        setStatus("Camera ready.");
-      } catch (error) {
-        console.error(error);
+        setStatus("Camera ready. Press Capture to add a photo.");
+      } catch (err) {
+        console.error(err);
         cameraFallbackInput.click();
-        setStatus("Camera access failed. Using file upload instead.");
+        const msg = err.name === "NotAllowedError"
+          ? "Camera permission denied. Allow camera access in your browser settings, then try again."
+          : "Camera unavailable. Using file upload instead.";
+        setStatus(msg);
       }
     }
 
     function closeCameraModal() {
       cameraModal.classList.remove("open");
       cameraModal.setAttribute("aria-hidden", "true");
-      if (cameraStream) {
-        cameraStream.getTracks().forEach((track) => track.stop());
-      }
+      if (cameraStream) cameraStream.getTracks().forEach((t) => t.stop());
       cameraStream = null;
       cameraFeed.srcObject = null;
     }
 
     async function capturePhotoToCanvas() {
-      if (!cameraStream) {
-        return;
-      }
-
-      const videoWidth = cameraFeed.videoWidth || 1280;
-      const videoHeight = cameraFeed.videoHeight || 720;
-      cameraCaptureCanvas.width = videoWidth;
-      cameraCaptureCanvas.height = videoHeight;
-      const context = cameraCaptureCanvas.getContext("2d");
-      context.drawImage(cameraFeed, 0, 0, videoWidth, videoHeight);
+      if (!cameraStream) return;
+      const vw = cameraFeed.videoWidth  || 1280;
+      const vh = cameraFeed.videoHeight || 720;
+      cameraCaptureCanvas.width  = vw;
+      cameraCaptureCanvas.height = vh;
+      cameraCaptureCanvas.getContext("2d").drawImage(cameraFeed, 0, 0, vw, vh);
       const dataUrl = cameraCaptureCanvas.toDataURL("image/png");
       closeCameraModal();
       await addImageToEditor(dataUrl);
       setStatus("Photo captured on page " + (currentPageIndex + 1) + ".");
     }
 
+    // ── Shortcuts modal ────────────────────────────────────────────
+    function openShortcutsModal() {
+      shortcutsModal.classList.add("open");
+      shortcutsModal.setAttribute("aria-hidden", "false");
+      closeShortcutsBtn.focus();
+    }
+
+    function closeShortcutsModal() {
+      shortcutsModal.classList.remove("open");
+      shortcutsModal.setAttribute("aria-hidden", "true");
+      shortcutsBtn.focus();
+    }
+
+    // ── Keyboard shortcuts ─────────────────────────────────────────
+    function handleKeyboardShortcut(event) {
+      const tag = document.activeElement.tagName;
+      if (["INPUT", "TEXTAREA", "SELECT"].includes(tag)) return;
+      if (editorCanvas.isEditing) return;
+
+      if (event.ctrlKey || event.metaKey) {
+        if (event.key === "z") { event.preventDefault(); undo(); return; }
+        if (event.key === "y" || (event.key === "z" && event.shiftKey)) {
+          event.preventDefault(); redo(); return;
+        }
+        return;
+      }
+
+      switch (event.key) {
+        case "s": case "S": applyEditorTool("select"); break;
+        case "d": case "D": applyEditorTool("draw");   break;
+        case "e": case "E": applyEditorTool("erase");  break;
+        case "t": case "T": handleTextTool();           break;
+        case "?":           openShortcutsModal();       break;
+        default: {
+          const n = parseInt(event.key, 10);
+          if (n >= 1 && n <= PAGE_COUNT) switchPage(n - 1);
+        }
+      }
+    }
+
+    // ── Wire all events ────────────────────────────────────────────
     function wireEvents() {
       toolButtons.select.addEventListener("click", () => applyEditorTool("select"));
-      toolButtons.draw.addEventListener("click", () => applyEditorTool("draw"));
-      toolButtons.erase.addEventListener("click", () => applyEditorTool("erase"));
-      toolButtons.text.addEventListener("click", handleTextTool);
+      toolButtons.draw.addEventListener("click",   () => applyEditorTool("draw"));
+      toolButtons.erase.addEventListener("click",  () => applyEditorTool("erase"));
+      toolButtons.text.addEventListener("click",   handleTextTool);
 
       undoBtn.addEventListener("click", undo);
       redoBtn.addEventListener("click", redo);
-      previewDrawBtn.addEventListener("click", togglePreviewDrawing);
-      exportPdfBtn.addEventListener("click", exportPdf);
       document.getElementById("clearCanvas").addEventListener("click", clearCurrentCanvas);
+
+      previewDrawBtn.addEventListener("click", togglePreviewDrawing);
+      exportPdfBtn.addEventListener("click",  exportPdf);
+      exportPdfBtn2.addEventListener("click", exportPdf);
+
+      shortcutsBtn.addEventListener("click", openShortcutsModal);
+      closeShortcutsBtn.addEventListener("click", closeShortcutsModal);
+      closeShortcutsFooterBtn.addEventListener("click", closeShortcutsModal);
+      shortcutsModal.addEventListener("click", (e) => {
+        if (e.target === shortcutsModal) closeShortcutsModal();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          if (shortcutsModal.classList.contains("open")) { closeShortcutsModal(); return; }
+          if (cameraModal.classList.contains("open"))    { closeCameraModal(); }
+        }
+      });
+
+      saveProjectBtn.addEventListener("click", saveProject);
+      loadProjectInput.addEventListener("change", async (e) => {
+        if (e.target.files[0]) await loadProject(e.target.files[0]);
+        loadProjectInput.value = "";
+      });
+
       cameraBtn.addEventListener("click", openCameraModal);
       cancelCameraBtn.addEventListener("click", closeCameraModal);
       capturePhotoBtn.addEventListener("click", capturePhotoToCanvas);
-      cameraModal.addEventListener("click", (event) => {
-        if (event.target === cameraModal) {
-          closeCameraModal();
-        }
+      cameraModal.addEventListener("click", (e) => {
+        if (e.target === cameraModal) closeCameraModal();
       });
 
       colorPicker.addEventListener("input", () => {
         syncBrushAndTextControls();
-        if (getActiveTextObject()) {
-          scheduleCompositeRefresh();
-        }
+        if (getActiveTextObject()) scheduleCompositeRefresh();
       });
-
       colorPicker.addEventListener("change", () => {
-        if (getActiveTextObject()) {
-          pushHistorySnapshot();
-        }
+        if (getActiveTextObject()) pushHistorySnapshot();
       });
 
       fontSizeRange.addEventListener("input", () => {
         syncBrushAndTextControls();
-        if (getActiveTextObject()) {
-          scheduleCompositeRefresh();
-        }
+        if (getActiveTextObject()) scheduleCompositeRefresh();
       });
-
       fontSizeRange.addEventListener("change", () => {
-        if (getActiveTextObject()) {
-          pushHistorySnapshot();
-        }
+        if (getActiveTextObject()) pushHistorySnapshot();
       });
 
-      imageUpload.addEventListener("change", async (event) => {
-        await handleImageFiles(event.target.files);
+      brushSizeRange.addEventListener("input", syncBrushAndTextControls);
+
+      imageUpload.addEventListener("change", async (e) => {
+        await handleImageFiles(e.target.files);
         imageUpload.value = "";
       });
-
-      cameraFallbackInput.addEventListener("change", async (event) => {
-        await handleImageFiles(event.target.files);
+      cameraFallbackInput.addEventListener("change", async (e) => {
+        await handleImageFiles(e.target.files);
         cameraFallbackInput.value = "";
       });
 
-      ["dragenter", "dragover"].forEach((eventName) => {
-        editorShell.addEventListener(eventName, (event) => {
-          event.preventDefault();
-          handleDragState(true);
-        });
+      ["dragenter", "dragover"].forEach((ev) => {
+        editorShell.addEventListener(ev, (e) => { e.preventDefault(); handleDragState(true); });
       });
-
-      ["dragleave", "dragend"].forEach((eventName) => {
-        editorShell.addEventListener(eventName, () => handleDragState(false));
+      ["dragleave", "dragend"].forEach((ev) => {
+        editorShell.addEventListener(ev, () => handleDragState(false));
       });
-
-      editorShell.addEventListener("drop", async (event) => {
-        event.preventDefault();
+      editorShell.addEventListener("drop", async (e) => {
+        e.preventDefault();
         handleDragState(false);
-        const files = event.dataTransfer ? event.dataTransfer.files : [];
-        await handleImageFiles(files);
+        await handleImageFiles(e.dataTransfer ? e.dataTransfer.files : []);
       });
 
-      editorCanvas.on("object:added", (event) => {
-        if (event.target) {
-          decorateObject(event.target);
+      // Arrow-key navigation on the thumbnail strip
+      thumbnailStrip.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight") {
+          e.preventDefault();
+          const next = (currentPageIndex + 1) % PAGE_COUNT;
+          switchPage(next).then(() => thumbnailButtons[next].focus());
+        } else if (e.key === "ArrowLeft") {
+          e.preventDefault();
+          const prev = (currentPageIndex - 1 + PAGE_COUNT) % PAGE_COUNT;
+          switchPage(prev).then(() => thumbnailButtons[prev].focus());
         }
+      });
+
+      editorCanvas.on("object:added", (e) => {
+        if (e.target) decorateObject(e.target);
         pushHistorySnapshot();
       });
-
       editorCanvas.on("object:modified", pushHistorySnapshot);
-      editorCanvas.on("object:removed", pushHistorySnapshot);
-      editorCanvas.on("path:created", scheduleCompositeRefresh);
-      editorCanvas.on("object:moving", (event) => {
-        if (!event.target || editorCanvas.isDrawingMode) {
-          return;
-        }
-        maybeSnapObject(event.target);
+      editorCanvas.on("object:removed",  pushHistorySnapshot);
+      editorCanvas.on("path:created",    scheduleCompositeRefresh);
+      editorCanvas.on("object:moving", (e) => {
+        if (!e.target || editorCanvas.isDrawingMode) return;
+        maybeSnapObject(e.target);
       });
-
       editorCanvas.on("selection:created", syncTextControlsFromSelection);
       editorCanvas.on("selection:updated", syncTextControlsFromSelection);
-      editorCanvas.on("selection:cleared", updateFontReadout);
+      editorCanvas.on("selection:cleared", updateReadouts);
       editorCanvas.on("text:editing:exited", pushHistorySnapshot);
       editorCanvas.on("text:changed", scheduleCompositeRefresh);
 
-      previewCanvas.on("path:created", () => {
-        setStatus("Preview annotated.");
-      });
+      previewCanvas.on("path:created", () => setStatus("Preview annotated."));
 
-      previewDetails.addEventListener("toggle", () => {
-        previewCanvas.calcOffset();
-      });
+      previewDetails.addEventListener("toggle", () => previewCanvas.calcOffset());
 
       window.addEventListener("beforeunload", saveCurrentPageState);
       window.addEventListener("resize", () => {
         editorCanvas.calcOffset();
         previewCanvas.calcOffset();
       });
+
+      document.addEventListener("keydown", handleKeyboardShortcut);
     }
 
+    // ── Init ───────────────────────────────────────────────────────
     function init() {
+      const restored = loadFromLocalStorage();
       buildThumbnailNavigation();
       wireEvents();
       updateHistoryButtons();
-      updateFontReadout();
+      updateReadouts();
       applyEditorTool("select");
-      scheduleCompositeRefresh();
+
+      if (restored) {
+        loadCanvasState(pages[0].json).then(() => {
+          scheduleCompositeRefresh();
+          setStatus("Last session restored. Pick a page to keep editing.");
+        });
+      } else {
+        scheduleCompositeRefresh();
+        setStatus("Ready. Pick a page below and start creating your zine.", false);
+      }
     }
 
     init();
