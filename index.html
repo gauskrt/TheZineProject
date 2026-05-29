@@ -63,48 +63,47 @@
     button, input, select, textarea { font: inherit; }
 
     .app-shell {
-      display: grid;
-      grid-template-columns: 310px minmax(0, 1fr);
-      min-height: 100vh;
+      display: block;
     }
 
-    /* ── Sidebar ─────────────────────────────────────────────────── */
-    .sidebar {
-      position: sticky;
-      top: 0;
-      align-self: start;
-      min-height: 100vh;
-      max-height: 100vh;
-      padding: 20px 16px;
-      border-right: 1px solid var(--line);
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.02), transparent 22%),
-        rgba(10,10,10,0.92);
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
-
-    .brand { margin-bottom: 14px; }
-    .brand h1 {
+    /* ── Brand in banner ─────────────────────────────────────────── */
+    .brand-inline h1 {
       margin: 0;
       font-family: "Bebas Neue", sans-serif;
-      font-size: 2.8rem;
-      line-height: 0.92;
+      font-size: 2.4rem;
+      line-height: 1;
       letter-spacing: 0.08em;
+      color: var(--text);
+    }
+
+    /* ── Tools panel (below editor) ──────────────────────────────── */
+    .sidebar {
+      padding: 16px 24px 20px;
+      border-top: 1px solid var(--line);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.02), transparent 40%),
+        rgba(8,8,8,0.96);
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    /* Each card expands equally in the row */
+    .sidebar .tool-group,
+    .sidebar .info-card {
+      flex: 1 1 200px;
+      min-width: 190px;
+      margin-bottom: 0;
     }
 
     /* ── Start guide steps ───────────────────────────────────────── */
     .start-guide {
       display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 16px;
-      padding: 12px 14px;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      background: rgba(255, 93, 42, 0.06);
+      flex-direction: row;
+      gap: 16px;
+      flex-wrap: wrap;
     }
     .start-step {
       display: flex;
@@ -297,6 +296,7 @@
       flex-wrap: wrap;
       overflow: visible;
     }
+    .start-banner .brand-inline { flex-shrink: 0; }
     .start-copy {
       margin: 0;
       color: var(--muted);
@@ -687,22 +687,7 @@
 
     /* ── Responsive: tablet 1080px ───────────────────────────────── */
     @media (max-width: 1080px) {
-      .app-shell { grid-template-columns: 1fr; }
-      .sidebar {
-        position: static;
-        min-height: auto;
-        max-height: none;
-        border-right: none;
-        border-bottom: 1px solid var(--line);
-        padding: 14px;
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 10px;
-        align-items: flex-start;
-      }
-      .brand { width: 100%; margin-bottom: 0; }
-      .start-guide { display: none; }
-      .tool-group, .info-card { margin-bottom: 0; flex: 1 1 200px; min-width: 180px; }
+      .sidebar { padding: 14px 16px; gap: 10px; }
     }
 
     /* ── Responsive: mobile 768px ────────────────────────────────── */
@@ -767,181 +752,19 @@
   <a class="skip-link" href="#editorCanvas">Skip to editor</a>
 
   <div class="app-shell">
-    <!-- ── Sidebar ─────────────────────────────────────────────── -->
-    <aside class="sidebar" aria-label="Tools and settings">
-      <div class="brand">
-        <h1>Booklet Maker</h1>
-      </div>
-
-      <div class="start-guide" aria-label="Getting started">
-        <div class="start-step"><span class="step-num">1</span>Pick a page thumbnail to edit.</div>
-        <div class="start-step"><span class="step-num">2</span>Add images, text, or draw freely.</div>
-        <div class="start-step"><span class="step-num">3</span>Export PDF when all 8 pages are done.</div>
-      </div>
-
-      <section class="tool-group" aria-label="Edit tools">
-        <h2>Edit Tools</h2>
-        <div class="tool-grid">
-          <button id="selectTool" type="button"
-            aria-label="Select and move objects (S)"
-            title="Select and move objects — press S">
-            <i class="fa-solid fa-up-down-left-right" aria-hidden="true"></i>
-            <span class="btn-text">Move</span>
-          </button>
-          <button id="drawTool" type="button"
-            aria-label="Freehand draw (D)"
-            title="Freehand draw — press D">
-            <i class="fa-solid fa-pencil" aria-hidden="true"></i>
-            <span class="btn-text">Draw</span>
-          </button>
-          <button id="eraseTool" type="button"
-            aria-label="Erase (E)"
-            title="Erase — press E">
-            <i class="fa-solid fa-eraser" aria-hidden="true"></i>
-            <span class="btn-text">Erase</span>
-          </button>
-          <button id="textTool" type="button"
-            aria-label="Insert text box (T)"
-            title="Insert text box — press T">
-            <i class="fa-solid fa-font" aria-hidden="true"></i>
-            <span class="btn-text">Insert Text</span>
-          </button>
-        </div>
-      </section>
-
-      <section class="tool-group" aria-label="Assets and style">
-        <h2>Assets</h2>
-        <div class="asset-grid">
-          <label class="file-label" for="imageUpload"
-            title="Upload images from your device">
-            <i class="fa-solid fa-image" aria-hidden="true"></i> Upload Images
-          </label>
-          <input id="imageUpload" class="file-input" type="file" accept="image/*" multiple
-            aria-label="Upload images">
-
-          <button id="cameraBtn" type="button"
-            aria-label="Take a photo with your camera"
-            title="Take a photo with your camera">
-            <i class="fa-solid fa-camera" aria-hidden="true"></i> Take Photo
-          </button>
-          <input id="cameraFallbackInput" class="file-input" type="file" accept="image/*" capture="environment"
-            aria-label="Camera photo fallback">
-
-          <div class="control-block">
-            <div class="control-row">
-              <span class="control-label" id="colorLabel">Color</span>
-              <span class="color-readout">
-                <span id="colorSwatch" class="color-swatch" aria-hidden="true"></span>
-                <span id="colorValue">#ff5d2a</span>
-              </span>
-            </div>
-            <input id="colorPicker" type="color" value="#ff5d2a"
-              aria-label="Pick draw and text color" aria-labelledby="colorLabel">
-          </div>
-
-          <div class="control-block">
-            <div class="control-row">
-              <span class="control-label" id="brushLabel">Brush Size</span>
-              <span id="brushSizeValue">3 px</span>
-            </div>
-            <input id="brushSizeRange" type="range" min="1" max="40" step="1" value="3"
-              aria-label="Brush and eraser size" aria-labelledby="brushLabel">
-          </div>
-
-          <div class="control-block">
-            <div class="control-row">
-              <span class="control-label" id="fontLabel">Text Size</span>
-              <span id="fontSizeValue">28 px</span>
-            </div>
-            <input id="fontSizeRange" type="range" min="12" max="96" step="1" value="28"
-              aria-label="Text font size" aria-labelledby="fontLabel">
-          </div>
-        </div>
-      </section>
-
-      <section class="tool-group" aria-label="Edit actions">
-        <h2>Actions</h2>
-        <div class="action-grid">
-          <button id="undoBtn" type="button"
-            aria-label="Undo last action (Ctrl+Z)"
-            title="Undo — Ctrl+Z">
-            <i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Undo
-          </button>
-          <button id="redoBtn" type="button"
-            aria-label="Redo last undone action (Ctrl+Y)"
-            title="Redo — Ctrl+Y">
-            <i class="fa-solid fa-rotate-right" aria-hidden="true"></i> Redo
-          </button>
-          <button id="clearCanvas" type="button"
-            aria-label="Clear all content on current page"
-            title="Clear this page (you can undo)">
-            <i class="fa-solid fa-trash-can" aria-hidden="true"></i> Clear Page
-          </button>
-        </div>
-      </section>
-
-      <section class="tool-group" aria-label="Project save and load">
-        <h2>Project</h2>
-        <div class="action-grid">
-          <button id="saveProjectBtn" type="button"
-            title="Download all 8 pages as a .json file"
-            aria-label="Save project to a JSON file">
-            <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Save Project
-          </button>
-          <label class="file-label" for="loadProjectInput"
-            title="Load a previously saved .json project file">
-            <i class="fa-solid fa-folder-open" aria-hidden="true"></i> Load Project
-          </label>
-          <input id="loadProjectInput" class="file-input" type="file" accept=".json"
-            aria-label="Load project from JSON file">
-        </div>
-      </section>
-
-      <section class="tool-group" aria-label="Output and export">
-        <h2>Output</h2>
-        <div class="output-grid">
-          <button id="previewDrawBtn" type="button"
-            title="Annotate the print preview without changing any page"
-            aria-label="Toggle annotation mode on the print preview">
-            <i class="fa-solid fa-pen-ruler" aria-hidden="true"></i> Annotate Print Preview
-          </button>
-          <button id="exportPdfBtn" type="button"
-            title="Export all 8 pages as a print-ready A4 PDF"
-            aria-label="Export PDF">
-            <i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i> Export PDF
-          </button>
-          <button id="shortcutsBtn" type="button"
-            title="Show keyboard shortcuts (?)"
-            aria-label="Show keyboard shortcuts">
-            <i class="fa-solid fa-keyboard" aria-hidden="true"></i> Shortcuts <kbd>?</kbd>
-          </button>
-        </div>
-      </section>
-
-      <details class="info-card fold-guide">
-        <summary>
-          <h2 style="display:inline">How To Fold</h2>
-          <i class="fa-solid fa-chevron-down fold-chevron" aria-hidden="true"></i>
-        </summary>
-        <ol class="instruction-list">
-          <li>Print the exported PDF.</li>
-          <li>Fold the sheet lengthwise.</li>
-          <li>Cut the center slit on the fold.</li>
-          <li>Push the ends together and fold into a booklet.</li>
-        </ol>
-      </details>
-    </aside>
-
     <!-- ── Main workspace ──────────────────────────────────────── -->
     <main class="workspace">
       <div class="workspace-inner">
 
-        <!-- Start banner (replaces version hero) -->
+        <!-- Header banner with brand + status -->
         <section class="panel start-banner" aria-label="App status">
+          <div class="brand-inline">
+            <h1>Booklet Maker</h1>
+          </div>
           <p class="start-copy">
             <i class="fa-solid fa-circle-info accent-icon" aria-hidden="true"></i>
-            Edit each of your 8 pages, then export as a print-ready A4 PDF. Press <kbd>?</kbd> for keyboard shortcuts.
-            Work is saved automatically in your browser.
+            Edit each of your 8 pages, then export as a print-ready A4 PDF. Press <kbd>?</kbd> for shortcuts.
+            Work saves automatically.
           </p>
           <div id="statusText" class="status-pill" role="status" aria-live="polite" aria-atomic="true">
             Ready.
@@ -987,6 +810,163 @@
             </div>
           </div>
         </section>
+
+        <!-- ── Tools panel (below editor) ───────────────────────── -->
+        <aside class="sidebar" aria-label="Tools and settings">
+
+          <section class="tool-group" aria-label="Edit tools">
+            <h2>Edit Tools</h2>
+            <div class="tool-grid">
+              <button id="selectTool" type="button"
+                aria-label="Select and move objects (S)"
+                title="Select and move objects — press S">
+                <i class="fa-solid fa-up-down-left-right" aria-hidden="true"></i>
+                <span class="btn-text">Move</span>
+              </button>
+              <button id="drawTool" type="button"
+                aria-label="Freehand draw (D)"
+                title="Freehand draw — press D">
+                <i class="fa-solid fa-pencil" aria-hidden="true"></i>
+                <span class="btn-text">Draw</span>
+              </button>
+              <button id="eraseTool" type="button"
+                aria-label="Erase (E)"
+                title="Erase — press E">
+                <i class="fa-solid fa-eraser" aria-hidden="true"></i>
+                <span class="btn-text">Erase</span>
+              </button>
+              <button id="textTool" type="button"
+                aria-label="Insert text box (T)"
+                title="Insert text box — press T">
+                <i class="fa-solid fa-font" aria-hidden="true"></i>
+                <span class="btn-text">Insert Text</span>
+              </button>
+            </div>
+          </section>
+
+          <section class="tool-group" aria-label="Assets and style">
+            <h2>Assets</h2>
+            <div class="asset-grid">
+              <label class="file-label" for="imageUpload"
+                title="Upload images from your device">
+                <i class="fa-solid fa-image" aria-hidden="true"></i> Upload Images
+              </label>
+              <input id="imageUpload" class="file-input" type="file" accept="image/*" multiple
+                aria-label="Upload images">
+
+              <button id="cameraBtn" type="button"
+                aria-label="Take a photo with your camera"
+                title="Take a photo with your camera">
+                <i class="fa-solid fa-camera" aria-hidden="true"></i> Take Photo
+              </button>
+              <input id="cameraFallbackInput" class="file-input" type="file" accept="image/*" capture="environment"
+                aria-label="Camera photo fallback">
+
+              <div class="control-block">
+                <div class="control-row">
+                  <span class="control-label" id="colorLabel">Color</span>
+                  <span class="color-readout">
+                    <span id="colorSwatch" class="color-swatch" aria-hidden="true"></span>
+                    <span id="colorValue">#ff5d2a</span>
+                  </span>
+                </div>
+                <input id="colorPicker" type="color" value="#ff5d2a"
+                  aria-label="Pick draw and text color" aria-labelledby="colorLabel">
+              </div>
+
+              <div class="control-block">
+                <div class="control-row">
+                  <span class="control-label" id="brushLabel">Brush Size</span>
+                  <span id="brushSizeValue">3 px</span>
+                </div>
+                <input id="brushSizeRange" type="range" min="1" max="40" step="1" value="3"
+                  aria-label="Brush and eraser size" aria-labelledby="brushLabel">
+              </div>
+
+              <div class="control-block">
+                <div class="control-row">
+                  <span class="control-label" id="fontLabel">Text Size</span>
+                  <span id="fontSizeValue">28 px</span>
+                </div>
+                <input id="fontSizeRange" type="range" min="12" max="96" step="1" value="28"
+                  aria-label="Text font size" aria-labelledby="fontLabel">
+              </div>
+            </div>
+          </section>
+
+          <section class="tool-group" aria-label="Edit actions">
+            <h2>Actions</h2>
+            <div class="action-grid">
+              <button id="undoBtn" type="button"
+                aria-label="Undo last action (Ctrl+Z)"
+                title="Undo — Ctrl+Z">
+                <i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Undo
+              </button>
+              <button id="redoBtn" type="button"
+                aria-label="Redo last undone action (Ctrl+Y)"
+                title="Redo — Ctrl+Y">
+                <i class="fa-solid fa-rotate-right" aria-hidden="true"></i> Redo
+              </button>
+              <button id="clearCanvas" type="button"
+                aria-label="Clear all content on current page"
+                title="Clear this page (you can undo)">
+                <i class="fa-solid fa-trash-can" aria-hidden="true"></i> Clear Page
+              </button>
+            </div>
+          </section>
+
+          <section class="tool-group" aria-label="Project save and load">
+            <h2>Project</h2>
+            <div class="action-grid">
+              <button id="saveProjectBtn" type="button"
+                title="Download all 8 pages as a .json file"
+                aria-label="Save project to a JSON file">
+                <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Save Project
+              </button>
+              <label class="file-label" for="loadProjectInput"
+                title="Load a previously saved .json project file">
+                <i class="fa-solid fa-folder-open" aria-hidden="true"></i> Load Project
+              </label>
+              <input id="loadProjectInput" class="file-input" type="file" accept=".json"
+                aria-label="Load project from JSON file">
+            </div>
+          </section>
+
+          <section class="tool-group" aria-label="Output and export">
+            <h2>Output</h2>
+            <div class="output-grid">
+              <button id="previewDrawBtn" type="button"
+                title="Annotate the print preview without changing any page"
+                aria-label="Toggle annotation mode on the print preview">
+                <i class="fa-solid fa-pen-ruler" aria-hidden="true"></i> Annotate Print Preview
+              </button>
+              <button id="exportPdfBtn" type="button"
+                title="Export all 8 pages as a print-ready A4 PDF"
+                aria-label="Export PDF">
+                <i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i> Export PDF
+              </button>
+              <button id="shortcutsBtn" type="button"
+                title="Show keyboard shortcuts (?)"
+                aria-label="Show keyboard shortcuts">
+                <i class="fa-solid fa-keyboard" aria-hidden="true"></i> Shortcuts <kbd>?</kbd>
+              </button>
+            </div>
+          </section>
+
+          <details class="info-card fold-guide">
+            <summary>
+              <h2 style="display:inline">How To Fold</h2>
+              <i class="fa-solid fa-chevron-down fold-chevron" aria-hidden="true"></i>
+            </summary>
+            <ol class="instruction-list">
+              <li>Print the exported PDF.</li>
+              <li>Fold the sheet lengthwise.</li>
+              <li>Cut the center slit on the fold.</li>
+              <li>Push the ends together and fold into a booklet.</li>
+            </ol>
+          </details>
+
+        </aside>
 
         <!-- Print preview (starts collapsed) -->
         <section class="panel" aria-label="Print layout preview">
