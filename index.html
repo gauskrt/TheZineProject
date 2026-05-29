@@ -24,6 +24,26 @@
       --canvas-bg: #ffffff;
       --shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
       --radius: 20px;
+      --body-grad-1: rgba(255, 93, 42, 0.14);
+      --body-grad-2: #0a0a0a;
+      --body-grad-3: #050505;
+    }
+
+    html.light-mode {
+      --bg: #f0ede8;
+      --panel: #ffffff;
+      --panel-2: #f5f2ed;
+      --panel-3: #ede9e3;
+      --line: #d8d4ce;
+      --text: #1a1714;
+      --muted: #6b6560;
+      --accent: #ff5d2a;
+      --accent-soft: rgba(255, 93, 42, 0.14);
+      --canvas-bg: #ffffff;
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.10);
+      --body-grad-1: rgba(255, 93, 42, 0.08);
+      --body-grad-2: #f0ede8;
+      --body-grad-3: #e8e4de;
     }
 
     * { box-sizing: border-box; }
@@ -32,8 +52,8 @@
 
     body {
       background:
-        radial-gradient(circle at top right, rgba(255, 93, 42, 0.14), transparent 28%),
-        linear-gradient(180deg, #0a0a0a 0%, #050505 100%);
+        radial-gradient(circle at top right, var(--body-grad-1), transparent 28%),
+        linear-gradient(180deg, var(--body-grad-2) 0%, var(--body-grad-3) 100%);
       color: var(--text);
       font-family: "Space Grotesk", sans-serif;
     }
@@ -230,7 +250,7 @@
       height: 14px;
       border-radius: 50%;
       border: 1px solid rgba(255,255,255,0.2);
-      background: #ff5d2a;
+      background: #000000;
       flex-shrink: 0;
     }
 
@@ -700,6 +720,39 @@
       border: 0;
     }
 
+    /* ── Smaller controls in sidebar ────────────────────────────── */
+    .sidebar button, .sidebar .file-label {
+      min-height: 32px;
+      padding: 5px 10px;
+      font-size: 0.8rem;
+      gap: 6px;
+      border-radius: 10px;
+    }
+    .sidebar .tool-group, .sidebar .info-card { padding: 10px 12px; margin-bottom: 8px; }
+    .sidebar .tool-grid  { gap: 5px; }
+    .sidebar .asset-grid,
+    .sidebar .action-grid,
+    .sidebar .output-grid { gap: 5px; }
+    .sidebar input[type="color"] { height: 34px; padding: 4px; border-radius: 10px; }
+    .sidebar input[type="range"] { height: 32px; border-radius: 10px; }
+    .sidebar .control-block { margin-top: 7px; gap: 4px; }
+
+    /* ── Theme toggle ────────────────────────────────────────────── */
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 36px;
+      width: auto;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
     /* ── Responsive: tablet 1080px ───────────────────────────────── */
     @media (max-width: 1080px) {
       .sidebar { padding: 14px 16px; gap: 10px; }
@@ -785,6 +838,11 @@
           <div id="statusText" class="status-pill" role="status" aria-live="polite" aria-atomic="true">
             Ready.
           </div>
+          <button id="themeToggle" type="button" class="theme-toggle"
+            aria-label="Toggle dark / light mode" title="Toggle dark / light mode">
+            <i class="fa-solid fa-sun" aria-hidden="true"></i>
+            <span class="btn-text">Light</span>
+          </button>
         </section>
 
         <!-- Pages / thumbnail strip -->
@@ -826,6 +884,14 @@
               <p class="editor-tip">
                 Tip: press <kbd>T</kbd> to insert a text box · drag images from your desktop · objects snap to centre.
               </p>
+              <details class="fold-guide how-to-image-details" style="width:100%;margin-top:10px;">
+                <summary>
+                  <h3 style="display:inline;font-size:0.78rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);font-weight:500;">How to Fold Reference</h3>
+                  <i class="fa-solid fa-chevron-down fold-chevron" aria-hidden="true"></i>
+                </summary>
+                <img src="images/how_to.jpg" alt="Zine folding instructions diagram"
+                  style="display:block;width:100%;max-width:420px;margin:10px auto 0;border-radius:12px;border:1px solid var(--line);">
+              </details>
             </div>
           </div>
         </section>
@@ -886,10 +952,10 @@
                   <span class="control-label" id="colorLabel">Color</span>
                   <span class="color-readout">
                     <span id="colorSwatch" class="color-swatch" aria-hidden="true"></span>
-                    <span id="colorValue">#ff5d2a</span>
+                    <span id="colorValue">#000000</span>
                   </span>
                 </div>
-                <input id="colorPicker" type="color" value="#ff5d2a"
+                <input id="colorPicker" type="color" value="#000000"
                   aria-label="Pick draw and text color" aria-labelledby="colorLabel">
               </div>
 
@@ -1971,6 +2037,23 @@
         setStatus("Ready. Pick a page below and start creating your zine.", false);
       }
     }
+
+    // ── Theme toggle ───────────────────────────────────────────────
+    const themeToggle = document.getElementById("themeToggle");
+    const themeIcon   = themeToggle.querySelector("i");
+    const themeLabel  = themeToggle.querySelector(".btn-text");
+
+    function applyTheme(isLight) {
+      document.documentElement.classList.toggle("light-mode", isLight);
+      themeIcon.className  = isLight ? "fa-solid fa-moon" : "fa-solid fa-sun";
+      themeLabel.textContent = isLight ? "Dark" : "Light";
+      localStorage.setItem("zine-theme", isLight ? "light" : "dark");
+    }
+
+    applyTheme(localStorage.getItem("zine-theme") === "light");
+    themeToggle.addEventListener("click", () => {
+      applyTheme(!document.documentElement.classList.contains("light-mode"));
+    });
 
     init();
   </script>
