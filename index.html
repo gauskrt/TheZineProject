@@ -76,27 +76,42 @@
       color: var(--text);
     }
 
-    /* ── Tools panel (below editor) ──────────────────────────────── */
-    .sidebar {
-      padding: 16px 24px 20px;
-      border-top: 1px solid var(--line);
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.02), transparent 40%),
-        rgba(8,8,8,0.96);
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: flex-start;
+    /* ── Editor + tools side-by-side ────────────────────────────── */
+    .editor-tools-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 268px;
+      gap: 16px;
+      align-items: start;
     }
 
-    /* Each card expands equally in the row */
+    /* Tools column: sticky so it stays on screen while the canvas scrolls */
+    .sidebar {
+      position: sticky;
+      top: 16px;
+      max-height: calc(100vh - 32px);
+      overflow-y: auto;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      /* thin scrollbar */
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.12) transparent;
+    }
+    .sidebar::-webkit-scrollbar { width: 4px; }
+    .sidebar::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.14);
+      border-radius: 999px;
+    }
+
+    /* Cards inside the sticky column stack naturally */
     .sidebar .tool-group,
     .sidebar .info-card {
-      flex: 1 1 200px;
-      min-width: 190px;
-      margin-bottom: 0;
+      margin-bottom: 10px;
+      flex-shrink: 0;
     }
+    .sidebar .tool-group:last-child,
+    .sidebar .info-card:last-child { margin-bottom: 0; }
 
     /* ── Start guide steps ───────────────────────────────────────── */
     .start-guide {
@@ -693,7 +708,8 @@
     /* ── Responsive: mobile 768px ────────────────────────────────── */
     @media (max-width: 768px) {
       .workspace { padding: 12px; }
-      .sidebar { padding: 12px; }
+      .editor-tools-row { grid-template-columns: 1fr; }
+      .sidebar { padding: 12px; position: static; max-height: none; }
       .brand h1 { font-size: 2.2rem; }
 
       .editor-shell { width: 100%; padding: 10px; }
@@ -784,6 +800,9 @@
             <p class="scroll-hint" aria-hidden="true">← Swipe to see all 8 pages →</p>
           </div>
         </section>
+
+        <!-- Editor + tools side-by-side -->
+        <div class="editor-tools-row">
 
         <!-- Main editor -->
         <section class="panel" aria-label="Canvas editor">
@@ -967,6 +986,8 @@
           </details>
 
         </aside>
+
+        </div><!-- /.editor-tools-row -->
 
         <!-- Print preview (starts collapsed) -->
         <section class="panel" aria-label="Print layout preview">
@@ -1339,7 +1360,6 @@
 
       pageTitle.textContent   = `Page ${currentPageIndex + 1} / ${PAGE_COUNT}`;
       pageCounter.textContent = `Page ${currentPageIndex + 1} / ${PAGE_COUNT}`;
-      scrollToActiveThumbnail();
     }
 
     // ── History ────────────────────────────────────────────────────
@@ -1385,6 +1405,7 @@
       }, { once: true });
 
       updateThumbnailSelection();
+      scrollToActiveThumbnail();
       await loadCanvasState(pages[currentPageIndex].json);
       updateHistoryButtons();
       syncTextControlsFromSelection();
