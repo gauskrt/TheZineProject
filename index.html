@@ -785,15 +785,13 @@
   </div>
   <canvas id="cameraCaptureCanvas" class="visually-hidden" width="1280" height="720"></canvas>
 
-  <script>
-    const PAGE_COUNT = 8;
-    const PAGE_WIDTH = 300;
-    const PAGE_HEIGHT = 400;
-    const LAYOUT_WIDTH = 1200;
-    const LAYOUT_HEIGHT = 800;
-    const PREVIEW_DEBOUNCE_MS = 250;
-    const HISTORY_LIMIT = 60;
-    const SNAP_THRESHOLD = 8;
+  <script type="module">
+    import {
+      PAGE_COUNT, PAGE_WIDTH, PAGE_HEIGHT, LAYOUT_WIDTH, LAYOUT_HEIGHT,
+      PREVIEW_DEBOUNCE_MS, HISTORY_LIMIT, SNAP_THRESHOLD,
+      layoutSlots, parseState, calcImageScale, createBlankPage,
+      pushSnapshot, undoPage, redoPage, snapPosition
+    } from "./src/zine-core.js";
 
     const editorCanvas = new fabric.Canvas("editorCanvas", {
       width: PAGE_WIDTH,
@@ -850,34 +848,10 @@
     let cameraStream = null;
 
     const blankState = JSON.stringify(editorCanvas.toJSON());
-    const pages = Array.from({ length: PAGE_COUNT }, (_, index) => ({
-      json: blankState,
-      history: [blankState],
-      redo: [],
-      thumbnail: "",
-      label: "Page " + (index + 1)
-    }));
-
-    // Exact zine mapping for the printable imposition sheet.
-    // Top row is rotated 180 degrees: [5][4][3][2]
-    // Bottom row remains upright:      [6][7][8][1]
-    const layoutSlots = [
-      { page: 5, col: 0, row: 0, rotate: true },
-      { page: 4, col: 1, row: 0, rotate: true },
-      { page: 3, col: 2, row: 0, rotate: true },
-      { page: 2, col: 3, row: 0, rotate: true },
-      { page: 6, col: 0, row: 1, rotate: false },
-      { page: 7, col: 1, row: 1, rotate: false },
-      { page: 8, col: 2, row: 1, rotate: false },
-      { page: 1, col: 3, row: 1, rotate: false }
-    ];
+    const pages = Array.from({ length: PAGE_COUNT }, (_, index) => createBlankPage(index, blankState));
 
     function setStatus(message) {
       statusText.textContent = message;
-    }
-
-    function parseState(jsonString) {
-      return typeof jsonString === "string" ? JSON.parse(jsonString) : jsonString;
     }
 
     function getCurrentCanvasState() {
@@ -978,23 +952,14 @@
         return;
       }
 
-      const page = pages[currentPageIndex];
       const snapshot = getCurrentCanvasState();
-      const lastSnapshot = page.history[page.history.length - 1];
-      page.json = snapshot;
-
-      if (snapshot === lastSnapshot) {
-        updateHistoryButtons();
-        return;
-      }
-
-      page.history.push(snapshot);
-      if (page.history.length > HISTORY_LIMIT) {
-        page.history.shift();
-      }
-      page.redo = [];
+      const newPage = pushSnapshot(pages[currentPageIndex], snapshot);
+      const changed = newPage !== pages[currentPageIndex];
+      pages[currentPageIndex] = newPage;
       updateHistoryButtons();
-      scheduleCompositeRefresh();
+      if (changed) {
+        scheduleCompositeRefresh();
+      }
     }
 
     function loadCanvasState(stateString) {
@@ -1036,27 +1001,22 @@
     }
 
     async function undo() {
-      const page = pages[currentPageIndex];
-      if (page.history.length <= 1) {
+      const result = undoPage(pages[currentPageIndex]);
+      if (!result.state) {
         return;
       }
-
-      const currentState = page.history.pop();
-      page.redo.push(currentState);
-      const previousState = page.history[page.history.length - 1];
-      await restoreFromHistory(previousState);
+      pages[currentPageIndex] = result.page;
+      await restoreFromHistory(result.state);
       setStatus("Undo on page " + (currentPageIndex + 1) + ".");
     }
 
     async function redo() {
-      const page = pages[currentPageIndex];
-      if (!page.redo.length) {
+      const result = redoPage(pages[currentPageIndex]);
+      if (!result.state) {
         return;
       }
-
-      const restoredState = page.redo.pop();
-      page.history.push(restoredState);
-      await restoreFromHistory(restoredState);
+      pages[currentPageIndex] = result.page;
+      await restoreFromHistory(result.state);
       setStatus("Redo on page " + (currentPageIndex + 1) + ".");
     }
 
@@ -1105,9 +1065,7 @@
 
     async function addImageToEditor(dataUrl, indexOffset = 0) {
       const image = decorateObject(await createFabricImage(dataUrl));
-      const maxWidth = PAGE_WIDTH * 0.82;
-      const maxHeight = PAGE_HEIGHT * 0.82;
-      const scale = Math.min(maxWidth / image.width, maxHeight / image.height, 1);
+      const scale = calcImageScale(image.width, image.height, PAGE_WIDTH, PAGE_HEIGHT);
 
       image.set({
         left: PAGE_WIDTH / 2 + indexOffset * 10,
@@ -1367,11 +1325,12 @@
 
     function maybeSnapObject(target) {
       const center = target.getCenterPoint();
-      if (Math.abs(center.x - PAGE_WIDTH / 2) <= SNAP_THRESHOLD) {
-        target.setPositionByOrigin(new fabric.Point(PAGE_WIDTH / 2, center.y), "center", "center");
+      const snapped = snapPosition(center.x, center.y, PAGE_WIDTH, PAGE_HEIGHT);
+      if (snapped.x !== center.x) {
+        target.setPositionByOrigin(new fabric.Point(snapped.x, center.y), "center", "center");
       }
-      if (Math.abs(center.y - PAGE_HEIGHT / 2) <= SNAP_THRESHOLD) {
-        target.setPositionByOrigin(new fabric.Point(center.x, PAGE_HEIGHT / 2), "center", "center");
+      if (snapped.y !== center.y) {
+        target.setPositionByOrigin(new fabric.Point(center.x, snapped.y), "center", "center");
       }
     }
 
