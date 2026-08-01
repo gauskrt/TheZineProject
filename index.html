@@ -496,20 +496,12 @@
         </header>
 
         <!-- ── Compact horizontal toolbar ────────────────────────── -->
-        <div class="panel editor-toolbar" role="toolbar" aria-label="Drawing tools">
+        <div class="panel editor-toolbar" role="toolbar" aria-label="Editor tools">
 
           <!-- Tool mode -->
           <button id="selectTool" type="button" class="tool-btn"
             aria-label="Select and move objects (S)" title="Move — S">
             <i class="fa-solid fa-up-down-left-right" aria-hidden="true"></i>
-          </button>
-          <button id="drawTool" type="button" class="tool-btn"
-            aria-label="Freehand draw (D)" title="Draw — D">
-            <i class="fa-solid fa-pencil" aria-hidden="true"></i>
-          </button>
-          <button id="eraseTool" type="button" class="tool-btn"
-            aria-label="Erase (E)" title="Erase — E">
-            <i class="fa-solid fa-eraser" aria-hidden="true"></i>
           </button>
           <button id="textTool" type="button" class="tool-btn"
             aria-label="Insert text box (T)" title="Insert Text — T">
@@ -522,7 +514,7 @@
           <div class="toolbar-color-wrap">
             <div id="colorSwatch" class="toolbar-color-swatch"
               role="button" tabindex="0"
-              aria-label="Pick draw and text colour" title="Pick colour"
+              aria-label="Pick text colour" title="Pick colour"
               style="background:#000000;"></div>
             <span id="colorValue" class="toolbar-color-hex">#000000</span>
             <input id="colorPicker" class="toolbar-color-input" type="color" value="#000000"
@@ -531,13 +523,13 @@
 
           <div class="toolbar-divider" aria-hidden="true"></div>
 
-          <!-- Unified size slider (hidden when Move tool active) -->
+          <!-- Size slider — font size, shown only when Text tool active -->
           <div class="toolbar-slider-wrap" id="sizeSliderWrap" hidden>
-            <span class="toolbar-slider-label" id="sizeSliderLabel">Brush Size</span>
+            <span class="toolbar-slider-label" id="sizeSliderLabel">Font Size</span>
             <input id="sizeRange" type="range" class="toolbar-slider"
-              min="1" max="40" step="1" value="3"
-              aria-label="Brush or font size" aria-labelledby="sizeSliderLabel">
-            <span id="sizeRangeValue" class="toolbar-slider-value">3 px</span>
+              min="12" max="96" step="1" value="28"
+              aria-label="Text font size" aria-labelledby="sizeSliderLabel">
+            <span id="sizeRangeValue" class="toolbar-slider-value">28 px</span>
           </div>
 
           <div class="toolbar-divider" aria-hidden="true"></div>
@@ -676,8 +668,6 @@
       <table class="shortcuts-table" aria-label="Keyboard shortcut list">
         <tbody>
           <tr><td><kbd>S</kbd></td><td>Select / Move tool</td></tr>
-          <tr><td><kbd>D</kbd></td><td>Draw tool</td></tr>
-          <tr><td><kbd>E</kbd></td><td>Erase tool</td></tr>
           <tr><td><kbd>T</kbd></td><td>Insert text box</td></tr>
           <tr><td><kbd>1</kbd> – <kbd>9</kbd></td><td>Switch to page 1 – 9 (numeric)</td></tr>
           <tr><td><kbd>Ctrl</kbd> <kbd>Z</kbd></td><td>Undo</td></tr>
@@ -749,8 +739,6 @@
 
     const toolButtons = {
       select: document.getElementById("selectTool"),
-      draw:   document.getElementById("drawTool"),
-      erase:  document.getElementById("eraseTool"),
       text:   document.getElementById("textTool")
     };
 
@@ -770,7 +758,6 @@
     let refreshToken       = 0;
     let cameraStream       = null;
     let statusClearTimer   = null;
-    let brushSize          = 3;
     let fontSize           = 28;
 
     // ── Status ─────────────────────────────────────────────────────
@@ -909,46 +896,20 @@
     }
 
     function syncBrushAndTextControls() {
-      const brushColor = currentTool === "erase" ? "#ffffff" : colorPicker.value;
-      const brushWidth = currentTool === "erase" ? Math.max(brushSize * 2, 12) : brushSize;
-
-      editorCanvas.freeDrawingBrush = new fabric.PencilBrush(editorCanvas);
-      editorCanvas.freeDrawingBrush.color = brushColor;
-      editorCanvas.freeDrawingBrush.width = brushWidth;
-
       const textObj = getActiveTextObject();
       if (textObj) {
         textObj.set({ fill: colorPicker.value, fontSize });
         textObj.setCoords();
         editorCanvas.requestRenderAll();
       }
-
       updateReadouts();
     }
 
-    // Shows/hides the unified slider and configures it for the active tool
     function updateSliderForTool(tool) {
-      if (tool === "select") {
-        sizeSliderWrap.hidden = true;
-        return;
-      }
-      sizeSliderWrap.hidden = false;
+      sizeSliderWrap.hidden = (tool !== "text");
       if (tool === "text") {
-        sizeSliderLabel.textContent    = "Font Size";
-        sizeRange.min                  = "12";
-        sizeRange.max                  = "96";
-        sizeRange.step                 = "1";
-        sizeRange.value                = String(fontSize);
-        sizeRangeValue.textContent     = fontSize + " px";
-        sizeRange.setAttribute("aria-label", "Text font size");
-      } else {
-        sizeSliderLabel.textContent    = "Brush Size";
-        sizeRange.min                  = "1";
-        sizeRange.max                  = "40";
-        sizeRange.step                 = "1";
-        sizeRange.value                = String(brushSize);
-        sizeRangeValue.textContent     = brushSize + " px";
-        sizeRange.setAttribute("aria-label", "Brush and eraser size");
+        sizeRange.value            = String(fontSize);
+        sizeRangeValue.textContent = fontSize + " px";
       }
     }
 
@@ -958,19 +919,8 @@
         btn.classList.toggle("active", key === mode);
       });
 
-      const isDrawing = mode === "draw" || mode === "erase";
-      editorCanvas.isDrawingMode  = isDrawing;
-      editorCanvas.selection      = !isDrawing;
-      editorCanvas.skipTargetFind = isDrawing;
-
-      editorCanvas.forEachObject(obj => {
-        obj.selectable = !isDrawing;
-        obj.evented    = !isDrawing;
-      });
-
       updateSliderForTool(mode);
       syncBrushAndTextControls();
-      editorCanvas.requestRenderAll();
     }
 
     // ── Format switching ───────────────────────────────────────────
@@ -1490,8 +1440,6 @@
 
       switch (event.key) {
         case "s": case "S": applyEditorTool("select"); break;
-        case "d": case "D": applyEditorTool("draw");   break;
-        case "e": case "E": applyEditorTool("erase");  break;
         case "t": case "T": handleTextTool();           break;
         case "?":           openShortcutsModal();       break;
         default: {
@@ -1509,8 +1457,6 @@
 
       // Tool mode
       toolButtons.select.addEventListener("click", () => applyEditorTool("select"));
-      toolButtons.draw.addEventListener("click",   () => applyEditorTool("draw"));
-      toolButtons.erase.addEventListener("click",  () => applyEditorTool("erase"));
       toolButtons.text.addEventListener("click",   handleTextTool);
 
       undoBtn.addEventListener("click", undo);
@@ -1560,17 +1506,15 @@
         if (getActiveTextObject()) pushHistorySnapshot();
       });
 
-      // Unified size slider
+      // Font size slider (only visible in text mode)
       sizeRange.addEventListener("input", () => {
-        const val = parseInt(sizeRange.value, 10);
-        sizeRangeValue.textContent = val + " px";
-        if (currentTool === "text") fontSize = val;
-        else brushSize = val;
+        fontSize = parseInt(sizeRange.value, 10);
+        sizeRangeValue.textContent = fontSize + " px";
         syncBrushAndTextControls();
-        if (currentTool === "text" && getActiveTextObject()) scheduleCompositeRefresh();
+        if (getActiveTextObject()) scheduleCompositeRefresh();
       });
       sizeRange.addEventListener("change", () => {
-        if (currentTool === "text" && getActiveTextObject()) pushHistorySnapshot();
+        if (getActiveTextObject()) pushHistorySnapshot();
       });
 
       imageUpload.addEventListener("change", async e => {
@@ -1609,9 +1553,8 @@
       editorCanvas.on("object:added", e => { if (e.target) decorateObject(e.target); pushHistorySnapshot(); });
       editorCanvas.on("object:modified", pushHistorySnapshot);
       editorCanvas.on("object:removed",  pushHistorySnapshot);
-      editorCanvas.on("path:created",    scheduleCompositeRefresh);
       editorCanvas.on("object:moving", e => {
-        if (!e.target || editorCanvas.isDrawingMode) return;
+        if (!e.target) return;
         maybeSnapObject(e.target);
       });
       editorCanvas.on("selection:created", syncTextControlsFromSelection);
