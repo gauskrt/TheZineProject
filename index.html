@@ -47,7 +47,6 @@
     }
 
     * { box-sizing: border-box; }
-
     html, body { margin: 0; min-height: 100%; }
 
     body {
@@ -58,436 +57,225 @@
       font-family: "Space Grotesk", sans-serif;
     }
 
-    /* ── Skip link (accessibility) ───────────────────────────────── */
+    /* ── Skip link ───────────────────────────────────────────────── */
     .skip-link {
-      position: absolute;
-      top: -100px;
-      left: 12px;
-      z-index: 9999;
-      padding: 8px 16px;
-      background: var(--accent);
-      color: #fff;
-      border-radius: 0 0 10px 10px;
-      font-weight: 700;
-      text-decoration: none;
+      position: absolute; top: -100px; left: 12px; z-index: 9999;
+      padding: 8px 16px; background: var(--accent); color: #fff;
+      border-radius: 0 0 10px 10px; font-weight: 700; text-decoration: none;
       transition: top 0.1s;
     }
     .skip-link:focus { top: 0; outline: 3px solid #fff; outline-offset: 2px; }
 
-    /* ── Global focus ring ───────────────────────────────────────── */
-    *:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
-    }
+    *:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
     button, input, select, textarea { font: inherit; }
 
-    .app-shell {
-      display: block;
-    }
+    .app-shell { display: block; }
 
-    /* ── Brand in banner ─────────────────────────────────────────── */
-    .brand-inline h1 {
-      margin: 0;
-      font-family: "Bebas Neue", sans-serif;
-      font-size: 2.4rem;
-      line-height: 1;
-      letter-spacing: 0.08em;
-      color: var(--text);
-    }
+    /* ── Workspace ───────────────────────────────────────────────── */
+    .workspace { padding: 20px; }
+    .workspace-inner { max-width: 1220px; margin: 0 auto; display: grid; gap: 12px; }
 
-    /* ── Editor + tools side-by-side ────────────────────────────── */
-    .editor-tools-row {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 268px;
-      gap: 16px;
-      align-items: start;
-    }
-
-    /* Tools column: sticky so it stays on screen while the canvas scrolls */
-    .sidebar {
-      position: sticky;
-      top: 16px;
-      max-height: calc(100vh - 32px);
-      overflow-y: auto;
-      overflow-x: hidden;
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-      /* thin scrollbar */
-      scrollbar-width: thin;
-      scrollbar-color: rgba(255,255,255,0.12) transparent;
-    }
-    .sidebar::-webkit-scrollbar { width: 4px; }
-    .sidebar::-webkit-scrollbar-thumb {
-      background: rgba(255,255,255,0.14);
-      border-radius: 999px;
-    }
-
-    /* Cards inside the sticky column stack naturally */
-    .sidebar .tool-group,
-    .sidebar .info-card {
-      margin-bottom: 10px;
-      flex-shrink: 0;
-    }
-    .sidebar .tool-group:last-child,
-    .sidebar .info-card:last-child { margin-bottom: 0; }
-
-    /* ── Start guide steps ───────────────────────────────────────── */
-    .start-guide {
-      display: flex;
-      flex-direction: row;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-    .start-step {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 0.88rem;
-      color: var(--muted);
-    }
-    .step-num {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      background: var(--accent);
-      color: #fff;
-      font-size: 0.75rem;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
-
-    /* ── Tool groups ─────────────────────────────────────────────── */
-    .tool-group, .info-card, .panel {
+    /* ── Panels (card base) ──────────────────────────────────────── */
+    .panel {
       border: 1px solid var(--line);
       border-radius: var(--radius);
       background:
         linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)),
         rgba(12,12,12,0.98);
       box-shadow: var(--shadow);
+      overflow: hidden;
     }
-    .tool-group, .info-card { padding: 14px; margin-bottom: 12px; }
-
-    .tool-group h2, .info-card h2, .panel-header h3, .summary-title {
-      margin: 0;
-      font-size: 0.78rem;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--muted);
+    .panel-header {
+      padding: 12px 18px 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; flex-wrap: wrap;
     }
-
-    .tool-stack, .tool-grid, .asset-grid, .action-grid, .output-grid {
-      display: grid;
-      gap: 8px;
-      margin-top: 10px;
+    .panel-header h3 {
+      margin: 0; font-size: 0.78rem; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--muted);
     }
-    .tool-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .asset-grid, .action-grid, .output-grid { grid-template-columns: 1fr; }
-
-    /* ── Buttons ─────────────────────────────────────────────────── */
-    button, .file-label, input[type="color"], input[type="range"] {
-      width: 100%;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      background: var(--panel);
-      color: var(--text);
-      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
-    }
-    button, .file-label {
-      min-height: 44px;
-      padding: 10px 12px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      text-align: center;
-    }
-    button:hover, .file-label:hover {
-      transform: translateY(-1px);
-      border-color: rgba(255,93,42,0.72);
-      background: var(--panel-2);
-      box-shadow: 0 10px 24px rgba(0,0,0,0.24);
-    }
-    button:focus-visible, .file-label:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
-      border-color: var(--accent);
-    }
-    button.active {
-      background: linear-gradient(180deg, rgba(255,93,42,0.22), rgba(255,93,42,0.06));
-      border-color: rgba(255,93,42,0.84);
-      color: #fff3ee;
-    }
-    button:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
-    .file-input { display: none; }
-
-    /* ── Color + swatch ──────────────────────────────────────────── */
-    .control-block { margin-top: 10px; display: grid; gap: 6px; }
-    .control-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      color: var(--muted);
-      font-size: 0.88rem;
-    }
-    .control-label { font-size: 0.84rem; color: var(--muted); }
-    .color-readout { display: flex; align-items: center; gap: 6px; }
-    .color-swatch {
-      display: inline-block;
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      border: 1px solid rgba(255,255,255,0.2);
-      background: #000000;
-      flex-shrink: 0;
-    }
-
-    input[type="color"] { height: 46px; padding: 6px; cursor: pointer; }
-
-    /* ── Range slider ────────────────────────────────────────────── */
-    input[type="range"] {
-      appearance: none;
-      height: 42px;
-      padding: 0 12px;
-      background: var(--panel);
-      cursor: pointer;
-    }
-    input[type="range"]::-webkit-slider-runnable-track {
-      height: 6px;
-      background: rgba(255,255,255,0.12);
-      border-radius: 999px;
-    }
-    input[type="range"]::-webkit-slider-thumb {
-      appearance: none;
-      width: 20px;
-      height: 20px;
-      margin-top: -7px;
-      background: var(--accent);
-      border-radius: 50%;
-      border: none;
-      box-shadow: 0 0 0 3px rgba(255,93,42,0);
-      transition: box-shadow 0.15s;
-    }
-    input[type="range"]:hover::-webkit-slider-thumb,
-    input[type="range"]:focus::-webkit-slider-thumb {
-      box-shadow: 0 0 0 4px var(--accent-soft);
-    }
-
-    /* ── Info text ───────────────────────────────────────────────── */
-    .help-copy, .instruction-list, .preview-note, .editor-tip,
-    .thumb-meta, .camera-note, .summary-copy, .scroll-hint {
-      color: var(--muted);
-      font-size: 0.88rem;
-      line-height: 1.5;
-    }
-    .instruction-list {
-      margin: 10px 0 0;
-      padding-left: 18px;
-      display: grid;
-      gap: 6px;
-    }
-
-    /* ── How To Fold collapsible ─────────────────────────────────── */
-    .fold-guide { margin-bottom: 0; }
-    .fold-guide > summary {
-      list-style: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-    .fold-guide > summary::-webkit-details-marker { display: none; }
-    .fold-guide > summary .fold-chevron {
-      transition: transform 0.18s;
-      color: var(--muted);
-      font-size: 0.75rem;
-    }
-    .fold-guide[open] > summary .fold-chevron { transform: rotate(180deg); }
-
-    /* ── Workspace ───────────────────────────────────────────────── */
-    .workspace { padding: 24px; }
-    .workspace-inner { max-width: 1220px; margin: 0 auto; display: grid; gap: 16px; }
-
-    /* ── Start banner ────────────────────────────────────────────── */
-    .start-banner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      padding: 14px 20px;
-      flex-wrap: wrap;
-      overflow: visible;
-    }
-    .start-banner .brand-inline { flex-shrink: 0; }
-    .start-copy {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.9rem;
-      line-height: 1.5;
-    }
-    .start-copy .accent-icon { color: var(--accent); margin-right: 6px; }
-    kbd {
-      display: inline-block;
-      padding: 1px 6px;
-      border: 1px solid rgba(255,255,255,0.22);
-      border-radius: 5px;
-      font-family: monospace;
-      font-size: 0.82em;
-      background: rgba(255,255,255,0.07);
-      color: var(--text);
-    }
+    .panel-body { padding: 12px 16px; }
 
     /* ── Status pill ─────────────────────────────────────────────── */
     .status-pill {
-      padding: 8px 14px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--line);
-      color: var(--muted);
-      font-size: 0.88rem;
-      white-space: nowrap;
-      min-width: 120px;
-      text-align: center;
-      transition: opacity 0.4s;
+      padding: 6px 14px; border-radius: 999px;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--line);
+      color: var(--muted); font-size: 0.82rem; white-space: nowrap;
+      min-width: 100px; text-align: center; transition: opacity 0.4s;
     }
     .status-pill.fading { opacity: 0.35; }
 
-    /* ── Panel ───────────────────────────────────────────────────── */
-    .panel { overflow: hidden; }
-    .panel-header {
-      padding: 16px 20px 10px;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
+    /* ── App header ──────────────────────────────────────────────── */
+    .app-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 20px; flex-wrap: wrap;
     }
-    .panel-body { padding: 16px; }
-
-    /* ── Page counter ────────────────────────────────────────────── */
-    .page-counter {
-      font-size: 0.82rem;
-      color: var(--accent);
-      font-weight: 700;
-      letter-spacing: 0.04em;
+    .app-header h1 {
+      margin: 0; font-family: "Bebas Neue", sans-serif;
+      font-size: 2.2rem; line-height: 1; letter-spacing: 0.08em;
+      color: var(--text); flex-shrink: 0;
+    }
+    .header-right {
+      display: flex; align-items: center; gap: 8px;
+      margin-left: auto; flex-wrap: wrap;
     }
 
-    /* ── Thumbnails ──────────────────────────────────────────────── */
-    .thumbnail-strip {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px;
+    /* ── Format toggle pill ──────────────────────────────────────── */
+    .format-toggle {
+      display: inline-flex; border: 1px solid var(--line);
+      border-radius: 999px; overflow: hidden; background: var(--panel);
+      flex-shrink: 0;
     }
-    .scroll-hint {
-      display: none;
-      text-align: center;
-      margin-top: 8px;
-      font-size: 0.82rem;
+    .format-btn {
+      padding: 6px 16px; font-size: 0.82rem; font-weight: 600;
+      border: none; background: transparent; color: var(--muted);
+      cursor: pointer; min-height: 36px; width: auto; white-space: nowrap;
+      transition: background 0.15s, color 0.15s;
     }
-    .thumb-button {
-      position: relative;
-      padding: 8px;
-      min-height: auto;
-      align-items: stretch;
-      flex-direction: column;
-      gap: 6px;
-      border-radius: 14px;
+    .format-btn:first-child { border-radius: 999px 0 0 999px; }
+    .format-btn:last-child  { border-radius: 0 999px 999px 0; }
+    .format-btn.active { background: var(--accent); color: #fff; }
+    .format-btn:hover:not(.active) { background: var(--panel-2); color: var(--text); }
+    .format-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    /* ── Primary export button ───────────────────────────────────── */
+    .export-primary-btn {
+      background: var(--accent); border: 1px solid var(--accent); color: #fff;
+      border-radius: 999px; min-height: 36px; padding: 6px 18px;
+      font-weight: 700; font-size: 0.88rem; white-space: nowrap;
+      width: auto; flex-shrink: 0; cursor: pointer;
+      transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
     }
-    .thumb-button.active {
-      background: linear-gradient(180deg, rgba(255,93,42,0.18), rgba(255,93,42,0.05));
-      border-color: var(--accent);
+    .export-primary-btn:hover { background: #e04d22; border-color: #e04d22; transform: translateY(-1px); }
+    .export-primary-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+    .export-primary-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+    /* ── Theme toggle ────────────────────────────────────────────── */
+    .theme-toggle {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 6px; min-height: 36px; width: auto; padding: 6px 14px;
+      border-radius: 999px; font-size: 0.82rem; font-weight: 600;
+      white-space: nowrap; flex-shrink: 0;
     }
-    .thumb-preview {
+
+    /* ── Horizontal editor toolbar ───────────────────────────────── */
+    .editor-toolbar {
+      display: flex; align-items: center; gap: 4px;
+      padding: 8px 14px; overflow-x: auto;
+      -webkit-overflow-scrolling: touch; scrollbar-width: none;
+    }
+    .editor-toolbar::-webkit-scrollbar { display: none; }
+    .toolbar-divider {
+      width: 1px; height: 22px; background: var(--line);
+      flex-shrink: 0; margin: 0 6px;
+    }
+
+    /* ── Icon-only tool buttons ──────────────────────────────────── */
+    .tool-btn {
+      width: 36px; height: 36px; min-height: 36px; padding: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 10px; flex-shrink: 0; font-size: 0.95rem;
+      border: 1px solid var(--line); background: var(--panel);
+      color: var(--text); cursor: pointer;
+      transition: transform 0.15s, border-color 0.15s, background 0.15s, box-shadow 0.15s;
+    }
+    .tool-btn:hover {
+      border-color: rgba(255,93,42,0.6); background: var(--panel-2);
+      transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,0,0,0.22);
+    }
+    .tool-btn.active {
+      background: linear-gradient(180deg, rgba(255,93,42,0.22), rgba(255,93,42,0.06));
+      border-color: rgba(255,93,42,0.84); color: #fff3ee;
+    }
+    .tool-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .tool-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    /* ── Toolbar colour group ────────────────────────────────────── */
+    .toolbar-color-wrap { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .toolbar-color-swatch {
+      width: 24px; height: 24px; border-radius: 6px;
+      border: 2px solid rgba(255,255,255,0.2); cursor: pointer; flex-shrink: 0;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+    .toolbar-color-swatch:hover { transform: scale(1.12); border-color: rgba(255,93,42,0.7); }
+    .toolbar-color-swatch:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+    .toolbar-color-hex {
+      font-size: 0.78rem; color: var(--muted); min-width: 54px;
+      font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+    }
+    .toolbar-color-input { position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none; }
+
+    /* ── Toolbar size slider ─────────────────────────────────────── */
+    .toolbar-slider-wrap { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .toolbar-slider-label { font-size: 0.78rem; color: var(--muted); white-space: nowrap; min-width: 58px; }
+    .toolbar-slider { width: 88px; height: 36px; }
+    .toolbar-slider-value { font-size: 0.78rem; color: var(--muted); min-width: 32px; text-align: right; font-variant-numeric: tabular-nums; }
+
+    /* ── Buttons (base — used by camera / shortcuts modals) ──────── */
+    button, .file-label {
+      border: 1px solid var(--line); border-radius: 14px;
+      background: var(--panel); color: var(--text);
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+      min-height: 44px; padding: 10px 12px;
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 8px; cursor: pointer; font-weight: 600; text-align: center;
       width: 100%;
-      aspect-ratio: 3 / 4;
-      object-fit: cover;
-      border-radius: 8px;
-      border: 2px solid rgba(255,255,255,0.08);
-      background: #ffffff;
-      display: block;
+    }
+    button:hover, .file-label:hover {
+      transform: translateY(-1px); border-color: rgba(255,93,42,0.72);
+      background: var(--panel-2); box-shadow: 0 10px 24px rgba(0,0,0,0.24);
+    }
+    button:focus-visible, .file-label:focus-visible {
+      outline: 2px solid var(--accent); outline-offset: 2px; border-color: var(--accent);
+    }
+    button.active {
+      background: linear-gradient(180deg, rgba(255,93,42,0.22), rgba(255,93,42,0.06));
+      border-color: rgba(255,93,42,0.84); color: #fff3ee;
+    }
+    button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+    .file-input { display: none; }
+
+    /* Range slider ──────────────────────────────────────────────── */
+    input[type="range"] {
+      appearance: none; width: 100%; height: 36px; padding: 0 12px;
+      background: var(--panel); border: 1px solid var(--line);
+      border-radius: 14px; cursor: pointer;
       transition: border-color 0.18s;
     }
-    .thumb-button.active .thumb-preview { border-color: var(--accent); }
-
-    /* Empty page indicator */
-    .thumb-button.thumb-empty .thumb-preview { opacity: 0.55; }
-    .thumb-empty-label {
-      position: absolute;
-      top: 14px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.55);
-      color: var(--muted);
-      font-size: 0.7rem;
-      padding: 2px 8px;
-      border-radius: 999px;
-      pointer-events: none;
-      white-space: nowrap;
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 6px; background: rgba(255,255,255,0.12); border-radius: 999px;
     }
-
-    .thumb-label {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      font-size: 0.85rem;
-      color: var(--text);
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none; width: 20px; height: 20px; margin-top: -7px;
+      background: var(--accent); border-radius: 50%; border: none;
+      box-shadow: 0 0 0 3px rgba(255,93,42,0); transition: box-shadow 0.15s;
     }
-    .thumb-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 24px;
-      min-height: 24px;
-      padding: 0 6px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.08);
-      color: var(--muted);
-      font-size: 0.78rem;
+    input[type="range"]:hover::-webkit-slider-thumb,
+    input[type="range"]:focus::-webkit-slider-thumb { box-shadow: 0 0 0 4px var(--accent-soft); }
+
+    /* kbd ────────────────────────────────────────────────────────── */
+    kbd {
+      display: inline-block; padding: 1px 6px;
+      border: 1px solid rgba(255,255,255,0.22); border-radius: 5px;
+      font-family: monospace; font-size: 0.82em;
+      background: rgba(255,255,255,0.07); color: var(--text);
     }
 
-    /* ── Canvas stage ────────────────────────────────────────────── */
-    .canvas-stage { display: grid; gap: 16px; justify-items: center; }
-    .canvas-meta {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-    .canvas-meta strong { font-size: 1rem; }
-    .canvas-meta .page-counter-inline {
-      font-size: 0.82rem;
-      color: var(--accent);
-      font-weight: 700;
+    /* ── Canvas area ─────────────────────────────────────────────── */
+    .canvas-area {
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+      padding: 20px;
     }
 
     /* Editor shell with focus ring */
     .editor-shell {
-      width: fit-content;
-      max-width: 100%;
-      padding: 16px;
-      border-radius: 22px;
+      width: fit-content; max-width: 100%; padding: 16px; border-radius: 22px;
       background:
         linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01)),
         #141414;
-      border: 1px solid var(--line);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+      border: 1px solid var(--line); box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
       transition: border-color 0.2s, box-shadow 0.2s;
     }
     .editor-shell:focus-within {
@@ -495,322 +283,170 @@
       box-shadow: 0 0 0 3px var(--accent-soft), inset 0 1px 0 rgba(255,255,255,0.04);
     }
     .editor-shell.dragging {
-      border-color: rgba(255,93,42,0.85);
-      box-shadow: 0 0 0 5px var(--accent-soft);
+      border-color: rgba(255,93,42,0.85); box-shadow: 0 0 0 5px var(--accent-soft);
     }
 
-    /* Canvas wrapper with crosshair */
+    /* Canvas wrapper */
     .canvas-wrapper {
-      position: relative;
-      background: var(--canvas-bg);
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 14px 28px rgba(0,0,0,0.2);
+      position: relative; background: var(--canvas-bg);
+      border-radius: 12px; overflow: hidden; box-shadow: 0 14px 28px rgba(0,0,0,0.2);
     }
     .canvas-wrapper canvas { display: block; border-radius: 12px; }
-    .snap-guide {
-      position: absolute;
-      pointer-events: none;
-      opacity: 0.13;
-      background: #555;
-    }
+    .snap-guide { position: absolute; pointer-events: none; opacity: 0.13; background: #555; }
     .snap-guide-h { left: 0; right: 0; height: 1px; top: 50%; }
     .snap-guide-v { top: 0; bottom: 0; width: 1px; left: 50%; }
 
-    /* Page-switch fade animation */
-    @keyframes pageFadeIn {
-      from { opacity: 0.55; }
-      to   { opacity: 1; }
-    }
+    @keyframes pageFadeIn { from { opacity: 0.55; } to { opacity: 1; } }
     .canvas-wrapper.page-switching { animation: pageFadeIn 0.22s ease; }
 
-    .editor-tip {
-      color: var(--muted);
-      font-size: 0.86rem;
-      line-height: 1.5;
-      text-align: center;
+    /* Page status bar below canvas */
+    .page-statusbar {
+      width: 100%; max-width: 332px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .page-label { font-size: 0.9rem; font-weight: 600; color: var(--text); }
+    .clear-page-btn {
+      width: auto; min-height: 30px; padding: 4px 14px;
+      font-size: 0.8rem; border-radius: 8px;
     }
 
-    /* ── Preview section ─────────────────────────────────────────── */
-    .preview-details { border: none; margin: 0; padding: 0; }
-    .preview-details > summary {
-      list-style: none;
-      cursor: pointer;
-      padding: 16px 20px 10px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-    }
-    .preview-details > summary::-webkit-details-marker { display: none; }
-    .summary-left { display: grid; gap: 4px; }
-    .summary-copy { margin: 0; }
-    .summary-toggle {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 36px; height: 36px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--line);
-      transition: transform 0.18s;
-      flex-shrink: 0;
-    }
-    .preview-details[open] .summary-toggle { transform: rotate(180deg); }
+    /* ── Page counter ────────────────────────────────────────────── */
+    .page-counter { font-size: 0.82rem; color: var(--accent); font-weight: 700; letter-spacing: 0.04em; }
 
-    .preview-stage { padding: 16px; }
-    .preview-stage-canvas-wrap { position: relative; }
-    .preview-stage .canvas-wrapper,
-    .preview-stage .canvas-wrapper canvas {
-      width: 100% !important;
-      height: auto !important;
+    /* ── Thumbnail strip — 8 columns (wraps to 2 rows for 16 pages) */
+    .thumbnail-strip {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: 8px;
     }
-
-    /* Preview loading overlay */
-    .preview-loading {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0,0,0,0.45);
+    .thumb-button {
+      position: relative; padding: 6px; min-height: auto;
+      align-items: stretch; flex-direction: column; gap: 5px;
       border-radius: 12px;
-      color: var(--muted);
-      font-size: 0.9rem;
-      gap: 10px;
-      z-index: 2;
     }
-    .preview-loading[hidden] { display: none; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .preview-loading .spinner {
-      width: 18px; height: 18px;
-      border: 2px solid rgba(255,255,255,0.15);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+    .thumb-button.active {
+      background: linear-gradient(180deg, rgba(255,93,42,0.18), rgba(255,93,42,0.05));
+      border-color: var(--accent);
+    }
+    .thumb-preview {
+      width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 6px;
+      border: 2px solid rgba(255,255,255,0.08); background: #ffffff; display: block;
+      transition: border-color 0.18s;
+    }
+    .thumb-button.active .thumb-preview { border-color: var(--accent); }
+    .thumb-button.thumb-empty .thumb-preview { opacity: 0.55; }
+    .thumb-empty-label {
+      position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,0.55); color: var(--muted); font-size: 0.65rem;
+      padding: 2px 6px; border-radius: 999px; pointer-events: none; white-space: nowrap;
+    }
+    .thumb-label {
+      display: flex; align-items: center; justify-content: space-between; gap: 6px;
+      font-size: 0.78rem; color: var(--text);
+    }
+    .thumb-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 20px; min-height: 20px; padding: 0 4px; border-radius: 999px;
+      background: rgba(255,255,255,0.08); color: var(--muted); font-size: 0.72rem;
     }
 
-    /* Second export CTA + fold guide */
-    .preview-cta {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-top: 14px;
-      flex-wrap: wrap;
+    /* ── How-to-fold collapsible ─────────────────────────────────── */
+    .fold-guide { padding: 14px 20px; }
+    .fold-guide > summary {
+      list-style: none; cursor: pointer; display: flex;
+      align-items: center; justify-content: space-between; gap: 8px;
     }
-    .fold-steps {
-      font-size: 0.86rem;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-    .fold-steps strong { color: var(--text); }
-    .preview-cta .export-cta-btn {
-      white-space: nowrap;
-      min-width: 160px;
-      background: linear-gradient(180deg, rgba(255,93,42,0.22), rgba(255,93,42,0.08));
-      border-color: rgba(255,93,42,0.7);
-      color: #fff3ee;
-      flex-shrink: 0;
-    }
+    .fold-guide > summary::-webkit-details-marker { display: none; }
+    .fold-chevron { transition: transform 0.18s; color: var(--muted); font-size: 0.75rem; }
+    .fold-guide[open] > summary .fold-chevron { transform: rotate(180deg); }
 
     /* ── Camera modal ────────────────────────────────────────────── */
     .camera-modal {
-      position: fixed;
-      inset: 0;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      background: rgba(0,0,0,0.72);
-      backdrop-filter: blur(8px);
-      z-index: 50;
+      position: fixed; inset: 0; display: none; align-items: center;
+      justify-content: center; padding: 20px; background: rgba(0,0,0,0.72);
+      backdrop-filter: blur(8px); z-index: 50;
     }
     .camera-modal.open { display: flex; }
     .camera-card {
-      width: min(100%, 720px);
-      background: rgba(10,10,10,0.96);
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      overflow: hidden;
+      width: min(100%, 720px); background: rgba(10,10,10,0.96);
+      border: 1px solid var(--line); border-radius: 24px; overflow: hidden;
       box-shadow: var(--shadow);
     }
     .camera-head, .camera-body, .camera-actions { padding: 16px; }
     .camera-head { border-bottom: 1px solid rgba(255,255,255,0.06); }
     .camera-head h3 { margin: 0; font-size: 1rem; }
+    .camera-note { color: var(--muted); font-size: 0.88rem; margin: 4px 0 0; }
     .camera-frame {
-      width: 100%;
-      border-radius: 16px;
-      overflow: hidden;
-      background: #000;
-      border: 1px solid rgba(255,255,255,0.08);
+      width: 100%; border-radius: 16px; overflow: hidden;
+      background: #000; border: 1px solid rgba(255,255,255,0.08);
     }
     .camera-frame video { display: block; width: 100%; height: auto; }
     .camera-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
+      display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end;
       border-top: 1px solid rgba(255,255,255,0.06);
     }
     .camera-actions button { width: auto; min-width: 140px; }
 
     /* ── Shortcuts modal ─────────────────────────────────────────── */
     .shortcuts-modal {
-      position: fixed;
-      inset: 0;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      background: rgba(0,0,0,0.72);
-      backdrop-filter: blur(8px);
-      z-index: 60;
+      position: fixed; inset: 0; display: none; align-items: center;
+      justify-content: center; padding: 20px; background: rgba(0,0,0,0.72);
+      backdrop-filter: blur(8px); z-index: 60;
     }
     .shortcuts-modal.open { display: flex; }
     .shortcuts-card {
-      width: min(100%, 480px);
-      background: rgba(10,10,10,0.97);
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      overflow: hidden;
+      width: min(100%, 480px); background: rgba(10,10,10,0.97);
+      border: 1px solid var(--line); border-radius: 22px; overflow: hidden;
       box-shadow: var(--shadow);
     }
     .shortcuts-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 20px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.06);
     }
     .shortcuts-head h3 { margin: 0; font-size: 1rem; }
     .shortcuts-close {
-      width: 36px; height: 36px;
-      min-height: auto;
-      padding: 0;
-      border-radius: 50%;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1rem;
+      width: 36px; height: 36px; min-height: auto; padding: 0; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center; font-size: 1.1rem;
     }
     .shortcuts-table {
-      width: 100%;
-      border-collapse: collapse;
-      padding: 16px;
-      display: block;
+      width: 100%; border-collapse: collapse; padding: 16px; display: block;
     }
-    .shortcuts-table td {
-      padding: 7px 16px;
-      font-size: 0.9rem;
-      color: var(--muted);
-    }
+    .shortcuts-table td { padding: 7px 16px; font-size: 0.9rem; color: var(--muted); }
     .shortcuts-table tr td:first-child { color: var(--text); }
     .shortcuts-table tr:nth-child(odd) td { background: rgba(255,255,255,0.02); }
     .shortcuts-footer { padding: 12px 20px; border-top: 1px solid rgba(255,255,255,0.06); }
 
-    /* ── Accessibility helpers ───────────────────────────────────── */
+    /* ── Accessibility ───────────────────────────────────────────── */
     .visually-hidden {
-      position: absolute;
-      width: 1px; height: 1px;
-      margin: -1px; padding: 0;
-      overflow: hidden;
-      clip: rect(0,0,0,0);
-      border: 0;
-    }
-
-    /* ── Smaller controls in sidebar ────────────────────────────── */
-    .sidebar button, .sidebar .file-label {
-      min-height: 32px;
-      padding: 5px 10px;
-      font-size: 0.8rem;
-      gap: 6px;
-      border-radius: 10px;
-    }
-    .sidebar .tool-group, .sidebar .info-card { padding: 10px 12px; margin-bottom: 8px; }
-    .sidebar .tool-grid  { gap: 5px; }
-    .sidebar .asset-grid,
-    .sidebar .action-grid,
-    .sidebar .output-grid { gap: 5px; }
-    .sidebar input[type="color"] { height: 34px; padding: 4px; border-radius: 10px; }
-    .sidebar input[type="range"] { height: 32px; border-radius: 10px; }
-    .sidebar .control-block { margin-top: 7px; gap: 4px; }
-
-    /* ── Theme toggle ────────────────────────────────────────────── */
-    .theme-toggle {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      min-height: 36px;
-      width: auto;
-      padding: 6px 14px;
-      border-radius: 999px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-
-    /* ── Responsive: tablet 1080px ───────────────────────────────── */
-    @media (max-width: 1080px) {
-      .sidebar { padding: 14px 16px; gap: 10px; }
+      position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+      overflow: hidden; clip: rect(0,0,0,0); border: 0;
     }
 
     /* ── Responsive: mobile 768px ────────────────────────────────── */
     @media (max-width: 768px) {
-      .workspace { padding: 12px; }
-      .editor-tools-row { grid-template-columns: 1fr; }
-      .sidebar { padding: 12px; position: static; max-height: none; }
-      .brand h1 { font-size: 2.2rem; }
-
+      .workspace { padding: 10px; }
+      .app-header { padding: 10px 14px; gap: 8px; }
+      .app-header h1 { font-size: 1.8rem; }
+      .header-right { gap: 6px; }
+      .toolbar-color-hex { display: none; }
+      .toolbar-slider-label { display: none; }
+      .toolbar-slider { width: 68px; }
       .editor-shell { width: 100%; padding: 10px; }
       .editor-shell .canvas-wrapper,
-      .editor-shell .canvas-wrapper canvas {
-        width: 100% !important;
-        height: auto !important;
-      }
-
+      .editor-shell .canvas-wrapper canvas { width: 100% !important; height: auto !important; }
       .thumbnail-strip {
-        display: flex;
-        gap: 8px;
-        overflow-x: auto;
-        padding-bottom: 6px;
-        scroll-snap-type: x proximity;
-        -webkit-overflow-scrolling: touch;
+        display: flex; overflow-x: auto; gap: 6px; padding-bottom: 4px;
+        -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity;
       }
       .thumbnail-strip::-webkit-scrollbar { height: 4px; }
       .thumbnail-strip::-webkit-scrollbar-thumb {
-        background: rgba(255,255,255,0.14);
-        border-radius: 999px;
+        background: rgba(255,255,255,0.14); border-radius: 999px;
       }
-      .thumb-button {
-        min-width: 110px;
-        flex: 0 0 110px;
-        scroll-snap-align: start;
-      }
-      .scroll-hint { display: block; }
-
-      .panel-header, .panel-body, .preview-stage {
-        padding-left: 12px;
-        padding-right: 12px;
-      }
-
+      .thumb-button { min-width: 90px; flex: 0 0 90px; scroll-snap-align: start; }
       .camera-actions { justify-content: stretch; }
       .camera-actions button { width: 100%; }
-
-      .preview-cta { flex-direction: column; }
-      .preview-cta .export-cta-btn { width: 100%; }
     }
 
-    /* ── Responsive: icon-only buttons at 480px ──────────────────── */
-    @media (max-width: 480px) {
-      .tool-grid .btn-text { display: none; }
-      .tool-grid button { justify-content: center; padding: 10px 8px; }
-    }
-
-    /* ── Tiny screen canvas constraint ──────────────────────────── */
     @media (max-width: 340px) {
       .canvas-wrapper { width: 100%; }
       .canvas-wrapper canvas { width: 100% !important; height: auto !important; }
@@ -821,31 +457,163 @@
   <a class="skip-link" href="#editorCanvas">Skip to editor</a>
 
   <div class="app-shell">
-    <!-- ── Main workspace ──────────────────────────────────────── -->
     <main class="workspace">
       <div class="workspace-inner">
 
-        <!-- Header banner with brand + status -->
-        <section class="panel start-banner" aria-label="App status">
-          <div class="brand-inline">
-            <h1>Booklet Maker</h1>
+        <!-- ── App header ─────────────────────────────────────────── -->
+        <header class="panel app-header" aria-label="App header">
+          <h1>Booklet Maker</h1>
+
+          <div id="statusText" class="status-pill"
+            role="status" aria-live="polite" aria-atomic="true">Ready.</div>
+
+          <div class="header-right">
+            <!-- Format toggle -->
+            <div class="format-toggle" role="group" aria-label="Paper format">
+              <button id="formatA4" type="button" class="format-btn active"
+                aria-pressed="true" title="A4 paper — 8 pages per booklet">
+                A4 · 8 pages
+              </button>
+              <button id="formatA2" type="button" class="format-btn"
+                aria-pressed="false" title="A2 paper — 16 pages per booklet">
+                A2 · 16 pages
+              </button>
+            </div>
+
+            <!-- Theme toggle -->
+            <button id="themeToggle" type="button" class="theme-toggle"
+              aria-label="Toggle dark / light mode" title="Toggle dark / light mode">
+              <i class="fa-solid fa-sun" aria-hidden="true"></i>
+              <span class="btn-text">Light</span>
+            </button>
+
+            <!-- Primary export CTA -->
+            <button id="exportPdfBtn" type="button" class="export-primary-btn"
+              aria-label="Export PDF" title="Export all pages as a print-ready PDF">
+              <i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i> Export PDF
+            </button>
           </div>
-          <p class="start-copy">
-            <i class="fa-solid fa-circle-info accent-icon" aria-hidden="true"></i>
-            Edit each of your 8 pages, then export as a print-ready A4 PDF. Press <kbd>?</kbd> for shortcuts.
-            Work saves automatically.
-          </p>
-          <div id="statusText" class="status-pill" role="status" aria-live="polite" aria-atomic="true">
-            Ready.
-          </div>
-          <button id="themeToggle" type="button" class="theme-toggle"
-            aria-label="Toggle dark / light mode" title="Toggle dark / light mode">
-            <i class="fa-solid fa-sun" aria-hidden="true"></i>
-            <span class="btn-text">Light</span>
+        </header>
+
+        <!-- ── Compact horizontal toolbar ────────────────────────── -->
+        <div class="panel editor-toolbar" role="toolbar" aria-label="Drawing tools">
+
+          <!-- Tool mode -->
+          <button id="selectTool" type="button" class="tool-btn"
+            aria-label="Select and move objects (S)" title="Move — S">
+            <i class="fa-solid fa-up-down-left-right" aria-hidden="true"></i>
           </button>
+          <button id="drawTool" type="button" class="tool-btn"
+            aria-label="Freehand draw (D)" title="Draw — D">
+            <i class="fa-solid fa-pencil" aria-hidden="true"></i>
+          </button>
+          <button id="eraseTool" type="button" class="tool-btn"
+            aria-label="Erase (E)" title="Erase — E">
+            <i class="fa-solid fa-eraser" aria-hidden="true"></i>
+          </button>
+          <button id="textTool" type="button" class="tool-btn"
+            aria-label="Insert text box (T)" title="Insert Text — T">
+            <i class="fa-solid fa-font" aria-hidden="true"></i>
+          </button>
+
+          <div class="toolbar-divider" aria-hidden="true"></div>
+
+          <!-- Colour picker -->
+          <div class="toolbar-color-wrap">
+            <div id="colorSwatch" class="toolbar-color-swatch"
+              role="button" tabindex="0"
+              aria-label="Pick draw and text colour" title="Pick colour"
+              style="background:#000000;"></div>
+            <span id="colorValue" class="toolbar-color-hex">#000000</span>
+            <input id="colorPicker" class="toolbar-color-input" type="color" value="#000000"
+              aria-hidden="true" tabindex="-1">
+          </div>
+
+          <div class="toolbar-divider" aria-hidden="true"></div>
+
+          <!-- Unified size slider (hidden when Move tool active) -->
+          <div class="toolbar-slider-wrap" id="sizeSliderWrap" hidden>
+            <span class="toolbar-slider-label" id="sizeSliderLabel">Brush Size</span>
+            <input id="sizeRange" type="range" class="toolbar-slider"
+              min="1" max="40" step="1" value="3"
+              aria-label="Brush or font size" aria-labelledby="sizeSliderLabel">
+            <span id="sizeRangeValue" class="toolbar-slider-value">3 px</span>
+          </div>
+
+          <div class="toolbar-divider" aria-hidden="true"></div>
+
+          <!-- Upload image -->
+          <label class="tool-btn" for="imageUpload"
+            title="Upload image from device" aria-label="Upload image">
+            <i class="fa-solid fa-image" aria-hidden="true"></i>
+          </label>
+          <input id="imageUpload" class="file-input" type="file" accept="image/*" multiple
+            aria-label="Upload images">
+
+          <!-- Camera -->
+          <button id="cameraBtn" type="button" class="tool-btn"
+            title="Take photo" aria-label="Take photo with camera">
+            <i class="fa-solid fa-camera" aria-hidden="true"></i>
+          </button>
+          <input id="cameraFallbackInput" class="file-input" type="file"
+            accept="image/*" capture="environment" aria-label="Camera photo fallback">
+
+          <div class="toolbar-divider" aria-hidden="true"></div>
+
+          <!-- Undo / Redo -->
+          <button id="undoBtn" type="button" class="tool-btn"
+            title="Undo (Ctrl+Z)" aria-label="Undo last action">
+            <i class="fa-solid fa-rotate-left" aria-hidden="true"></i>
+          </button>
+          <button id="redoBtn" type="button" class="tool-btn"
+            title="Redo (Ctrl+Y)" aria-label="Redo last undone action">
+            <i class="fa-solid fa-rotate-right" aria-hidden="true"></i>
+          </button>
+
+          <div class="toolbar-divider" aria-hidden="true"></div>
+
+          <!-- Save / Load -->
+          <button id="saveProjectBtn" type="button" class="tool-btn"
+            title="Save project as JSON" aria-label="Save project">
+            <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>
+          </button>
+          <label class="tool-btn" for="loadProjectInput"
+            title="Load project from JSON" aria-label="Load project">
+            <i class="fa-solid fa-folder-open" aria-hidden="true"></i>
+          </label>
+          <input id="loadProjectInput" class="file-input" type="file" accept=".json"
+            aria-label="Load project from JSON file">
+
+          <div class="toolbar-divider" aria-hidden="true"></div>
+
+          <!-- Shortcuts help -->
+          <button id="shortcutsBtn" type="button" class="tool-btn"
+            title="Keyboard shortcuts (?)" aria-label="Show keyboard shortcuts">
+            <i class="fa-solid fa-keyboard" aria-hidden="true"></i>
+          </button>
+
+        </div><!-- /.editor-toolbar -->
+
+        <!-- ── Canvas area ────────────────────────────────────────── -->
+        <section class="panel canvas-area" aria-label="Canvas editor">
+          <div id="editorShell" class="editor-shell">
+            <div class="canvas-wrapper" id="canvasWrapper">
+              <canvas id="editorCanvas" width="300" height="400"></canvas>
+              <div class="snap-guide snap-guide-h" aria-hidden="true"></div>
+              <div class="snap-guide snap-guide-v" aria-hidden="true"></div>
+            </div>
+          </div>
+          <div class="page-statusbar">
+            <span id="pageTitle" class="page-label">Page 1 / 8</span>
+            <button id="clearCanvas" type="button" class="clear-page-btn"
+              aria-label="Clear all content on current page"
+              title="Clear this page — you can undo">
+              <i class="fa-solid fa-trash-can" aria-hidden="true"></i> Clear Page
+            </button>
+          </div>
         </section>
 
-        <!-- Pages / thumbnail strip -->
+        <!-- ── Page navigation / thumbnail strip ─────────────────── -->
         <section class="panel" aria-label="Page navigation">
           <div class="panel-header">
             <h3>Pages</h3>
@@ -853,244 +621,21 @@
           </div>
           <div class="panel-body">
             <div id="thumbnailStrip" class="thumbnail-strip"
-              role="tablist"
-              aria-label="Switch between the 8 zine pages"></div>
-            <p class="scroll-hint" aria-hidden="true">← Swipe to see all 8 pages →</p>
+              role="tablist" aria-label="Switch between zine pages"></div>
           </div>
         </section>
 
-        <!-- Editor + tools side-by-side -->
-        <div class="editor-tools-row">
-
-        <!-- Main editor -->
-        <section class="panel" aria-label="Canvas editor">
-          <div class="panel-header">
-            <h3>Main Editor</h3>
-            <span class="preview-note">Drag &amp; drop images · snap-to-center while moving · <kbd>S</kbd> <kbd>D</kbd> <kbd>E</kbd> <kbd>T</kbd> shortcuts</span>
-          </div>
-          <div class="panel-body">
-            <div class="canvas-stage">
-              <div class="canvas-meta">
-                <strong id="pageTitle">Page 1 / 8</strong>
-                <span class="preview-note">Move mode: resize and rotate selected items.</span>
-              </div>
-              <div id="editorShell" class="editor-shell">
-                <div class="canvas-wrapper" id="canvasWrapper">
-                  <canvas id="editorCanvas" width="300" height="400"></canvas>
-                  <div class="snap-guide snap-guide-h" aria-hidden="true"></div>
-                  <div class="snap-guide snap-guide-v" aria-hidden="true"></div>
-                </div>
-              </div>
-              <p class="editor-tip">
-                Tip: press <kbd>T</kbd> to insert a text box · drag images from your desktop · objects snap to centre.
-              </p>
-              <details class="fold-guide how-to-image-details" style="width:100%;margin-top:10px;">
-                <summary>
-                  <h3 style="display:inline;font-size:0.78rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);font-weight:500;">How to Fold Reference</h3>
-                  <i class="fa-solid fa-chevron-down fold-chevron" aria-hidden="true"></i>
-                </summary>
-                <img src="images/how_to.jpg" alt="Zine folding instructions diagram"
-                  style="display:block;width:100%;max-width:420px;margin:10px auto 0;border-radius:12px;border:1px solid var(--line);">
-              </details>
-            </div>
-          </div>
-        </section>
-
-        <!-- ── Tools panel (below editor) ───────────────────────── -->
-        <aside class="sidebar" aria-label="Tools and settings">
-
-          <section class="tool-group" aria-label="Edit tools">
-            <h2>Edit Tools</h2>
-            <div class="tool-grid">
-              <button id="selectTool" type="button"
-                aria-label="Select and move objects (S)"
-                title="Select and move objects — press S">
-                <i class="fa-solid fa-up-down-left-right" aria-hidden="true"></i>
-                <span class="btn-text">Move</span>
-              </button>
-              <button id="drawTool" type="button"
-                aria-label="Freehand draw (D)"
-                title="Freehand draw — press D">
-                <i class="fa-solid fa-pencil" aria-hidden="true"></i>
-                <span class="btn-text">Draw</span>
-              </button>
-              <button id="eraseTool" type="button"
-                aria-label="Erase (E)"
-                title="Erase — press E">
-                <i class="fa-solid fa-eraser" aria-hidden="true"></i>
-                <span class="btn-text">Erase</span>
-              </button>
-              <button id="textTool" type="button"
-                aria-label="Insert text box (T)"
-                title="Insert text box — press T">
-                <i class="fa-solid fa-font" aria-hidden="true"></i>
-                <span class="btn-text">Insert Text</span>
-              </button>
-            </div>
-          </section>
-
-          <section class="tool-group" aria-label="Assets and style">
-            <h2>Assets</h2>
-            <div class="asset-grid">
-              <label class="file-label" for="imageUpload"
-                title="Upload images from your device">
-                <i class="fa-solid fa-image" aria-hidden="true"></i> Upload Images
-              </label>
-              <input id="imageUpload" class="file-input" type="file" accept="image/*" multiple
-                aria-label="Upload images">
-
-              <button id="cameraBtn" type="button"
-                aria-label="Take a photo with your camera"
-                title="Take a photo with your camera">
-                <i class="fa-solid fa-camera" aria-hidden="true"></i> Take Photo
-              </button>
-              <input id="cameraFallbackInput" class="file-input" type="file" accept="image/*" capture="environment"
-                aria-label="Camera photo fallback">
-
-              <div class="control-block">
-                <div class="control-row">
-                  <span class="control-label" id="colorLabel">Color</span>
-                  <span class="color-readout">
-                    <span id="colorSwatch" class="color-swatch" aria-hidden="true"></span>
-                    <span id="colorValue">#000000</span>
-                  </span>
-                </div>
-                <input id="colorPicker" type="color" value="#000000"
-                  aria-label="Pick draw and text color" aria-labelledby="colorLabel">
-              </div>
-
-              <div class="control-block">
-                <div class="control-row">
-                  <span class="control-label" id="brushLabel">Brush Size</span>
-                  <span id="brushSizeValue">3 px</span>
-                </div>
-                <input id="brushSizeRange" type="range" min="1" max="40" step="1" value="3"
-                  aria-label="Brush and eraser size" aria-labelledby="brushLabel">
-              </div>
-
-              <div class="control-block">
-                <div class="control-row">
-                  <span class="control-label" id="fontLabel">Text Size</span>
-                  <span id="fontSizeValue">28 px</span>
-                </div>
-                <input id="fontSizeRange" type="range" min="12" max="96" step="1" value="28"
-                  aria-label="Text font size" aria-labelledby="fontLabel">
-              </div>
-            </div>
-          </section>
-
-          <section class="tool-group" aria-label="Edit actions">
-            <h2>Actions</h2>
-            <div class="action-grid">
-              <button id="undoBtn" type="button"
-                aria-label="Undo last action (Ctrl+Z)"
-                title="Undo — Ctrl+Z">
-                <i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Undo
-              </button>
-              <button id="redoBtn" type="button"
-                aria-label="Redo last undone action (Ctrl+Y)"
-                title="Redo — Ctrl+Y">
-                <i class="fa-solid fa-rotate-right" aria-hidden="true"></i> Redo
-              </button>
-              <button id="clearCanvas" type="button"
-                aria-label="Clear all content on current page"
-                title="Clear this page (you can undo)">
-                <i class="fa-solid fa-trash-can" aria-hidden="true"></i> Clear Page
-              </button>
-            </div>
-          </section>
-
-          <section class="tool-group" aria-label="Project save and load">
-            <h2>Project</h2>
-            <div class="action-grid">
-              <button id="saveProjectBtn" type="button"
-                title="Download all 8 pages as a .json file"
-                aria-label="Save project to a JSON file">
-                <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Save Project
-              </button>
-              <label class="file-label" for="loadProjectInput"
-                title="Load a previously saved .json project file">
-                <i class="fa-solid fa-folder-open" aria-hidden="true"></i> Load Project
-              </label>
-              <input id="loadProjectInput" class="file-input" type="file" accept=".json"
-                aria-label="Load project from JSON file">
-            </div>
-          </section>
-
-          <section class="tool-group" aria-label="Output and export">
-            <h2>Output</h2>
-            <div class="output-grid">
-              <button id="previewDrawBtn" type="button"
-                title="Annotate the print preview without changing any page"
-                aria-label="Toggle annotation mode on the print preview">
-                <i class="fa-solid fa-pen-ruler" aria-hidden="true"></i> Annotate Print Preview
-              </button>
-              <button id="exportPdfBtn" type="button"
-                title="Export all 8 pages as a print-ready A4 PDF"
-                aria-label="Export PDF">
-                <i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i> Export PDF
-              </button>
-              <button id="shortcutsBtn" type="button"
-                title="Show keyboard shortcuts (?)"
-                aria-label="Show keyboard shortcuts">
-                <i class="fa-solid fa-keyboard" aria-hidden="true"></i> Shortcuts <kbd>?</kbd>
-              </button>
-            </div>
-          </section>
-
-          <details class="info-card fold-guide">
-            <summary>
-              <h2 style="display:inline">How To Fold</h2>
-              <i class="fa-solid fa-chevron-down fold-chevron" aria-hidden="true"></i>
-            </summary>
-            <ol class="instruction-list">
-              <li>Print the exported PDF.</li>
-              <li>Fold the sheet lengthwise.</li>
-              <li>Cut the center slit on the fold.</li>
-              <li>Push the ends together and fold into a booklet.</li>
-            </ol>
-          </details>
-
-        </aside>
-
-        </div><!-- /.editor-tools-row -->
-
-        <!-- Print preview (starts collapsed) -->
-        <section class="panel" aria-label="Print layout preview">
-          <details id="previewDetails" class="preview-details">
-            <summary>
-              <div class="summary-left">
-                <span class="summary-title">Live Print Layout Preview</span>
-                <p class="summary-copy">Top row inverted 180°: [5][4][3][2] · Bottom row upright: [6][7][8][1].</p>
-              </div>
-              <span class="summary-toggle" aria-hidden="true">
-                <i class="fa-solid fa-chevron-down"></i>
-              </span>
-            </summary>
-            <div class="preview-stage">
-              <div class="preview-stage-canvas-wrap">
-                <div class="canvas-wrapper">
-                  <canvas id="previewCanvas" width="900" height="600"></canvas>
-                </div>
-                <div id="previewLoading" class="preview-loading" hidden aria-live="polite">
-                  <div class="spinner" aria-hidden="true"></div>
-                  <span>Rendering preview…</span>
-                </div>
-              </div>
-              <div class="preview-cta">
-                <div class="fold-steps">
-                  <strong>To fold after printing:</strong>
-                  fold lengthwise → cut centre slit → push ends together → fold into booklet.
-                </div>
-                <button id="exportPdfBtn2" type="button" class="export-cta-btn"
-                  aria-label="Export PDF"
-                  title="Export all 8 pages as a print-ready A4 PDF">
-                  <i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i> Export PDF
-                </button>
-              </div>
-            </div>
-          </details>
-        </section>
+        <!-- ── How to fold reference (collapsible) ────────────────── -->
+        <details class="panel fold-guide">
+          <summary>
+            <h3 style="display:inline;font-size:0.78rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);font-weight:500;">
+              How to Fold Reference
+            </h3>
+            <i class="fa-solid fa-chevron-down fold-chevron" aria-hidden="true"></i>
+          </summary>
+          <img src="images/how_to.jpg" alt="Zine folding instructions diagram"
+            style="display:block;width:100%;max-width:480px;margin:12px auto 0;border-radius:12px;border:1px solid var(--line);">
+        </details>
 
       </div>
     </main>
@@ -1134,7 +679,7 @@
           <tr><td><kbd>D</kbd></td><td>Draw tool</td></tr>
           <tr><td><kbd>E</kbd></td><td>Erase tool</td></tr>
           <tr><td><kbd>T</kbd></td><td>Insert text box</td></tr>
-          <tr><td><kbd>1</kbd> – <kbd>8</kbd></td><td>Switch to page 1 – 8</td></tr>
+          <tr><td><kbd>1</kbd> – <kbd>9</kbd></td><td>Switch to page 1 – 9 (numeric)</td></tr>
           <tr><td><kbd>Ctrl</kbd> <kbd>Z</kbd></td><td>Undo</td></tr>
           <tr><td><kbd>Ctrl</kbd> <kbd>Y</kbd></td><td>Redo</td></tr>
           <tr><td><kbd>?</kbd></td><td>Show / hide this panel</td></tr>
@@ -1152,64 +697,55 @@
 
   <script type="module">
     import {
-      PAGE_COUNT, PAGE_WIDTH, PAGE_HEIGHT, LAYOUT_WIDTH, LAYOUT_HEIGHT,
+      createZineConfig,
       PREVIEW_DEBOUNCE_MS, SNAP_THRESHOLD,
-      layoutSlots, parseState, calcImageScale, createBlankPage,
+      parseState, calcImageScale, createBlankPage,
       pushSnapshot, undoPage, redoPage, snapPosition
     } from "./src/zine-core.js";
 
-    // ── Canvas setup ───────────────────────────────────────────────
+    // ── Canvas setup (300×400 matches both format variants per-page) ──
     const editorCanvas = new fabric.Canvas("editorCanvas", {
-      width: PAGE_WIDTH,
-      height: PAGE_HEIGHT,
+      width: 300,
+      height: 400,
       backgroundColor: "#ffffff",
       preserveObjectStacking: true,
       selection: true
     });
 
-    const previewCanvas = new fabric.Canvas("previewCanvas", {
-      width: 900,
-      height: 600,
-      backgroundColor: "#0f0f0f",
-      preserveObjectStacking: true,
-      selection: false
-    });
-
     // ── DOM refs ───────────────────────────────────────────────────
-    const statusText        = document.getElementById("statusText");
-    const pageTitle         = document.getElementById("pageTitle");
-    const pageCounter       = document.getElementById("pageCounter");
-    const thumbnailStrip    = document.getElementById("thumbnailStrip");
-    const editorShell       = document.getElementById("editorShell");
-    const canvasWrapper     = document.getElementById("canvasWrapper");
-    const imageUpload       = document.getElementById("imageUpload");
-    const cameraBtn         = document.getElementById("cameraBtn");
+    const statusText          = document.getElementById("statusText");
+    const pageTitle           = document.getElementById("pageTitle");
+    const pageCounter         = document.getElementById("pageCounter");
+    const thumbnailStrip      = document.getElementById("thumbnailStrip");
+    const editorShell         = document.getElementById("editorShell");
+    const canvasWrapper       = document.getElementById("canvasWrapper");
+    const imageUpload         = document.getElementById("imageUpload");
+    const cameraBtn           = document.getElementById("cameraBtn");
     const cameraFallbackInput = document.getElementById("cameraFallbackInput");
-    const colorPicker       = document.getElementById("colorPicker");
-    const colorValue        = document.getElementById("colorValue");
-    const colorSwatch       = document.getElementById("colorSwatch");
-    const fontSizeRange     = document.getElementById("fontSizeRange");
-    const fontSizeValue     = document.getElementById("fontSizeValue");
-    const brushSizeRange    = document.getElementById("brushSizeRange");
-    const brushSizeValue    = document.getElementById("brushSizeValue");
-    const undoBtn           = document.getElementById("undoBtn");
-    const redoBtn           = document.getElementById("redoBtn");
-    const previewDrawBtn    = document.getElementById("previewDrawBtn");
-    const exportPdfBtn      = document.getElementById("exportPdfBtn");
-    const exportPdfBtn2     = document.getElementById("exportPdfBtn2");
-    const previewDetails    = document.getElementById("previewDetails");
-    const previewLoading    = document.getElementById("previewLoading");
-    const cameraModal       = document.getElementById("cameraModal");
-    const cameraFeed        = document.getElementById("cameraFeed");
-    const capturePhotoBtn   = document.getElementById("capturePhotoBtn");
-    const cancelCameraBtn   = document.getElementById("cancelCameraBtn");
+    const colorPicker         = document.getElementById("colorPicker");
+    const colorValue          = document.getElementById("colorValue");
+    const colorSwatch         = document.getElementById("colorSwatch");
+    const sizeSliderWrap      = document.getElementById("sizeSliderWrap");
+    const sizeSliderLabel     = document.getElementById("sizeSliderLabel");
+    const sizeRange           = document.getElementById("sizeRange");
+    const sizeRangeValue      = document.getElementById("sizeRangeValue");
+    const undoBtn             = document.getElementById("undoBtn");
+    const redoBtn             = document.getElementById("redoBtn");
+    const exportPdfBtn        = document.getElementById("exportPdfBtn");
+    const formatA4Btn         = document.getElementById("formatA4");
+    const formatA2Btn         = document.getElementById("formatA2");
+    const themeToggle         = document.getElementById("themeToggle");
+    const cameraModal         = document.getElementById("cameraModal");
+    const cameraFeed          = document.getElementById("cameraFeed");
+    const capturePhotoBtn     = document.getElementById("capturePhotoBtn");
+    const cancelCameraBtn     = document.getElementById("cancelCameraBtn");
     const cameraCaptureCanvas = document.getElementById("cameraCaptureCanvas");
-    const shortcutsModal    = document.getElementById("shortcutsModal");
-    const shortcutsBtn      = document.getElementById("shortcutsBtn");
-    const closeShortcutsBtn = document.getElementById("closeShortcutsBtn");
+    const shortcutsModal      = document.getElementById("shortcutsModal");
+    const shortcutsBtn        = document.getElementById("shortcutsBtn");
+    const closeShortcutsBtn   = document.getElementById("closeShortcutsBtn");
     const closeShortcutsFooterBtn = document.getElementById("closeShortcutsFooterBtn");
-    const saveProjectBtn    = document.getElementById("saveProjectBtn");
-    const loadProjectInput  = document.getElementById("loadProjectInput");
+    const saveProjectBtn      = document.getElementById("saveProjectBtn");
+    const loadProjectInput    = document.getElementById("loadProjectInput");
 
     const toolButtons = {
       select: document.getElementById("selectTool"),
@@ -1218,23 +754,26 @@
       text:   document.getElementById("textTool")
     };
 
-    // ── State ──────────────────────────────────────────────────────
+    // ── Format + state ─────────────────────────────────────────────
+    const LS_KEYS   = { "a4-8": "bookletmaker_a4_v1", "a2-16": "bookletmaker_a2_v1" };
+    const LS_FORMAT = "zine-format";
+
+    let activeFormat     = localStorage.getItem(LS_FORMAT) || "a4-8";
+    let cfg              = createZineConfig(activeFormat);
+
     const thumbnailButtons = [];
-    let currentPageIndex     = 0;
-    let currentTool          = "select";
-    let previewDrawingEnabled = false;
-    let isRestoringPage      = false;
-    let refreshTimer         = null;
-    let refreshToken         = 0;
-    let cameraStream         = null;
-    let statusClearTimer     = null;
+    const pages            = [];
+    let currentPageIndex   = 0;
+    let currentTool        = "select";
+    let isRestoringPage    = false;
+    let refreshTimer       = null;
+    let refreshToken       = 0;
+    let cameraStream       = null;
+    let statusClearTimer   = null;
+    let brushSize          = 3;
+    let fontSize           = 28;
 
-    const LS_KEY = "bookletmaker_v1";
-
-    const blankState = JSON.stringify(editorCanvas.toJSON());
-    const pages = Array.from({ length: PAGE_COUNT }, (_, i) => createBlankPage(i, blankState));
-
-    // ── Status (auto-clears after 4 s by default) ──────────────────
+    // ── Status ─────────────────────────────────────────────────────
     function setStatus(message, autoClear = true) {
       clearTimeout(statusClearTimer);
       statusText.textContent = message;
@@ -1250,19 +789,29 @@
       }
     }
 
-    // ── localStorage persistence ───────────────────────────────────
+    // ── Theme ──────────────────────────────────────────────────────
+    function applyTheme(isLight) {
+      const icon  = themeToggle.querySelector("i");
+      const label = themeToggle.querySelector(".btn-text");
+      document.documentElement.classList.toggle("light-mode", isLight);
+      icon.className    = isLight ? "fa-solid fa-moon" : "fa-solid fa-sun";
+      label.textContent = isLight ? "Dark" : "Light";
+      localStorage.setItem("zine-theme", isLight ? "light" : "dark");
+    }
+
+    // ── localStorage ───────────────────────────────────────────────
     function saveToLocalStorage() {
       try {
-        localStorage.setItem(LS_KEY, JSON.stringify(pages.map((p) => p.json)));
-      } catch (_) { /* storage full — fail silently */ }
+        localStorage.setItem(LS_KEYS[activeFormat], JSON.stringify(pages.map(p => p.json)));
+      } catch (_) {}
     }
 
     function loadFromLocalStorage() {
       try {
-        const raw = localStorage.getItem(LS_KEY);
+        const raw = localStorage.getItem(LS_KEYS[activeFormat]);
         if (!raw) return false;
         const data = JSON.parse(raw);
-        if (!Array.isArray(data) || data.length !== PAGE_COUNT) return false;
+        if (!Array.isArray(data) || data.length !== cfg.PAGE_COUNT) return false;
         data.forEach((json, i) => {
           if (typeof json === "string") {
             pages[i].json    = json;
@@ -1277,12 +826,12 @@
     // ── Save / Load project ────────────────────────────────────────
     function saveProject() {
       saveCurrentPageState();
-      const data = { version: 1, pages: pages.map((p) => p.json) };
+      const data = { version: 2, format: activeFormat, pages: pages.map(p => p.json) };
       const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
       const url  = URL.createObjectURL(blob);
       const a    = document.createElement("a");
       a.href     = url;
-      a.download = `zine-project-${new Date().toISOString().slice(0, 10)}.json`;
+      a.download = `zine-${activeFormat}-${new Date().toISOString().slice(0, 10)}.json`;
       a.click();
       URL.revokeObjectURL(url);
       setStatus("Project saved as JSON.");
@@ -1292,9 +841,17 @@
       try {
         const text = await file.text();
         const data = JSON.parse(text);
-        if (!Array.isArray(data.pages) || data.pages.length !== PAGE_COUNT) {
-          setStatus("Invalid project file — expected 8 pages.");
+        const fileFormat = data.format || "a4-8";
+        if (!Array.isArray(data.pages) || data.pages.length !== cfg.PAGE_COUNT) {
+          setStatus(`Invalid project file — expected ${cfg.PAGE_COUNT} pages for ${activeFormat} format.`);
           return;
+        }
+        if (fileFormat !== activeFormat) {
+          const ok = confirm(
+            `This project was saved as ${fileFormat} (${data.pages.length} pages). ` +
+            `You are in ${activeFormat} mode. Load anyway?`
+          );
+          if (!ok) return;
         }
         data.pages.forEach((json, i) => {
           pages[i].json    = json;
@@ -1326,9 +883,7 @@
     }
 
     function updateReadouts() {
-      fontSizeValue.textContent  = fontSizeRange.value + " px";
-      brushSizeValue.textContent = brushSizeRange.value + " px";
-      colorValue.textContent     = colorPicker.value.toLowerCase();
+      colorValue.textContent       = colorPicker.value.toLowerCase();
       colorSwatch.style.background = colorPicker.value;
     }
 
@@ -1350,30 +905,51 @@
     }
 
     function decorateLoadedObjects() {
-      editorCanvas.forEachObject((obj) => decorateObject(obj));
+      editorCanvas.forEachObject(obj => decorateObject(obj));
     }
 
     function syncBrushAndTextControls() {
       const brushColor = currentTool === "erase" ? "#ffffff" : colorPicker.value;
-      const rawSize    = parseInt(brushSizeRange.value, 10);
-      const brushWidth = currentTool === "erase" ? Math.max(rawSize * 2, 12) : rawSize;
+      const brushWidth = currentTool === "erase" ? Math.max(brushSize * 2, 12) : brushSize;
 
       editorCanvas.freeDrawingBrush = new fabric.PencilBrush(editorCanvas);
       editorCanvas.freeDrawingBrush.color = brushColor;
       editorCanvas.freeDrawingBrush.width = brushWidth;
 
-      previewCanvas.freeDrawingBrush = new fabric.PencilBrush(previewCanvas);
-      previewCanvas.freeDrawingBrush.color = colorPicker.value;
-      previewCanvas.freeDrawingBrush.width = 4;
-
       const textObj = getActiveTextObject();
       if (textObj) {
-        textObj.set({ fill: colorPicker.value, fontSize: Number(fontSizeRange.value) });
+        textObj.set({ fill: colorPicker.value, fontSize });
         textObj.setCoords();
         editorCanvas.requestRenderAll();
       }
 
       updateReadouts();
+    }
+
+    // Shows/hides the unified slider and configures it for the active tool
+    function updateSliderForTool(tool) {
+      if (tool === "select") {
+        sizeSliderWrap.hidden = true;
+        return;
+      }
+      sizeSliderWrap.hidden = false;
+      if (tool === "text") {
+        sizeSliderLabel.textContent    = "Font Size";
+        sizeRange.min                  = "12";
+        sizeRange.max                  = "96";
+        sizeRange.step                 = "1";
+        sizeRange.value                = String(fontSize);
+        sizeRangeValue.textContent     = fontSize + " px";
+        sizeRange.setAttribute("aria-label", "Text font size");
+      } else {
+        sizeSliderLabel.textContent    = "Brush Size";
+        sizeRange.min                  = "1";
+        sizeRange.max                  = "40";
+        sizeRange.step                 = "1";
+        sizeRange.value                = String(brushSize);
+        sizeRangeValue.textContent     = brushSize + " px";
+        sizeRange.setAttribute("aria-label", "Brush and eraser size");
+      }
     }
 
     function applyEditorTool(mode) {
@@ -1387,13 +963,92 @@
       editorCanvas.selection      = !isDrawing;
       editorCanvas.skipTargetFind = isDrawing;
 
-      editorCanvas.forEachObject((obj) => {
+      editorCanvas.forEachObject(obj => {
         obj.selectable = !isDrawing;
         obj.evented    = !isDrawing;
       });
 
+      updateSliderForTool(mode);
       syncBrushAndTextControls();
       editorCanvas.requestRenderAll();
+    }
+
+    // ── Format switching ───────────────────────────────────────────
+    function syncFormatButtons() {
+      formatA4Btn.classList.toggle("active", activeFormat === "a4-8");
+      formatA4Btn.setAttribute("aria-pressed", String(activeFormat === "a4-8"));
+      formatA2Btn.classList.toggle("active", activeFormat === "a2-16");
+      formatA2Btn.setAttribute("aria-pressed", String(activeFormat === "a2-16"));
+    }
+
+    async function switchFormat(newFormat) {
+      if (newFormat === activeFormat) return;
+
+      // Save current format's work to its own LS key before switching
+      saveCurrentPageState();
+      try {
+        localStorage.setItem(LS_KEYS[activeFormat], JSON.stringify(pages.map(p => p.json)));
+      } catch (_) {}
+
+      const hasContent = pages.some(p => p.history.length > 1);
+      if (hasContent) {
+        const label = newFormat === "a2-16" ? "A2 (16 pages)" : "A4 (8 pages)";
+        const ok = confirm(
+          `Switch to ${label}?\n\nYour current work is auto-saved and will be restored when you switch back.`
+        );
+        if (!ok) return;
+      }
+
+      activeFormat = newFormat;
+      cfg          = createZineConfig(newFormat);
+      localStorage.setItem(LS_FORMAT, newFormat);
+      syncFormatButtons();
+      await reinitializeForFormat();
+    }
+
+    async function reinitializeForFormat() {
+      isRestoringPage = true;
+
+      // Clear canvas, wipe pages array, tear down old thumbnails
+      editorCanvas.clear();
+      await new Promise(resolve => editorCanvas.setBackgroundColor("#ffffff", resolve));
+      editorCanvas.renderAll();
+      const blankState = JSON.stringify(editorCanvas.toJSON());
+
+      pages.length         = 0;
+      thumbnailButtons.length = 0;
+      thumbnailStrip.innerHTML = "";
+
+      for (let i = 0; i < cfg.PAGE_COUNT; i++) {
+        pages.push(createBlankPage(i, blankState));
+      }
+
+      // Restore previously saved work for this format if available
+      const raw = localStorage.getItem(LS_KEYS[activeFormat]);
+      if (raw) {
+        try {
+          const data = JSON.parse(raw);
+          if (Array.isArray(data) && data.length === cfg.PAGE_COUNT) {
+            data.forEach((json, i) => {
+              if (typeof json === "string") {
+                pages[i].json    = json;
+                pages[i].history = [json];
+                pages[i].redo    = [];
+              }
+            });
+          }
+        } catch (_) {}
+      }
+
+      currentPageIndex = 0;
+      buildThumbnailNavigation();
+      await loadCanvasState(pages[0].json);   // sets isRestoringPage = false
+      updateHistoryButtons();
+      applyEditorTool("select");
+      scheduleCompositeRefresh();
+
+      const label = activeFormat === "a2-16" ? "A2 · 16 pages" : "A4 · 8 pages";
+      setStatus(`Switched to ${label}.${raw ? " Previous work restored." : " Ready."}`);
     }
 
     // ── Thumbnail navigation ───────────────────────────────────────
@@ -1409,7 +1064,6 @@
         btn.setAttribute("tabindex", isActive ? "0" : "-1");
         btn.setAttribute("aria-selected", String(isActive));
 
-        // Empty-page indicator
         const isEmpty = pages[i].history.length <= 1;
         btn.classList.toggle("thumb-empty", isEmpty);
         const existingLabel = btn.querySelector(".thumb-empty-label");
@@ -1424,8 +1078,8 @@
         }
       });
 
-      pageTitle.textContent   = `Page ${currentPageIndex + 1} / ${PAGE_COUNT}`;
-      pageCounter.textContent = `Page ${currentPageIndex + 1} / ${PAGE_COUNT}`;
+      pageTitle.textContent   = `Page ${currentPageIndex + 1} / ${cfg.PAGE_COUNT}`;
+      pageCounter.textContent = `Page ${currentPageIndex + 1} / ${cfg.PAGE_COUNT}`;
     }
 
     // ── History ────────────────────────────────────────────────────
@@ -1450,7 +1104,6 @@
             decorateLoadedObjects();
             editorCanvas.renderAll();
             isRestoringPage = false;
-            // Keep the current tool (no forced revert to select)
             applyEditorTool(currentTool);
             resolve();
           });
@@ -1464,7 +1117,6 @@
       saveCurrentPageState();
       currentPageIndex = nextIndex;
 
-      // Page-switch fade animation
       canvasWrapper.classList.add("page-switching");
       canvasWrapper.addEventListener("animationend", () => {
         canvasWrapper.classList.remove("page-switching");
@@ -1491,10 +1143,7 @@
 
     async function undo() {
       const result = undoPage(pages[currentPageIndex]);
-      if (!result.state) {
-        setStatus("Nothing to undo on page " + (currentPageIndex + 1) + ".");
-        return;
-      }
+      if (!result.state) { setStatus("Nothing to undo on page " + (currentPageIndex + 1) + "."); return; }
       pages[currentPageIndex] = result.page;
       await restoreFromHistory(result.state);
       setStatus("Undo on page " + (currentPageIndex + 1) + ".");
@@ -1502,10 +1151,7 @@
 
     async function redo() {
       const result = redoPage(pages[currentPageIndex]);
-      if (!result.state) {
-        setStatus("Nothing to redo on page " + (currentPageIndex + 1) + ".");
-        return;
-      }
+      if (!result.state) { setStatus("Nothing to redo on page " + (currentPageIndex + 1) + "."); return; }
       pages[currentPageIndex] = result.page;
       await restoreFromHistory(result.state);
       setStatus("Redo on page " + (currentPageIndex + 1) + ".");
@@ -1527,8 +1173,14 @@
     function syncTextControlsFromSelection() {
       const activeText = getActiveTextObject();
       if (!activeText) { updateReadouts(); return; }
-      if (activeText.fill)     colorPicker.value  = activeText.fill;
-      if (activeText.fontSize) fontSizeRange.value = String(Math.round(activeText.fontSize));
+      if (activeText.fill) colorPicker.value = activeText.fill;
+      if (activeText.fontSize) {
+        fontSize = Math.round(activeText.fontSize);
+        if (currentTool === "text") {
+          sizeRange.value            = String(fontSize);
+          sizeRangeValue.textContent = fontSize + " px";
+        }
+      }
       updateReadouts();
     }
 
@@ -1544,16 +1196,16 @@
 
     function createFabricImage(src) {
       return new Promise((resolve) => {
-        fabric.Image.fromURL(src, (img) => resolve(img), { crossOrigin: "anonymous" });
+        fabric.Image.fromURL(src, img => resolve(img), { crossOrigin: "anonymous" });
       });
     }
 
     async function addImageToEditor(dataUrl, indexOffset = 0) {
       const image = decorateObject(await createFabricImage(dataUrl));
-      const scale = calcImageScale(image.width, image.height, PAGE_WIDTH, PAGE_HEIGHT);
+      const scale = calcImageScale(image.width, image.height, cfg.PAGE_WIDTH, cfg.PAGE_HEIGHT);
       image.set({
-        left: PAGE_WIDTH  / 2 + indexOffset * 10,
-        top:  PAGE_HEIGHT / 2 + indexOffset * 10,
+        left: cfg.PAGE_WIDTH  / 2 + indexOffset * 10,
+        top:  cfg.PAGE_HEIGHT / 2 + indexOffset * 10,
         originX: "center",
         originY: "center"
       });
@@ -1565,9 +1217,9 @@
     }
 
     async function handleImageFiles(fileList) {
-      const files = Array.from(fileList).filter((f) => f.type.startsWith("image/"));
+      const files = Array.from(fileList).filter(f => f.type.startsWith("image/"));
       if (!files.length) {
-        setStatus("No valid image files found. Please select JPG, PNG, GIF, or WebP.");
+        setStatus("No valid image files. Please select JPG, PNG, GIF, or WebP.");
         return;
       }
       for (let i = 0; i < files.length; i++) {
@@ -1578,23 +1230,23 @@
 
     function insertTextBox() {
       const textObj = decorateObject(new fabric.Textbox("Tap to edit", {
-        left: PAGE_WIDTH  / 2,
-        top:  PAGE_HEIGHT / 2,
-        originX: "center",
-        originY: "center",
-        width: 190,
-        fontSize: Number(fontSizeRange.value),
-        fill: colorPicker.value,
+        left:       cfg.PAGE_WIDTH  / 2,
+        top:        cfg.PAGE_HEIGHT / 2,
+        originX:    "center",
+        originY:    "center",
+        width:      190,
+        fontSize:   fontSize,
+        fill:       colorPicker.value,
         fontFamily: "Arial",
-        editable: true,
-        textAlign: "left"
+        editable:   true,
+        textAlign:  "left"
       }));
       editorCanvas.add(textObj);
       editorCanvas.setActiveObject(textObj);
       editorCanvas.requestRenderAll();
       textObj.enterEditing();
       textObj.selectAll();
-      setStatus("Text box added. Click outside the box to finish editing.");
+      setStatus("Text box added. Click outside to finish editing.");
     }
 
     function handleTextTool() {
@@ -1606,18 +1258,18 @@
     function loadImageElement(src) {
       return new Promise((resolve, reject) => {
         const img  = new Image();
-        img.onload = () => resolve(img);
+        img.onload  = () => resolve(img);
         img.onerror = () => reject(new Error("Could not load image."));
         img.src = src;
       });
     }
 
     async function renderPageToDataUrl(page, multiplier = 0.45) {
-      const el = document.createElement("canvas");
-      el.width  = PAGE_WIDTH;
-      el.height = PAGE_HEIGHT;
+      const el  = document.createElement("canvas");
+      el.width  = cfg.PAGE_WIDTH;
+      el.height = cfg.PAGE_HEIGHT;
       const tmp = new fabric.StaticCanvas(el, {
-        width: PAGE_WIDTH, height: PAGE_HEIGHT, backgroundColor: "#ffffff"
+        width: cfg.PAGE_WIDTH, height: cfg.PAGE_HEIGHT, backgroundColor: "#ffffff"
       });
       await new Promise((resolve) => {
         tmp.loadFromJSON(parseState(page.json), () => {
@@ -1631,29 +1283,29 @@
 
     async function renderAllPageImages(multiplier = 0.45) {
       saveCurrentPageState();
-      return Promise.all(pages.map((p) => renderPageToDataUrl(p, multiplier)));
+      return Promise.all(pages.map(p => renderPageToDataUrl(p, multiplier)));
     }
 
     async function buildZineLayoutCanvas(pageImages) {
       const srcs    = pageImages || await renderAllPageImages(1);
       const canvas  = document.createElement("canvas");
-      canvas.width  = LAYOUT_WIDTH;
-      canvas.height = LAYOUT_HEIGHT;
+      canvas.width  = cfg.LAYOUT_WIDTH;
+      canvas.height = cfg.LAYOUT_HEIGHT;
       const ctx     = canvas.getContext("2d");
       ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, LAYOUT_WIDTH, LAYOUT_HEIGHT);
+      ctx.fillRect(0, 0, cfg.LAYOUT_WIDTH, cfg.LAYOUT_HEIGHT);
 
-      for (const slot of layoutSlots) {
-        const x   = slot.col * PAGE_WIDTH;
-        const y   = slot.row * PAGE_HEIGHT;
+      for (const slot of cfg.layoutSlots) {
+        const x   = slot.col * cfg.PAGE_WIDTH;
+        const y   = slot.row * cfg.PAGE_HEIGHT;
         const img = await loadImageElement(srcs[slot.page - 1]);
         ctx.save();
         if (slot.rotate) {
-          ctx.translate(x + PAGE_WIDTH, y + PAGE_HEIGHT);
+          ctx.translate(x + cfg.PAGE_WIDTH, y + cfg.PAGE_HEIGHT);
           ctx.rotate(Math.PI);
-          ctx.drawImage(img, 0, 0, PAGE_WIDTH, PAGE_HEIGHT);
+          ctx.drawImage(img, 0, 0, cfg.PAGE_WIDTH, cfg.PAGE_HEIGHT);
         } else {
-          ctx.drawImage(img, x, y, PAGE_WIDTH, PAGE_HEIGHT);
+          ctx.drawImage(img, x, y, cfg.PAGE_WIDTH, cfg.PAGE_HEIGHT);
         }
         ctx.restore();
       }
@@ -1668,79 +1320,30 @@
       updateThumbnailSelection();
     }
 
-    function updatePreviewBackground(dataUrl) {
-      return new Promise((resolve) => {
-        fabric.Image.fromURL(dataUrl, (img) => {
-          img.set({
-            originX: "left", originY: "top",
-            selectable: false, evented: false,
-            scaleX: previewCanvas.getWidth()  / LAYOUT_WIDTH,
-            scaleY: previewCanvas.getHeight() / LAYOUT_HEIGHT
-          });
-          previewCanvas.setBackgroundImage(img, () => {
-            previewCanvas.renderAll();
-            resolve();
-          });
-        }, { crossOrigin: "anonymous" });
-      });
-    }
-
     function scheduleCompositeRefresh() {
       clearTimeout(refreshTimer);
       const token = ++refreshToken;
 
       refreshTimer = setTimeout(async () => {
-        previewLoading.hidden = false;
-        setStatus("Refreshing preview…", false);
-
         try {
-          const rendered = await renderAllPageImages(1);
+          const rendered = await renderAllPageImages(0.45);
           if (token !== refreshToken) return;
-
           updateThumbnails(rendered);
-
-          const layoutCanvas = await buildZineLayoutCanvas(rendered);
-          if (token !== refreshToken) return;
-
-          await updatePreviewBackground(layoutCanvas.toDataURL("image/png"));
-          if (token !== refreshToken) return;
-
-          setStatus("Preview ready — page " + (currentPageIndex + 1) + ".");
         } catch (err) {
-          console.error(err);
-          setStatus("Preview update failed. Try again.");
-        } finally {
-          previewLoading.hidden = true;
+          console.error("Thumbnail refresh failed:", err);
         }
       }, PREVIEW_DEBOUNCE_MS);
     }
 
-    // ── Preview drawing toggle ─────────────────────────────────────
-    function togglePreviewDrawing() {
-      previewDrawingEnabled = !previewDrawingEnabled;
-      previewCanvas.isDrawingMode  = previewDrawingEnabled;
-      previewCanvas.selection      = !previewDrawingEnabled;
-      previewCanvas.skipTargetFind = previewDrawingEnabled;
-
-      previewDrawBtn.classList.toggle("active", previewDrawingEnabled);
-      previewDrawBtn.innerHTML = previewDrawingEnabled
-        ? '<i class="fa-solid fa-pen-ruler" aria-hidden="true"></i> Stop Annotating'
-        : '<i class="fa-solid fa-pen-ruler" aria-hidden="true"></i> Annotate Print Preview';
-
-      syncBrushAndTextControls();
-      setStatus(previewDrawingEnabled ? "Annotating print preview." : "Annotation mode off.");
-    }
-
     // ── PDF export ─────────────────────────────────────────────────
     async function exportPdf() {
-      exportPdfBtn.disabled  = true;
-      exportPdfBtn2.disabled = true;
+      exportPdfBtn.disabled = true;
 
+      const timeout = activeFormat === "a2-16" ? 60000 : 30000;
       const exportTimeout = setTimeout(() => {
-        exportPdfBtn.disabled  = false;
-        exportPdfBtn2.disabled = false;
+        exportPdfBtn.disabled = false;
         setStatus("PDF export timed out. Please try again.");
-      }, 30000);
+      }, timeout);
 
       try {
         setStatus("Building PDF — rendering pages…", false);
@@ -1752,25 +1355,28 @@
 
         setStatus("Building PDF — saving file…", false);
         const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
-        pdf.addImage(imageData, "PNG", 0, 0, 297, 210, undefined, "FAST");
+        const pdf = new jsPDF({
+          orientation: cfg.pdfOrientation,
+          unit: "mm",
+          format: cfg.pdfFormat
+        });
+        pdf.addImage(imageData, "PNG", 0, 0, cfg.pdfWidth, cfg.pdfHeight, undefined, "FAST");
 
         const ts = new Date().toISOString().slice(0, 19).replace(/[T:]/g, "-");
-        pdf.save(`mini-zine-${ts}.pdf`);
+        pdf.save(`mini-zine-${activeFormat}-${ts}.pdf`);
         setStatus("PDF exported successfully.");
       } catch (err) {
         console.error(err);
         setStatus("PDF export failed. Check the browser console for details.");
       } finally {
         clearTimeout(exportTimeout);
-        exportPdfBtn.disabled  = false;
-        exportPdfBtn2.disabled = false;
+        exportPdfBtn.disabled = false;
       }
     }
 
     // ── Thumbnails ─────────────────────────────────────────────────
     function buildThumbnailNavigation() {
-      for (let i = 0; i < PAGE_COUNT; i++) {
+      for (let i = 0; i < cfg.PAGE_COUNT; i++) {
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "thumb-button";
@@ -1799,7 +1405,7 @@
     // ── Snap ───────────────────────────────────────────────────────
     function maybeSnapObject(target) {
       const center  = target.getCenterPoint();
-      const snapped = snapPosition(center.x, center.y, PAGE_WIDTH, PAGE_HEIGHT);
+      const snapped = snapPosition(center.x, center.y, cfg.PAGE_WIDTH, cfg.PAGE_HEIGHT);
       if (snapped.x !== center.x) {
         target.setPositionByOrigin(new fabric.Point(snapped.x, center.y), "center", "center");
       }
@@ -1828,7 +1434,7 @@
         console.error(err);
         cameraFallbackInput.click();
         const msg = err.name === "NotAllowedError"
-          ? "Camera permission denied. Allow camera access in your browser settings, then try again."
+          ? "Camera permission denied. Allow camera access in your browser settings."
           : "Camera unavailable. Using file upload instead.";
         setStatus(msg);
       }
@@ -1837,7 +1443,7 @@
     function closeCameraModal() {
       cameraModal.classList.remove("open");
       cameraModal.setAttribute("aria-hidden", "true");
-      if (cameraStream) cameraStream.getTracks().forEach((t) => t.stop());
+      if (cameraStream) cameraStream.getTracks().forEach(t => t.stop());
       cameraStream = null;
       cameraFeed.srcObject = null;
     }
@@ -1890,13 +1496,18 @@
         case "?":           openShortcutsModal();       break;
         default: {
           const n = parseInt(event.key, 10);
-          if (n >= 1 && n <= PAGE_COUNT) switchPage(n - 1);
+          if (n >= 1 && n <= cfg.PAGE_COUNT) switchPage(n - 1);
         }
       }
     }
 
     // ── Wire all events ────────────────────────────────────────────
     function wireEvents() {
+      // Format toggle
+      formatA4Btn.addEventListener("click", () => switchFormat("a4-8"));
+      formatA2Btn.addEventListener("click", () => switchFormat("a2-16"));
+
+      // Tool mode
       toolButtons.select.addEventListener("click", () => applyEditorTool("select"));
       toolButtons.draw.addEventListener("click",   () => applyEditorTool("draw"));
       toolButtons.erase.addEventListener("click",  () => applyEditorTool("erase"));
@@ -1906,17 +1517,14 @@
       redoBtn.addEventListener("click", redo);
       document.getElementById("clearCanvas").addEventListener("click", clearCurrentCanvas);
 
-      previewDrawBtn.addEventListener("click", togglePreviewDrawing);
-      exportPdfBtn.addEventListener("click",  exportPdf);
-      exportPdfBtn2.addEventListener("click", exportPdf);
+      exportPdfBtn.addEventListener("click", exportPdf);
 
       shortcutsBtn.addEventListener("click", openShortcutsModal);
       closeShortcutsBtn.addEventListener("click", closeShortcutsModal);
       closeShortcutsFooterBtn.addEventListener("click", closeShortcutsModal);
-      shortcutsModal.addEventListener("click", (e) => {
-        if (e.target === shortcutsModal) closeShortcutsModal();
-      });
-      document.addEventListener("keydown", (e) => {
+      shortcutsModal.addEventListener("click", e => { if (e.target === shortcutsModal) closeShortcutsModal(); });
+
+      document.addEventListener("keydown", e => {
         if (e.key === "Escape") {
           if (shortcutsModal.classList.contains("open")) { closeShortcutsModal(); return; }
           if (cameraModal.classList.contains("open"))    { closeCameraModal(); }
@@ -1924,7 +1532,7 @@
       });
 
       saveProjectBtn.addEventListener("click", saveProject);
-      loadProjectInput.addEventListener("change", async (e) => {
+      loadProjectInput.addEventListener("change", async e => {
         if (e.target.files[0]) await loadProject(e.target.files[0]);
         loadProjectInput.value = "";
       });
@@ -1932,10 +1540,18 @@
       cameraBtn.addEventListener("click", openCameraModal);
       cancelCameraBtn.addEventListener("click", closeCameraModal);
       capturePhotoBtn.addEventListener("click", capturePhotoToCanvas);
-      cameraModal.addEventListener("click", (e) => {
-        if (e.target === cameraModal) closeCameraModal();
+      cameraModal.addEventListener("click", e => { if (e.target === cameraModal) closeCameraModal(); });
+
+      // Theme toggle
+      themeToggle.addEventListener("click", () => {
+        applyTheme(!document.documentElement.classList.contains("light-mode"));
       });
 
+      // Colour picker — swatch click opens native picker
+      colorSwatch.addEventListener("click", () => colorPicker.click());
+      colorSwatch.addEventListener("keydown", e => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); colorPicker.click(); }
+      });
       colorPicker.addEventListener("input", () => {
         syncBrushAndTextControls();
         if (getActiveTextObject()) scheduleCompositeRefresh();
@@ -1944,58 +1560,57 @@
         if (getActiveTextObject()) pushHistorySnapshot();
       });
 
-      fontSizeRange.addEventListener("input", () => {
+      // Unified size slider
+      sizeRange.addEventListener("input", () => {
+        const val = parseInt(sizeRange.value, 10);
+        sizeRangeValue.textContent = val + " px";
+        if (currentTool === "text") fontSize = val;
+        else brushSize = val;
         syncBrushAndTextControls();
-        if (getActiveTextObject()) scheduleCompositeRefresh();
+        if (currentTool === "text" && getActiveTextObject()) scheduleCompositeRefresh();
       });
-      fontSizeRange.addEventListener("change", () => {
-        if (getActiveTextObject()) pushHistorySnapshot();
+      sizeRange.addEventListener("change", () => {
+        if (currentTool === "text" && getActiveTextObject()) pushHistorySnapshot();
       });
 
-      brushSizeRange.addEventListener("input", syncBrushAndTextControls);
-
-      imageUpload.addEventListener("change", async (e) => {
+      imageUpload.addEventListener("change", async e => {
         await handleImageFiles(e.target.files);
         imageUpload.value = "";
       });
-      cameraFallbackInput.addEventListener("change", async (e) => {
+      cameraFallbackInput.addEventListener("change", async e => {
         await handleImageFiles(e.target.files);
         cameraFallbackInput.value = "";
       });
 
-      ["dragenter", "dragover"].forEach((ev) => {
-        editorShell.addEventListener(ev, (e) => { e.preventDefault(); handleDragState(true); });
+      ["dragenter", "dragover"].forEach(ev => {
+        editorShell.addEventListener(ev, e => { e.preventDefault(); handleDragState(true); });
       });
-      ["dragleave", "dragend"].forEach((ev) => {
+      ["dragleave", "dragend"].forEach(ev => {
         editorShell.addEventListener(ev, () => handleDragState(false));
       });
-      editorShell.addEventListener("drop", async (e) => {
+      editorShell.addEventListener("drop", async e => {
         e.preventDefault();
         handleDragState(false);
         await handleImageFiles(e.dataTransfer ? e.dataTransfer.files : []);
       });
 
-      // Arrow-key navigation on the thumbnail strip
-      thumbnailStrip.addEventListener("keydown", (e) => {
+      thumbnailStrip.addEventListener("keydown", e => {
         if (e.key === "ArrowRight") {
           e.preventDefault();
-          const next = (currentPageIndex + 1) % PAGE_COUNT;
+          const next = (currentPageIndex + 1) % cfg.PAGE_COUNT;
           switchPage(next).then(() => thumbnailButtons[next].focus());
         } else if (e.key === "ArrowLeft") {
           e.preventDefault();
-          const prev = (currentPageIndex - 1 + PAGE_COUNT) % PAGE_COUNT;
+          const prev = (currentPageIndex - 1 + cfg.PAGE_COUNT) % cfg.PAGE_COUNT;
           switchPage(prev).then(() => thumbnailButtons[prev].focus());
         }
       });
 
-      editorCanvas.on("object:added", (e) => {
-        if (e.target) decorateObject(e.target);
-        pushHistorySnapshot();
-      });
+      editorCanvas.on("object:added", e => { if (e.target) decorateObject(e.target); pushHistorySnapshot(); });
       editorCanvas.on("object:modified", pushHistorySnapshot);
       editorCanvas.on("object:removed",  pushHistorySnapshot);
       editorCanvas.on("path:created",    scheduleCompositeRefresh);
-      editorCanvas.on("object:moving", (e) => {
+      editorCanvas.on("object:moving", e => {
         if (!e.target || editorCanvas.isDrawingMode) return;
         maybeSnapObject(e.target);
       });
@@ -2005,21 +1620,27 @@
       editorCanvas.on("text:editing:exited", pushHistorySnapshot);
       editorCanvas.on("text:changed", scheduleCompositeRefresh);
 
-      previewCanvas.on("path:created", () => setStatus("Preview annotated."));
-
-      previewDetails.addEventListener("toggle", () => previewCanvas.calcOffset());
-
       window.addEventListener("beforeunload", saveCurrentPageState);
-      window.addEventListener("resize", () => {
-        editorCanvas.calcOffset();
-        previewCanvas.calcOffset();
-      });
-
+      window.addEventListener("resize", () => editorCanvas.calcOffset());
       document.addEventListener("keydown", handleKeyboardShortcut);
     }
 
     // ── Init ───────────────────────────────────────────────────────
     function init() {
+      // One-time legacy migration: preserve existing A4 work from old key
+      const legacy = localStorage.getItem("bookletmaker_v1");
+      if (legacy && !localStorage.getItem("bookletmaker_a4_v1")) {
+        try { localStorage.setItem("bookletmaker_a4_v1", legacy); } catch (_) {}
+      }
+
+      syncFormatButtons();
+      applyTheme(localStorage.getItem("zine-theme") === "light");
+
+      const blankState = JSON.stringify(editorCanvas.toJSON());
+      for (let i = 0; i < cfg.PAGE_COUNT; i++) {
+        pages.push(createBlankPage(i, blankState));
+      }
+
       const restored = loadFromLocalStorage();
       buildThumbnailNavigation();
       wireEvents();
@@ -2034,26 +1655,9 @@
         });
       } else {
         scheduleCompositeRefresh();
-        setStatus("Ready. Pick a page below and start creating your zine.", false);
+        setStatus("Ready. Pick a page and start creating your zine.", false);
       }
     }
-
-    // ── Theme toggle ───────────────────────────────────────────────
-    const themeToggle = document.getElementById("themeToggle");
-    const themeIcon   = themeToggle.querySelector("i");
-    const themeLabel  = themeToggle.querySelector(".btn-text");
-
-    function applyTheme(isLight) {
-      document.documentElement.classList.toggle("light-mode", isLight);
-      themeIcon.className  = isLight ? "fa-solid fa-moon" : "fa-solid fa-sun";
-      themeLabel.textContent = isLight ? "Dark" : "Light";
-      localStorage.setItem("zine-theme", isLight ? "light" : "dark");
-    }
-
-    applyTheme(localStorage.getItem("zine-theme") === "light");
-    themeToggle.addEventListener("click", () => {
-      applyTheme(!document.documentElement.classList.contains("light-mode"));
-    });
 
     init();
   </script>
