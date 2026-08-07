@@ -297,31 +297,20 @@
     @keyframes pageFadeIn { from { opacity: 0.55; } to { opacity: 1; } }
     .canvas-wrapper.page-switching { animation: pageFadeIn 0.22s ease; }
 
-    /* ── Spread adjacent page ────────────────────────────────────── */
-    .spread-adjacent {
-      flex-shrink: 0; position: relative; width: 300px; height: 400px;
-      background: var(--canvas-bg); overflow: hidden;
-      box-shadow: 0 14px 28px rgba(0,0,0,0.2);
-      opacity: 0.72; cursor: pointer; padding: 0; border: none;
-      transition: opacity 0.18s, box-shadow 0.18s;
+    /* Spread canvas: wider wrapper for facing-page pairs */
+    .canvas-wrapper.spread-canvas { border-radius: 12px; }
+    /* Fold-line overlay in the centre of a spread */
+    .canvas-wrapper.spread-canvas::after {
+      content: "";
+      position: absolute; top: 0; bottom: 0;
+      left: 50%; width: 1px;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(180,180,180,0.35) 0, rgba(180,180,180,0.35) 6px,
+        transparent 6px, transparent 12px
+      );
+      pointer-events: none;
     }
-    .spread-adjacent:hover { opacity: 1; box-shadow: 0 14px 28px rgba(0,0,0,0.35); }
-    .spread-img { display: block; width: 300px; height: 400px; object-fit: cover; }
-    .spread-hint {
-      position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
-      font-size: 0.7rem; color: #fff; background: rgba(0,0,0,0.5);
-      padding: 2px 10px; border-radius: 999px; white-space: nowrap;
-      pointer-events: none; opacity: 0; transition: opacity 0.18s;
-    }
-    .spread-adjacent:hover .spread-hint { opacity: 1; }
-    /* Fold line: active canvas gets a dashed border on the side facing the spread */
-    .spread-active-left  #canvasWrapper { border-right: 2px dashed rgba(128,128,128,0.22); }
-    .spread-active-right #canvasWrapper { border-left:  2px dashed rgba(128,128,128,0.22); }
-    /* Round only the outward corners of each page in a spread */
-    .spread-active-left  #canvasWrapper { border-radius: 12px 0 0 12px; }
-    .spread-active-left  #spreadRight    { border-radius: 0 12px 12px 0; }
-    .spread-active-right #canvasWrapper  { border-radius: 0 12px 12px 0; }
-    .spread-active-right #spreadLeft     { border-radius: 12px 0 0 12px; }
 
     /* Page status bar below canvas */
     .page-statusbar {
@@ -625,25 +614,11 @@
         <section class="panel canvas-area" aria-label="Canvas editor">
           <div id="editorShell" class="editor-shell">
 
-            <!-- Spread: left adjacent page (shown when current page is right of pair) -->
-            <button type="button" id="spreadLeft" class="spread-adjacent" hidden
-              aria-label="Go to left page">
-              <img id="spreadImgLeft" class="spread-img" alt="">
-              <span class="spread-hint" aria-hidden="true">Click to edit</span>
-            </button>
-
             <div class="canvas-wrapper" id="canvasWrapper">
               <canvas id="editorCanvas" width="300" height="400"></canvas>
               <div class="snap-guide snap-guide-h" aria-hidden="true"></div>
               <div class="snap-guide snap-guide-v" aria-hidden="true"></div>
             </div>
-
-            <!-- Spread: right adjacent page (shown when current page is left of pair) -->
-            <button type="button" id="spreadRight" class="spread-adjacent" hidden
-              aria-label="Go to right page">
-              <img id="spreadImgRight" class="spread-img" alt="">
-              <span class="spread-hint" aria-hidden="true">Click to edit</span>
-            </button>
 
           </div>
           <div class="page-statusbar">
@@ -676,8 +651,10 @@
             </h3>
             <i class="fa-solid fa-chevron-down fold-chevron" aria-hidden="true"></i>
           </summary>
-          <img src="images/how_to.jpg" alt="Zine folding instructions diagram"
-            style="display:block;width:100%;max-width:480px;margin:12px auto 0;border-radius:12px;border:1px solid var(--line);">
+          <div id="foldGuideContent">
+            <img src="images/how_to.jpg" alt="Zine folding instructions diagram"
+              style="display:block;width:100%;max-width:480px;margin:12px auto 0;border-radius:12px;border:1px solid var(--line);">
+          </div>
         </details>
 
       </div>
@@ -787,12 +764,9 @@
     const closeShortcutsFooterBtn = document.getElementById("closeShortcutsFooterBtn");
     const saveProjectBtn      = document.getElementById("saveProjectBtn");
     const loadProjectInput    = document.getElementById("loadProjectInput");
-    const spreadLeft          = document.getElementById("spreadLeft");
-    const spreadRight         = document.getElementById("spreadRight");
-    const spreadImgLeft       = document.getElementById("spreadImgLeft");
-    const spreadImgRight      = document.getElementById("spreadImgRight");
     const singlePageLayoutBtn = document.getElementById("singlePageLayout");
     const spreadPageLayoutBtn = document.getElementById("spreadPageLayout");
+    const foldGuideContent    = document.getElementById("foldGuideContent");
 
     const toolButtons = {
       select: document.getElementById("selectTool"),
@@ -800,13 +774,13 @@
     };
 
     // ── Format + state ─────────────────────────────────────────────
-    const LS_KEYS   = { "a4-8": "bookletmaker_a4_v1", "a2-16": "bookletmaker_a2_v1" };
     const LS_FORMAT = "zine-format";
     const LS_LAYOUT = "zine-layout";
 
     let activeFormat     = localStorage.getItem(LS_FORMAT) || "a4-8";
     let cfg              = createZineConfig(activeFormat);
-    let layoutMode       = localStorage.getItem(LS_LAYOUT) || "single";
+    let spreadMode       = localStorage.getItem(LS_LAYOUT) === "spread";
+    let editorPagesConfig = [];
 
     const thumbnailButtons = [];
     const pages            = [];
@@ -846,18 +820,22 @@
     }
 
     // ── localStorage ───────────────────────────────────────────────
+    function getLsKey() {
+      return `zinemakerv2_${activeFormat}_${spreadMode ? "spread" : "single"}`;
+    }
+
     function saveToLocalStorage() {
       try {
-        localStorage.setItem(LS_KEYS[activeFormat], JSON.stringify(pages.map(p => p.json)));
+        localStorage.setItem(getLsKey(), JSON.stringify(pages.map(p => p.json)));
       } catch (_) {}
     }
 
     function loadFromLocalStorage() {
       try {
-        const raw = localStorage.getItem(LS_KEYS[activeFormat]);
+        const raw = localStorage.getItem(getLsKey());
         if (!raw) return false;
         const data = JSON.parse(raw);
-        if (!Array.isArray(data) || data.length !== cfg.PAGE_COUNT) return false;
+        if (!Array.isArray(data) || data.length !== editorPagesConfig.length) return false;
         data.forEach((json, i) => {
           if (typeof json === "string") {
             pages[i].json    = json;
@@ -888,8 +866,8 @@
         const text = await file.text();
         const data = JSON.parse(text);
         const fileFormat = data.format || "a4-8";
-        if (!Array.isArray(data.pages) || data.pages.length !== cfg.PAGE_COUNT) {
-          setStatus(`Invalid project file — expected ${cfg.PAGE_COUNT} pages for ${activeFormat} format.`);
+        if (!Array.isArray(data.pages) || data.pages.length !== editorPagesConfig.length) {
+          setStatus(`Invalid project file — expected ${editorPagesConfig.length} pages for current format/layout.`);
           return;
         }
         if (fileFormat !== activeFormat) {
@@ -992,67 +970,104 @@
 
     // ── Layout mode (single / spread) ──────────────────────────────
     function syncLayoutButtons() {
-      singlePageLayoutBtn.classList.toggle("active", layoutMode === "single");
-      singlePageLayoutBtn.setAttribute("aria-pressed", String(layoutMode === "single"));
-      spreadPageLayoutBtn.classList.toggle("active", layoutMode === "spread");
-      spreadPageLayoutBtn.setAttribute("aria-pressed", String(layoutMode === "spread"));
+      singlePageLayoutBtn.classList.toggle("active", !spreadMode);
+      singlePageLayoutBtn.setAttribute("aria-pressed", String(!spreadMode));
+      spreadPageLayoutBtn.classList.toggle("active", spreadMode);
+      spreadPageLayoutBtn.setAttribute("aria-pressed", String(spreadMode));
     }
 
-    async function updateSpreadView() {
-      if (layoutMode !== "spread") {
-        spreadLeft.hidden  = true;
-        spreadRight.hidden = true;
-        editorShell.classList.remove("spread-active-left", "spread-active-right");
-        return;
+    function buildEditorPagesConfig() {
+      if (!spreadMode) {
+        return Array.from({ length: cfg.PAGE_COUNT }, (_, i) => ({
+          label: i === 0 ? "Cover" : i === cfg.PAGE_COUNT - 1 ? "Back Cover" : `Page ${i + 1}`,
+          printPages: [i + 1],
+          width: cfg.PAGE_WIDTH,
+          height: cfg.PAGE_HEIGHT,
+          isSpread: false
+        }));
       }
-
-      const isLeftPage    = currentPageIndex % 2 === 0;
-      const adjacentIndex = isLeftPage ? currentPageIndex + 1 : currentPageIndex - 1;
-
-      if (adjacentIndex < 0 || adjacentIndex >= cfg.PAGE_COUNT) {
-        // Odd page count edge case — show nothing adjacent
-        spreadLeft.hidden  = true;
-        spreadRight.hidden = true;
-        editorShell.classList.remove("spread-active-left", "spread-active-right");
-        return;
+      // Spread mode: Cover + inner spreads + Back Cover
+      const result = [
+        { label: "Cover", printPages: [1], width: cfg.PAGE_WIDTH, height: cfg.PAGE_HEIGHT, isSpread: false }
+      ];
+      for (let i = 2; i < cfg.PAGE_COUNT; i += 2) {
+        result.push({
+          label: `Pages ${i} – ${i + 1}`,
+          printPages: [i, i + 1],
+          width: cfg.PAGE_WIDTH * 2,
+          height: cfg.PAGE_HEIGHT,
+          isSpread: true
+        });
       }
-
-      const adjacentImg = await renderPageToDataUrl(pages[adjacentIndex], 1);
-
-      if (isLeftPage) {
-        editorShell.classList.add("spread-active-left");
-        editorShell.classList.remove("spread-active-right");
-        spreadLeft.hidden  = true;
-        spreadRight.hidden = false;
-        spreadImgRight.src = adjacentImg;
-        spreadImgRight.alt = `Page ${adjacentIndex + 1}`;
-        spreadRight.setAttribute("aria-label", `Go to page ${adjacentIndex + 1}`);
-      } else {
-        editorShell.classList.add("spread-active-right");
-        editorShell.classList.remove("spread-active-left");
-        spreadRight.hidden = true;
-        spreadLeft.hidden  = false;
-        spreadImgLeft.src  = adjacentImg;
-        spreadImgLeft.alt  = `Page ${adjacentIndex + 1}`;
-        spreadLeft.setAttribute("aria-label", `Go to page ${adjacentIndex + 1}`);
-      }
+      result.push({ label: "Back Cover", printPages: [cfg.PAGE_COUNT], width: cfg.PAGE_WIDTH, height: cfg.PAGE_HEIGHT, isSpread: false });
+      return result;
     }
 
-    function switchLayoutMode(mode) {
-      layoutMode = mode;
+    function resizeEditorCanvasForPage(editorIdx) {
+      const pc = editorPagesConfig[editorIdx];
+      if (!pc) return;
+      editorCanvas.setDimensions({ width: pc.width, height: pc.height });
+      canvasWrapper.style.width  = pc.width  + "px";
+      canvasWrapper.style.height = pc.height + "px";
+      canvasWrapper.classList.toggle("spread-canvas", pc.isSpread);
+    }
+
+    async function reinitializeForLayout() {
+      isRestoringPage = true;
+      editorCanvas.clear();
+      await new Promise(resolve => editorCanvas.setBackgroundColor("#ffffff", resolve));
+      editorCanvas.renderAll();
+      const blankState = JSON.stringify(editorCanvas.toJSON());
+
+      editorPagesConfig = buildEditorPagesConfig();
+      pages.length = 0;
+      thumbnailButtons.length = 0;
+      thumbnailStrip.innerHTML = "";
+
+      for (let i = 0; i < editorPagesConfig.length; i++) {
+        pages.push(createBlankPage(i, blankState));
+      }
+
+      const raw = localStorage.getItem(getLsKey());
+      if (raw) {
+        try {
+          const data = JSON.parse(raw);
+          if (Array.isArray(data) && data.length === editorPagesConfig.length) {
+            data.forEach((json, i) => {
+              if (typeof json === "string") {
+                pages[i].json = json; pages[i].history = [json]; pages[i].redo = [];
+              }
+            });
+          }
+        } catch (_) {}
+      }
+
+      currentPageIndex = 0;
+      buildThumbnailNavigation();
+      resizeEditorCanvasForPage(0);
+      await loadCanvasState(pages[0].json);
+      updateHistoryButtons();
+      applyEditorTool("select");
+      scheduleCompositeRefresh();
+      setStatus(`Switched to ${spreadMode ? "spread" : "single page"} layout.`);
+    }
+
+    async function switchLayoutMode(mode) {
+      const wantSpread = (mode === "spread");
+      if (wantSpread === spreadMode) return;
+      saveCurrentPageState();
+      try { localStorage.setItem(getLsKey(), JSON.stringify(pages.map(p => p.json))); } catch (_) {}
+      spreadMode = wantSpread;
       localStorage.setItem(LS_LAYOUT, mode);
       syncLayoutButtons();
-      updateSpreadView();
+      await reinitializeForLayout();
     }
 
     async function switchFormat(newFormat) {
       if (newFormat === activeFormat) return;
 
-      // Save current format's work to its own LS key before switching
       saveCurrentPageState();
-      try {
-        localStorage.setItem(LS_KEYS[activeFormat], JSON.stringify(pages.map(p => p.json)));
-      } catch (_) {}
+      try { localStorage.setItem(getLsKey(), JSON.stringify(pages.map(p => p.json))); } catch (_) {}
 
       const hasContent = pages.some(p => p.history.length > 1);
       if (hasContent) {
@@ -1067,52 +1082,10 @@
       cfg          = createZineConfig(newFormat);
       localStorage.setItem(LS_FORMAT, newFormat);
       syncFormatButtons();
-      await reinitializeForFormat();
-    }
-
-    async function reinitializeForFormat() {
-      isRestoringPage = true;
-
-      // Clear canvas, wipe pages array, tear down old thumbnails
-      editorCanvas.clear();
-      await new Promise(resolve => editorCanvas.setBackgroundColor("#ffffff", resolve));
-      editorCanvas.renderAll();
-      const blankState = JSON.stringify(editorCanvas.toJSON());
-
-      pages.length         = 0;
-      thumbnailButtons.length = 0;
-      thumbnailStrip.innerHTML = "";
-
-      for (let i = 0; i < cfg.PAGE_COUNT; i++) {
-        pages.push(createBlankPage(i, blankState));
-      }
-
-      // Restore previously saved work for this format if available
-      const raw = localStorage.getItem(LS_KEYS[activeFormat]);
-      if (raw) {
-        try {
-          const data = JSON.parse(raw);
-          if (Array.isArray(data) && data.length === cfg.PAGE_COUNT) {
-            data.forEach((json, i) => {
-              if (typeof json === "string") {
-                pages[i].json    = json;
-                pages[i].history = [json];
-                pages[i].redo    = [];
-              }
-            });
-          }
-        } catch (_) {}
-      }
-
-      currentPageIndex = 0;
-      buildThumbnailNavigation();
-      await loadCanvasState(pages[0].json);   // sets isRestoringPage = false
-      updateHistoryButtons();
-      applyEditorTool("select");
-      scheduleCompositeRefresh();
-
+      updateFoldGuide();
+      await reinitializeForLayout();
       const label = activeFormat === "a2-16" ? "A2 · 16 pages" : "A4 · 8 pages";
-      setStatus(`Switched to ${label}.${raw ? " Previous work restored." : " Ready."}`);
+      setStatus(`Switched to ${label}.`);
     }
 
     // ── Thumbnail navigation ───────────────────────────────────────
@@ -1142,8 +1115,11 @@
         }
       });
 
-      pageTitle.textContent   = `Page ${currentPageIndex + 1} / ${cfg.PAGE_COUNT}`;
-      pageCounter.textContent = `Page ${currentPageIndex + 1} / ${cfg.PAGE_COUNT}`;
+      const pc    = editorPagesConfig[currentPageIndex];
+      const label = pc ? pc.label : `Page ${currentPageIndex + 1}`;
+      const total = editorPagesConfig.length;
+      pageTitle.textContent   = `${label} · ${currentPageIndex + 1} / ${total}`;
+      pageCounter.textContent = `${label} · ${currentPageIndex + 1} / ${total}`;
     }
 
     // ── History ────────────────────────────────────────────────────
@@ -1177,7 +1153,6 @@
 
     async function switchPage(nextIndex) {
       if (nextIndex === currentPageIndex) return;
-      const fromIndex = currentPageIndex;
       saveCurrentPageState();
       currentPageIndex = nextIndex;
 
@@ -1186,15 +1161,16 @@
         canvasWrapper.classList.remove("page-switching");
       }, { once: true });
 
+      resizeEditorCanvasForPage(nextIndex);
       updateThumbnailSelection();
       scrollToActiveThumbnail();
       await loadCanvasState(pages[currentPageIndex].json);
       updateHistoryButtons();
       syncTextControlsFromSelection();
-      setStatus(`Page ${fromIndex + 1} saved. Now editing page ${nextIndex + 1}.`);
+      const pc = editorPagesConfig[nextIndex];
+      setStatus(`Now editing: ${pc ? pc.label : "page " + (nextIndex + 1)}.`);
       saveToLocalStorage();
       scheduleCompositeRefresh();
-      updateSpreadView();
     }
 
     async function restoreFromHistory(stateString) {
@@ -1207,23 +1183,29 @@
     }
 
     async function undo() {
+      const pc = editorPagesConfig[currentPageIndex];
+      const lbl = pc ? pc.label : `page ${currentPageIndex + 1}`;
       const result = undoPage(pages[currentPageIndex]);
-      if (!result.state) { setStatus("Nothing to undo on page " + (currentPageIndex + 1) + "."); return; }
+      if (!result.state) { setStatus(`Nothing to undo on ${lbl}.`); return; }
       pages[currentPageIndex] = result.page;
       await restoreFromHistory(result.state);
-      setStatus("Undo on page " + (currentPageIndex + 1) + ".");
+      setStatus(`Undo on ${lbl}.`);
     }
 
     async function redo() {
+      const pc = editorPagesConfig[currentPageIndex];
+      const lbl = pc ? pc.label : `page ${currentPageIndex + 1}`;
       const result = redoPage(pages[currentPageIndex]);
-      if (!result.state) { setStatus("Nothing to redo on page " + (currentPageIndex + 1) + "."); return; }
+      if (!result.state) { setStatus(`Nothing to redo on ${lbl}.`); return; }
       pages[currentPageIndex] = result.page;
       await restoreFromHistory(result.state);
-      setStatus("Redo on page " + (currentPageIndex + 1) + ".");
+      setStatus(`Redo on ${lbl}.`);
     }
 
     function clearCurrentCanvas() {
-      if (!confirm(`Clear all content on page ${currentPageIndex + 1}? You can undo this.`)) return;
+      const pc = editorPagesConfig[currentPageIndex];
+      const lbl = pc ? pc.label : `page ${currentPageIndex + 1}`;
+      if (!confirm(`Clear all content on ${lbl}? You can undo this.`)) return;
       isRestoringPage = true;
       editorCanvas.clear();
       editorCanvas.setBackgroundColor("#ffffff", () => {
@@ -1231,7 +1213,7 @@
         isRestoringPage = false;
         applyEditorTool("select");
         pushHistorySnapshot();
-        setStatus("Page " + (currentPageIndex + 1) + " cleared. Press Undo to restore.");
+        setStatus(`${lbl} cleared. Press Undo to restore.`);
       });
     }
 
@@ -1266,11 +1248,14 @@
     }
 
     async function addImageToEditor(dataUrl, indexOffset = 0) {
+      const pc    = editorPagesConfig[currentPageIndex];
+      const cw    = pc ? pc.width  : cfg.PAGE_WIDTH;
+      const ch    = pc ? pc.height : cfg.PAGE_HEIGHT;
       const image = decorateObject(await createFabricImage(dataUrl));
-      const scale = calcImageScale(image.width, image.height, cfg.PAGE_WIDTH, cfg.PAGE_HEIGHT);
+      const scale = calcImageScale(image.width, image.height, cw, ch);
       image.set({
-        left: cfg.PAGE_WIDTH  / 2 + indexOffset * 10,
-        top:  cfg.PAGE_HEIGHT / 2 + indexOffset * 10,
+        left: cw / 2 + indexOffset * 10,
+        top:  ch / 2 + indexOffset * 10,
         originX: "center",
         originY: "center"
       });
@@ -1294,9 +1279,12 @@
     }
 
     function insertTextBox() {
+      const pc = editorPagesConfig[currentPageIndex];
+      const cw = pc ? pc.width  : cfg.PAGE_WIDTH;
+      const ch = pc ? pc.height : cfg.PAGE_HEIGHT;
       const textObj = decorateObject(new fabric.Textbox("Tap to edit", {
-        left:       cfg.PAGE_WIDTH  / 2,
-        top:        cfg.PAGE_HEIGHT / 2,
+        left:       cw / 2,
+        top:        ch / 2,
         originX:    "center",
         originY:    "center",
         width:      190,
@@ -1329,13 +1317,11 @@
       });
     }
 
-    async function renderPageToDataUrl(page, multiplier = 0.45) {
+    async function renderPageToDataUrl(page, multiplier = 0.45, width = cfg.PAGE_WIDTH, height = cfg.PAGE_HEIGHT) {
       const el  = document.createElement("canvas");
-      el.width  = cfg.PAGE_WIDTH;
-      el.height = cfg.PAGE_HEIGHT;
-      const tmp = new fabric.StaticCanvas(el, {
-        width: cfg.PAGE_WIDTH, height: cfg.PAGE_HEIGHT, backgroundColor: "#ffffff"
-      });
+      el.width  = width;
+      el.height = height;
+      const tmp = new fabric.StaticCanvas(el, { width, height, backgroundColor: "#ffffff" });
       await new Promise((resolve) => {
         tmp.loadFromJSON(parseState(page.json), () => {
           tmp.setBackgroundColor("#ffffff", () => { tmp.renderAll(); resolve(); });
@@ -1346,9 +1332,40 @@
       return dataUrl;
     }
 
+    async function cropDataUrl(dataUrl, sx, sy, sw, sh) {
+      return new Promise(resolve => {
+        const img = new Image();
+        img.onload = () => {
+          const c = document.createElement("canvas");
+          c.width = sw; c.height = sh;
+          c.getContext("2d").drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
+          resolve(c.toDataURL("image/png"));
+        };
+        img.src = dataUrl;
+      });
+    }
+
+    async function getAllPrintPageImages(multiplier = 1) {
+      saveCurrentPageState();
+      const printImages = new Array(cfg.PAGE_COUNT);
+      for (let i = 0; i < editorPagesConfig.length; i++) {
+        const pc = editorPagesConfig[i];
+        const dataUrl = await renderPageToDataUrl(pages[i], multiplier, pc.width, pc.height);
+        if (pc.isSpread) {
+          printImages[pc.printPages[0] - 1] = await cropDataUrl(dataUrl, 0, 0, cfg.PAGE_WIDTH, cfg.PAGE_HEIGHT);
+          printImages[pc.printPages[1] - 1] = await cropDataUrl(dataUrl, cfg.PAGE_WIDTH, 0, cfg.PAGE_WIDTH, cfg.PAGE_HEIGHT);
+        } else {
+          printImages[pc.printPages[0] - 1] = dataUrl;
+        }
+      }
+      return printImages;
+    }
+
     async function renderAllPageImages(multiplier = 0.45) {
       saveCurrentPageState();
-      return Promise.all(pages.map(p => renderPageToDataUrl(p, multiplier)));
+      return Promise.all(editorPagesConfig.map((pc, i) =>
+        renderPageToDataUrl(pages[i], multiplier, pc.width, pc.height)
+      ));
     }
 
     async function buildZineLayoutCanvas(pageImages) {
@@ -1394,7 +1411,6 @@
           const rendered = await renderAllPageImages(0.45);
           if (token !== refreshToken) return;
           updateThumbnails(rendered);
-          updateSpreadView();
         } catch (err) {
           console.error("Thumbnail refresh failed:", err);
         }
@@ -1413,7 +1429,7 @@
 
       try {
         setStatus("Building PDF — rendering pages…", false);
-        const pageImages = await renderAllPageImages(1);
+        const pageImages = await getAllPrintPageImages(1);
 
         setStatus("Building PDF — compositing layout…", false);
         const layoutCanvas = await buildZineLayoutCanvas(pageImages);
@@ -1442,18 +1458,20 @@
 
     // ── Thumbnails ─────────────────────────────────────────────────
     function buildThumbnailNavigation() {
-      for (let i = 0; i < cfg.PAGE_COUNT; i++) {
+      for (let i = 0; i < editorPagesConfig.length; i++) {
+        const pc = editorPagesConfig[i];
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "thumb-button";
         btn.setAttribute("role", "tab");
-        btn.setAttribute("aria-label", `Go to page ${i + 1}`);
+        btn.setAttribute("aria-label", `Go to ${pc.label}`);
         btn.setAttribute("tabindex", i === 0 ? "0" : "-1");
         btn.setAttribute("aria-selected", i === 0 ? "true" : "false");
+        const aspectStyle = pc.isSpread ? "aspect-ratio:3/2;" : "aspect-ratio:3/4;";
         btn.innerHTML = `
-          <img class="thumb-preview" alt="Page ${i + 1} preview">
+          <img class="thumb-preview" alt="${pc.label} preview" style="${aspectStyle}">
           <span class="thumb-label">
-            <span>${pages[i].label}</span>
+            <span>${pc.label}</span>
             <span class="thumb-badge" aria-hidden="true">${i + 1}</span>
           </span>`;
         btn.addEventListener("click", () => switchPage(i));
@@ -1470,8 +1488,11 @@
 
     // ── Snap ───────────────────────────────────────────────────────
     function maybeSnapObject(target) {
+      const pc     = editorPagesConfig[currentPageIndex];
+      const w      = pc ? pc.width  : cfg.PAGE_WIDTH;
+      const h      = pc ? pc.height : cfg.PAGE_HEIGHT;
       const center  = target.getCenterPoint();
-      const snapped = snapPosition(center.x, center.y, cfg.PAGE_WIDTH, cfg.PAGE_HEIGHT);
+      const snapped = snapPosition(center.x, center.y, w, h);
       if (snapped.x !== center.x) {
         target.setPositionByOrigin(new fabric.Point(snapped.x, center.y), "center", "center");
       }
@@ -1560,7 +1581,7 @@
         case "?":           openShortcutsModal();       break;
         default: {
           const n = parseInt(event.key, 10);
-          if (n >= 1 && n <= cfg.PAGE_COUNT) switchPage(n - 1);
+          if (n >= 1 && n <= editorPagesConfig.length) switchPage(n - 1);
         }
       }
     }
@@ -1574,10 +1595,6 @@
       // Layout toggle
       singlePageLayoutBtn.addEventListener("click", () => switchLayoutMode("single"));
       spreadPageLayoutBtn.addEventListener("click",  () => switchLayoutMode("spread"));
-
-      // Spread adjacent page clicks
-      spreadLeft.addEventListener("click",  () => { if (currentPageIndex > 0) switchPage(currentPageIndex - 1); });
-      spreadRight.addEventListener("click", () => { if (currentPageIndex < cfg.PAGE_COUNT - 1) switchPage(currentPageIndex + 1); });
 
       // Tool mode
       toolButtons.select.addEventListener("click", () => applyEditorTool("select"));
@@ -1665,11 +1682,11 @@
       thumbnailStrip.addEventListener("keydown", e => {
         if (e.key === "ArrowRight") {
           e.preventDefault();
-          const next = (currentPageIndex + 1) % cfg.PAGE_COUNT;
+          const next = (currentPageIndex + 1) % editorPagesConfig.length;
           switchPage(next).then(() => thumbnailButtons[next].focus());
         } else if (e.key === "ArrowLeft") {
           e.preventDefault();
-          const prev = (currentPageIndex - 1 + cfg.PAGE_COUNT) % cfg.PAGE_COUNT;
+          const prev = (currentPageIndex - 1 + editorPagesConfig.length) % editorPagesConfig.length;
           switchPage(prev).then(() => thumbnailButtons[prev].focus());
         }
       });
@@ -1692,25 +1709,41 @@
       document.addEventListener("keydown", handleKeyboardShortcut);
     }
 
+    // ── Fold guide ─────────────────────────────────────────────────
+    function updateFoldGuide() {
+      if (activeFormat === "a2-16") {
+        foldGuideContent.innerHTML = `
+          <p style="font-size:0.9rem;color:var(--muted);margin:12px 16px 8px;">
+            Print on A2 sheet (landscape). Fold in half along the long edge to form an A3 sheet.
+            Then follow the same 8-page fold pattern — fold in half twice, make one cut, unfold, and refold into a booklet.
+          </p>
+          <img src="images/how_to.jpg" alt="8-page fold diagram — apply same technique to your folded A3 sheet"
+            style="display:block;width:100%;max-width:480px;margin:0 16px 0;border-radius:12px;border:1px solid var(--line);opacity:0.75;">
+        `;
+      } else {
+        foldGuideContent.innerHTML = `
+          <img src="images/how_to.jpg" alt="Zine folding instructions diagram"
+            style="display:block;width:100%;max-width:480px;margin:12px auto 0;border-radius:12px;border:1px solid var(--line);">
+        `;
+      }
+    }
+
     // ── Init ───────────────────────────────────────────────────────
     function init() {
-      // One-time legacy migration: preserve existing A4 work from old key
-      const legacy = localStorage.getItem("bookletmaker_v1");
-      if (legacy && !localStorage.getItem("bookletmaker_a4_v1")) {
-        try { localStorage.setItem("bookletmaker_a4_v1", legacy); } catch (_) {}
-      }
-
       syncFormatButtons();
       syncLayoutButtons();
       applyTheme(localStorage.getItem("zine-theme") === "light");
+      updateFoldGuide();
 
       const blankState = JSON.stringify(editorCanvas.toJSON());
-      for (let i = 0; i < cfg.PAGE_COUNT; i++) {
+      editorPagesConfig = buildEditorPagesConfig();
+      for (let i = 0; i < editorPagesConfig.length; i++) {
         pages.push(createBlankPage(i, blankState));
       }
 
       const restored = loadFromLocalStorage();
       buildThumbnailNavigation();
+      resizeEditorCanvasForPage(0);
       wireEvents();
       updateHistoryButtons();
       updateReadouts();
@@ -1719,12 +1752,10 @@
       if (restored) {
         loadCanvasState(pages[0].json).then(() => {
           scheduleCompositeRefresh();
-          updateSpreadView();
           setStatus("Last session restored. Pick a page to keep editing.");
         });
       } else {
         scheduleCompositeRefresh();
-        updateSpreadView();
         setStatus("Ready. Pick a page and start creating your zine.", false);
       }
     }
