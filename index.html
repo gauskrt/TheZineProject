@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Booklet Maker</title>
+  <title>Zine Maker</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
@@ -274,6 +274,7 @@
       background: var(--panel-2);
       border: 1px solid var(--line); box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
       transition: border-color 0.2s, box-shadow 0.2s;
+      display: flex; align-items: flex-start; gap: 0;
     }
     .editor-shell:focus-within {
       border-color: rgba(255,93,42,0.7);
@@ -296,9 +297,35 @@
     @keyframes pageFadeIn { from { opacity: 0.55; } to { opacity: 1; } }
     .canvas-wrapper.page-switching { animation: pageFadeIn 0.22s ease; }
 
+    /* ── Spread adjacent page ────────────────────────────────────── */
+    .spread-adjacent {
+      flex-shrink: 0; position: relative; width: 300px; height: 400px;
+      background: var(--canvas-bg); overflow: hidden;
+      box-shadow: 0 14px 28px rgba(0,0,0,0.2);
+      opacity: 0.72; cursor: pointer; padding: 0; border: none;
+      transition: opacity 0.18s, box-shadow 0.18s;
+    }
+    .spread-adjacent:hover { opacity: 1; box-shadow: 0 14px 28px rgba(0,0,0,0.35); }
+    .spread-img { display: block; width: 300px; height: 400px; object-fit: cover; }
+    .spread-hint {
+      position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+      font-size: 0.7rem; color: #fff; background: rgba(0,0,0,0.5);
+      padding: 2px 10px; border-radius: 999px; white-space: nowrap;
+      pointer-events: none; opacity: 0; transition: opacity 0.18s;
+    }
+    .spread-adjacent:hover .spread-hint { opacity: 1; }
+    /* Fold line: active canvas gets a dashed border on the side facing the spread */
+    .spread-active-left  #canvasWrapper { border-right: 2px dashed rgba(128,128,128,0.22); }
+    .spread-active-right #canvasWrapper { border-left:  2px dashed rgba(128,128,128,0.22); }
+    /* Round only the outward corners of each page in a spread */
+    .spread-active-left  #canvasWrapper { border-radius: 12px 0 0 12px; }
+    .spread-active-left  #spreadRight    { border-radius: 0 12px 12px 0; }
+    .spread-active-right #canvasWrapper  { border-radius: 0 12px 12px 0; }
+    .spread-active-right #spreadLeft     { border-radius: 12px 0 0 12px; }
+
     /* Page status bar below canvas */
     .page-statusbar {
-      width: 100%; max-width: 332px;
+      width: 100%; max-width: 660px;
       display: flex; align-items: center; justify-content: space-between; gap: 12px;
     }
     .page-label { font-size: 0.9rem; font-weight: 600; color: var(--text); }
@@ -459,7 +486,7 @@
 
         <!-- ── App header ─────────────────────────────────────────── -->
         <header class="panel app-header" aria-label="App header">
-          <h1>Booklet Maker</h1>
+          <h1>Zine Maker</h1>
 
           <div id="statusText" class="status-pill"
             role="status" aria-live="polite" aria-atomic="true">Ready.</div>
@@ -474,6 +501,18 @@
               <button id="formatA2" type="button" class="format-btn"
                 aria-pressed="false" title="A2 paper — 16 pages per booklet">
                 A2 · 16 pages
+              </button>
+            </div>
+
+            <!-- Layout toggle -->
+            <div class="format-toggle" role="group" aria-label="Page layout">
+              <button id="singlePageLayout" type="button" class="format-btn active"
+                aria-pressed="true" title="Edit one page at a time">
+                Single
+              </button>
+              <button id="spreadPageLayout" type="button" class="format-btn"
+                aria-pressed="false" title="See facing pages side by side">
+                Spread
               </button>
             </div>
 
@@ -585,11 +624,27 @@
         <!-- ── Canvas area ────────────────────────────────────────── -->
         <section class="panel canvas-area" aria-label="Canvas editor">
           <div id="editorShell" class="editor-shell">
+
+            <!-- Spread: left adjacent page (shown when current page is right of pair) -->
+            <button type="button" id="spreadLeft" class="spread-adjacent" hidden
+              aria-label="Go to left page">
+              <img id="spreadImgLeft" class="spread-img" alt="">
+              <span class="spread-hint" aria-hidden="true">Click to edit</span>
+            </button>
+
             <div class="canvas-wrapper" id="canvasWrapper">
               <canvas id="editorCanvas" width="300" height="400"></canvas>
               <div class="snap-guide snap-guide-h" aria-hidden="true"></div>
               <div class="snap-guide snap-guide-v" aria-hidden="true"></div>
             </div>
+
+            <!-- Spread: right adjacent page (shown when current page is left of pair) -->
+            <button type="button" id="spreadRight" class="spread-adjacent" hidden
+              aria-label="Go to right page">
+              <img id="spreadImgRight" class="spread-img" alt="">
+              <span class="spread-hint" aria-hidden="true">Click to edit</span>
+            </button>
+
           </div>
           <div class="page-statusbar">
             <span id="pageTitle" class="page-label">Page 1 / 8</span>
@@ -732,6 +787,12 @@
     const closeShortcutsFooterBtn = document.getElementById("closeShortcutsFooterBtn");
     const saveProjectBtn      = document.getElementById("saveProjectBtn");
     const loadProjectInput    = document.getElementById("loadProjectInput");
+    const spreadLeft          = document.getElementById("spreadLeft");
+    const spreadRight         = document.getElementById("spreadRight");
+    const spreadImgLeft       = document.getElementById("spreadImgLeft");
+    const spreadImgRight      = document.getElementById("spreadImgRight");
+    const singlePageLayoutBtn = document.getElementById("singlePageLayout");
+    const spreadPageLayoutBtn = document.getElementById("spreadPageLayout");
 
     const toolButtons = {
       select: document.getElementById("selectTool"),
@@ -741,9 +802,11 @@
     // ── Format + state ─────────────────────────────────────────────
     const LS_KEYS   = { "a4-8": "bookletmaker_a4_v1", "a2-16": "bookletmaker_a2_v1" };
     const LS_FORMAT = "zine-format";
+    const LS_LAYOUT = "zine-layout";
 
     let activeFormat     = localStorage.getItem(LS_FORMAT) || "a4-8";
     let cfg              = createZineConfig(activeFormat);
+    let layoutMode       = localStorage.getItem(LS_LAYOUT) || "single";
 
     const thumbnailButtons = [];
     const pages            = [];
@@ -927,6 +990,61 @@
       formatA2Btn.setAttribute("aria-pressed", String(activeFormat === "a2-16"));
     }
 
+    // ── Layout mode (single / spread) ──────────────────────────────
+    function syncLayoutButtons() {
+      singlePageLayoutBtn.classList.toggle("active", layoutMode === "single");
+      singlePageLayoutBtn.setAttribute("aria-pressed", String(layoutMode === "single"));
+      spreadPageLayoutBtn.classList.toggle("active", layoutMode === "spread");
+      spreadPageLayoutBtn.setAttribute("aria-pressed", String(layoutMode === "spread"));
+    }
+
+    async function updateSpreadView() {
+      if (layoutMode !== "spread") {
+        spreadLeft.hidden  = true;
+        spreadRight.hidden = true;
+        editorShell.classList.remove("spread-active-left", "spread-active-right");
+        return;
+      }
+
+      const isLeftPage    = currentPageIndex % 2 === 0;
+      const adjacentIndex = isLeftPage ? currentPageIndex + 1 : currentPageIndex - 1;
+
+      if (adjacentIndex < 0 || adjacentIndex >= cfg.PAGE_COUNT) {
+        // Odd page count edge case — show nothing adjacent
+        spreadLeft.hidden  = true;
+        spreadRight.hidden = true;
+        editorShell.classList.remove("spread-active-left", "spread-active-right");
+        return;
+      }
+
+      const adjacentImg = await renderPageToDataUrl(pages[adjacentIndex], 1);
+
+      if (isLeftPage) {
+        editorShell.classList.add("spread-active-left");
+        editorShell.classList.remove("spread-active-right");
+        spreadLeft.hidden  = true;
+        spreadRight.hidden = false;
+        spreadImgRight.src = adjacentImg;
+        spreadImgRight.alt = `Page ${adjacentIndex + 1}`;
+        spreadRight.setAttribute("aria-label", `Go to page ${adjacentIndex + 1}`);
+      } else {
+        editorShell.classList.add("spread-active-right");
+        editorShell.classList.remove("spread-active-left");
+        spreadRight.hidden = true;
+        spreadLeft.hidden  = false;
+        spreadImgLeft.src  = adjacentImg;
+        spreadImgLeft.alt  = `Page ${adjacentIndex + 1}`;
+        spreadLeft.setAttribute("aria-label", `Go to page ${adjacentIndex + 1}`);
+      }
+    }
+
+    function switchLayoutMode(mode) {
+      layoutMode = mode;
+      localStorage.setItem(LS_LAYOUT, mode);
+      syncLayoutButtons();
+      updateSpreadView();
+    }
+
     async function switchFormat(newFormat) {
       if (newFormat === activeFormat) return;
 
@@ -1076,6 +1194,7 @@
       setStatus(`Page ${fromIndex + 1} saved. Now editing page ${nextIndex + 1}.`);
       saveToLocalStorage();
       scheduleCompositeRefresh();
+      updateSpreadView();
     }
 
     async function restoreFromHistory(stateString) {
@@ -1275,6 +1394,7 @@
           const rendered = await renderAllPageImages(0.45);
           if (token !== refreshToken) return;
           updateThumbnails(rendered);
+          updateSpreadView();
         } catch (err) {
           console.error("Thumbnail refresh failed:", err);
         }
@@ -1451,6 +1571,14 @@
       formatA4Btn.addEventListener("click", () => switchFormat("a4-8"));
       formatA2Btn.addEventListener("click", () => switchFormat("a2-16"));
 
+      // Layout toggle
+      singlePageLayoutBtn.addEventListener("click", () => switchLayoutMode("single"));
+      spreadPageLayoutBtn.addEventListener("click",  () => switchLayoutMode("spread"));
+
+      // Spread adjacent page clicks
+      spreadLeft.addEventListener("click",  () => { if (currentPageIndex > 0) switchPage(currentPageIndex - 1); });
+      spreadRight.addEventListener("click", () => { if (currentPageIndex < cfg.PAGE_COUNT - 1) switchPage(currentPageIndex + 1); });
+
       // Tool mode
       toolButtons.select.addEventListener("click", () => applyEditorTool("select"));
       toolButtons.text.addEventListener("click",   handleTextTool);
@@ -1573,6 +1701,7 @@
       }
 
       syncFormatButtons();
+      syncLayoutButtons();
       applyTheme(localStorage.getItem("zine-theme") === "light");
 
       const blankState = JSON.stringify(editorCanvas.toJSON());
@@ -1590,10 +1719,12 @@
       if (restored) {
         loadCanvasState(pages[0].json).then(() => {
           scheduleCompositeRefresh();
+          updateSpreadView();
           setStatus("Last session restored. Pick a page to keep editing.");
         });
       } else {
         scheduleCompositeRefresh();
+        updateSpreadView();
         setStatus("Ready. Pick a page and start creating your zine.", false);
       }
     }
