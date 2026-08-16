@@ -341,26 +341,58 @@
       background: linear-gradient(180deg, rgba(255,93,42,0.18), rgba(255,93,42,0.05));
       border-color: var(--accent);
     }
+    /* Cover + Back Cover thumbnails always highlighted */
+    .thumb-button.thumb-cover {
+      border-color: rgba(255,93,42,0.55);
+      background: rgba(255,93,42,0.09);
+    }
+    .thumb-button.thumb-cover.active {
+      background: linear-gradient(180deg, rgba(255,93,42,0.28), rgba(255,93,42,0.12));
+      border-color: var(--accent);
+    }
+    .thumb-cover-pill {
+      position: absolute; top: 7px; left: 50%; transform: translateX(-50%);
+      background: var(--accent); color: #fff;
+      font-size: 0.55rem; font-weight: 800; letter-spacing: 0.12em;
+      text-transform: uppercase; padding: 2px 7px; border-radius: 999px;
+      white-space: nowrap; pointer-events: none; z-index: 2;
+    }
     .thumb-preview {
       width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 6px;
       border: 2px solid rgba(255,255,255,0.08); background: #ffffff; display: block;
       transition: border-color 0.18s;
     }
     .thumb-button.active .thumb-preview { border-color: var(--accent); }
+    .thumb-button.thumb-cover .thumb-preview { border-color: rgba(255,93,42,0.3); }
     .thumb-button.thumb-empty .thumb-preview { opacity: 0.55; }
     .thumb-empty-label {
-      position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+      position: absolute; top: 28px; left: 50%; transform: translateX(-50%);
       background: rgba(0,0,0,0.55); color: var(--muted); font-size: 0.65rem;
       padding: 2px 6px; border-radius: 999px; pointer-events: none; white-space: nowrap;
     }
+    .thumb-button:not(.thumb-cover) .thumb-empty-label { top: 12px; }
     .thumb-label {
       display: flex; align-items: center; justify-content: space-between; gap: 6px;
       font-size: 0.78rem; color: var(--text);
     }
+    .thumb-button.thumb-cover .thumb-label { color: var(--accent); font-weight: 700; }
     .thumb-badge {
       display: inline-flex; align-items: center; justify-content: center;
       min-width: 20px; min-height: 20px; padding: 0 4px; border-radius: 999px;
       background: rgba(255,255,255,0.08); color: var(--muted); font-size: 0.72rem;
+    }
+    .thumb-button.thumb-cover .thumb-badge {
+      background: rgba(255,93,42,0.2); color: var(--accent);
+    }
+
+    /* Canvas-area cover role indicator */
+    .canvas-role-banner {
+      font-size: 0.7rem; font-weight: 800; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--accent);
+      padding: 3px 12px; border-radius: 999px;
+      border: 1px solid rgba(255,93,42,0.35);
+      background: rgba(255,93,42,0.1);
+      white-space: nowrap;
     }
 
     /* ── How-to-fold collapsible ─────────────────────────────────── */
@@ -712,7 +744,10 @@
 
           </div>
           <div class="page-statusbar">
-            <span id="pageTitle" class="page-label">Page 1 / 8</span>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+              <span id="pageTitle" class="page-label">Cover</span>
+              <span id="canvasRoleBanner" class="canvas-role-banner" hidden>Front Cover</span>
+            </div>
             <button id="clearCanvas" type="button" class="clear-page-btn"
               aria-label="Clear all content on current page"
               title="Clear this page — you can undo">
@@ -871,6 +906,7 @@
     const singlePageLayoutBtn = document.getElementById("singlePageLayout");
     const spreadPageLayoutBtn = document.getElementById("spreadPageLayout");
     const foldGuideContent    = document.getElementById("foldGuideContent");
+    const canvasRoleBanner    = document.getElementById("canvasRoleBanner");
 
     const toolButtons = {
       select: document.getElementById("selectTool"),
@@ -1222,8 +1258,21 @@
       const pc    = editorPagesConfig[currentPageIndex];
       const label = pc ? pc.label : `Page ${currentPageIndex + 1}`;
       const total = editorPagesConfig.length;
-      pageTitle.textContent   = `${label} · ${currentPageIndex + 1} / ${total}`;
+      pageTitle.textContent   = label;
       pageCounter.textContent = `${label} · ${currentPageIndex + 1} / ${total}`;
+
+      // Cover role banner
+      const isFront = currentPageIndex === 0;
+      const isBack  = currentPageIndex === total - 1;
+      if (isFront) {
+        canvasRoleBanner.textContent = "Front Cover · P1";
+        canvasRoleBanner.hidden = false;
+      } else if (isBack) {
+        canvasRoleBanner.textContent = `Back Cover · P${cfg.PAGE_COUNT}`;
+        canvasRoleBanner.hidden = false;
+      } else {
+        canvasRoleBanner.hidden = true;
+      }
     }
 
     // ── History ────────────────────────────────────────────────────
@@ -1564,19 +1613,24 @@
     function buildThumbnailNavigation() {
       for (let i = 0; i < editorPagesConfig.length; i++) {
         const pc = editorPagesConfig[i];
+        const isCoverPage = i === 0 || i === editorPagesConfig.length - 1;
         const btn = document.createElement("button");
         btn.type = "button";
-        btn.className = "thumb-button";
+        btn.className = "thumb-button" + (isCoverPage ? " thumb-cover" : "");
         btn.setAttribute("role", "tab");
         btn.setAttribute("aria-label", `Go to ${pc.label}`);
         btn.setAttribute("tabindex", i === 0 ? "0" : "-1");
         btn.setAttribute("aria-selected", i === 0 ? "true" : "false");
         const aspectStyle = pc.isSpread ? "aspect-ratio:3/2;" : "aspect-ratio:3/4;";
+        const coverPill = isCoverPage
+          ? `<span class="thumb-cover-pill" aria-hidden="true">${i === 0 ? "Front" : "Back"}</span>`
+          : "";
         btn.innerHTML = `
+          ${coverPill}
           <img class="thumb-preview" alt="${pc.label} preview" style="${aspectStyle}">
           <span class="thumb-label">
             <span>${pc.label}</span>
-            <span class="thumb-badge" aria-hidden="true">${i + 1}</span>
+            <span class="thumb-badge" aria-hidden="true">${pc.printPages[0]}</span>
           </span>`;
         btn.addEventListener("click", () => switchPage(i));
         thumbnailButtons.push(btn);
